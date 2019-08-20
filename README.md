@@ -1,2 +1,2 @@
-# consorcioAdminAPI
-Servicio web para el sistema de administración de consorcios
+# ApiPHPBlank
+Web Service en blanco hecho en PHP, utilizando Slim Framework y PDO, con JWT y Middleware.
