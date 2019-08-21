@@ -6,9 +6,20 @@ class AccesoDatos
  
     private function __construct()
     {
-        
-        try { 
-            $this->objetoPDO = new PDO('mysql:host=localhost;dbname=name_bdd;charset=utf8', 'user', 'pass', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+        //***************** CONFIGURAR CONEXIÓN EN LAS SIGUIENTES VARIABLES *****************
+            $myServer 	= "localhost";                
+            $myDBName 	= "gestion_expensas";
+            $myUser 	= "root";
+            $myPassWord = "";
+			
+			// $myServer 	= "localhost";                
+            // $myDBName 	= "u524020682_lab4";
+            // $myUser 	= "u524020682_lab4";
+            // $myPassWord = "quesito";
+			
+        //***********************************************************************************    
+        try {
+            $this->objetoPDO = new PDO('mysql:host=' . $myServer .';dbname='. $myDBName .';charset=utf8', $myUser, $myPassWord, array(PDO::ATTR_EMULATE_PREPARES => true,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
             $this->objetoPDO->exec("SET CHARACTER SET utf8");
             } 
         catch (PDOException $e) { 

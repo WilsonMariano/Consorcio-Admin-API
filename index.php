@@ -6,6 +6,7 @@
     require_once 'composer/vendor/autoload.php';
     require_once 'clases/AccesoDatos.php';
     require_once 'clases/apis/entidadApi.php';
+    require_once 'clases/apis/genericApi.php';
    
     $config['displayErrorDetails'] = true;
     $config['addContentLengthHeader'] = false;
@@ -21,10 +22,21 @@
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 	});
 
-	$app->group('/entidad', function () {
 
-        $this->get('/holamundo[/]', \entidadApi::class . ':HolaMundo');
+
+    $app->group('/generic', function () {
+
+        $this->get('/all[/]', \GenericApi::class . ':GetAll');      
+        $this->put('/put[/]', \GenericApi::class . ':UpdateOne');
+        $this->post('/post[/]', \GenericApi::class . ':Insert');
+        $this->delete('/del[/]', \GenericApi::class . ':DeleteOne');
+    
+        //https://github.com/pablo86v/miApiRestGenerica/blob/master/README.md
+        //http://localhost/consorcioAdminAPI/index.php/generic/getAll?t=usuarios
     });
+
+
+    
 
 
 	$app->run();
