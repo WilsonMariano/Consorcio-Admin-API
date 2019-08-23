@@ -4,6 +4,8 @@ require_once "AccesoDatos.php";
 require_once "Usuarios.php";
 require_once "Adherentes.php";
 require_once "UF.php";
+require_once "Manzanas.php";
+require_once "CtasCtes.php";
  
 
 
@@ -19,17 +21,21 @@ class Funciones
      public static function getObjEntidad($EntityName){
         switch (trim($EntityName)) 
         {
-
-		  case "usuarios":
+			case "usuarios":
 				$objEntidad = new Usuarios();
 				break;
-		  case "adherentes":
+			case "adherentes":
 				$objEntidad = new Adherentes();
 				break;
-		  case "UF":
+			case "UF":
 				$objEntidad = new UF();
 				break;
-
+			case "Manzanas":
+				$objEntidad = new Manzanas();
+				break;
+			case "CtasCtes":
+				$objEntidad = new CtasCtes();
+				break;
 
         }//switch   
         return  $objEntidad;

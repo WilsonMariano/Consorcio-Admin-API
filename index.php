@@ -32,7 +32,7 @@
         $this->delete('/del[/]', \GenericApi::class . ':DeleteOne');
     
         //https://github.com/pablo86v/miApiRestGenerica/blob/master/README.md
-        //http://localhost/consorcioAdminAPI/index.php/generic/getAll?t=usuarios
+        //http://localhost/consorcioAdminAPI/index.php/generic/all?t=usuarios
     });
 
 
