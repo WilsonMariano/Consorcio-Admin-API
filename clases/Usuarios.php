@@ -11,10 +11,10 @@ public $email;
 public $password;
 
 //	Configurar parámetros para las consultas
-public function setQueryParams($consulta,$obj){
-		$consulta->bindValue(':id',$obj->id, \PDO::PARAM_INT);
-		$consulta->bindValue(':email', $obj->email, \PDO::PARAM_STR);
-		$consulta->bindValue(':password', $obj->password, \PDO::PARAM_STR);
+public function setQueryParams($consulta,$objEntidad){
+		$consulta->bindValue(':id',$objEntidad->id, \PDO::PARAM_INT);
+		$consulta->bindValue(':email', $objEntidad->email, \PDO::PARAM_STR);
+		$consulta->bindValue(':password', $objEntidad->password, \PDO::PARAM_STR);
 		
 		return $consulta;
 }

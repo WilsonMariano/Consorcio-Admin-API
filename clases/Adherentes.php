@@ -14,13 +14,13 @@ class Adherentes
  	
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$obj){
-		$consulta->bindValue(':id'      , $obj->id,       \PDO::PARAM_INT);
-		$consulta->bindValue(':nombre'  , $obj->nombre,   \PDO::PARAM_STR);
-		$consulta->bindValue(':apellido', $obj->apellido, \PDO::PARAM_STR);
-		$consulta->bindValue(':dni'     , $obj->dni,      \PDO::PARAM_INT);
-		$consulta->bindValue(':telefono', $obj->telefono, \PDO::PARAM_STR);
-		$consulta->bindValue(':email'   , $obj->email,    \PDO::PARAM_STR);
+	public function setQueryParams($consulta,$objEntidad){
+		$consulta->bindValue(':id'      , $objEntidad->id,       \PDO::PARAM_INT);
+		$consulta->bindValue(':nombre'  , $objEntidad->nombre,   \PDO::PARAM_STR);
+		$consulta->bindValue(':apellido', $objEntidad->apellido, \PDO::PARAM_STR);
+		$consulta->bindValue(':dni'     , $objEntidad->dni,      \PDO::PARAM_INT);
+		$consulta->bindValue(':telefono', $objEntidad->telefono, \PDO::PARAM_STR);
+		$consulta->bindValue(':email'   , $objEntidad->email,    \PDO::PARAM_STR);
 		
 		return $consulta;
 	}

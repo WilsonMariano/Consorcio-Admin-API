@@ -12,11 +12,11 @@ public $tipoVivienda;
 public $nombreConsorcio;
 
 //	Configurar parámetros para las consultas
-public function setQueryParams($consulta,$obj){
-		$consulta->bindValue(':id'             ,$obj->id,             \PDO::PARAM_INT);
-		$consulta->bindValue(':mtsCuadrados'   ,$obj->mtsCuadrados,   \PDO::PARAM_STR);
-		$consulta->bindValue(':tipoVivienda'   ,$obj->tipoVivienda,   \PDO::PARAM_STR);
-		$consulta->bindValue(':nombreConsorcio',$obj->nombreConsorcio,\PDO::PARAM_STR);
+public function setQueryParams($consulta,$objEntidad){
+		$consulta->bindValue(':id'             ,$objEntidad->id,             \PDO::PARAM_INT);
+		$consulta->bindValue(':mtsCuadrados'   ,$objEntidad->mtsCuadrados,   \PDO::PARAM_STR);
+		$consulta->bindValue(':tipoVivienda'   ,$objEntidad->tipoVivienda,   \PDO::PARAM_STR);
+		$consulta->bindValue(':nombreConsorcio',$objEntidad->nombreConsorcio,\PDO::PARAM_STR);
 		
 		return $consulta;
 }
