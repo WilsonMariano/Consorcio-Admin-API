@@ -5,8 +5,9 @@
 
     require_once 'composer/vendor/autoload.php';
     require_once 'clases/AccesoDatos.php';
-    require_once 'clases/apis/entidadApi.php';
     require_once 'clases/apis/genericApi.php';
+	require_once 'clases/apis/usuarioApi.php';
+    
    
     $config['displayErrorDetails'] = true;
     $config['addContentLengthHeader'] = false;
@@ -25,7 +26,6 @@
 
 
     $app->group('/generic', function () {
-
         $this->get('/all[/]', \GenericApi::class . ':GetAll');      
         $this->put('/put[/]', \GenericApi::class . ':UpdateOne');
         $this->post('/post[/]', \GenericApi::class . ':Insert');
@@ -36,7 +36,9 @@
     });
 
 
-    
-
+    $app->group('/usuario', function () {
+		$this->get('/getAll[/]', \UsuarioApi::class . ':GetAll');      
+		$this->post('/insert'   , \UsuarioApi::class . ':Insert');      
+	});
 
 	$app->run();
