@@ -9,7 +9,8 @@ class Funciones
 {
 
 	public static function getObjEntidad($EntityName){
-		$class = 'Class'.$EntityName;
+		$class = $EntityName;
+		// $class = 'Class'.$EntityName;
 		$object = new $class();
 		return $object;
 	}
@@ -27,7 +28,7 @@ class Funciones
 	 
 	public static function UpdateOne($datosRecibidos){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = Funciones::getObjEntidad ($datosRecibidos['t']);
+		$objEntidad = self::getObjEntidad ($datosRecibidos['t']);
 	
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));
@@ -51,7 +52,7 @@ class Funciones
 
 	public static function GetOne($idParametro,$EntityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = Funciones::getObjEntidad ($EntityName);
+		$objEntidad = self::getObjEntidad ($EntityName);
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $EntityName . " where id =:id");
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
@@ -75,7 +76,7 @@ class Funciones
 	public static function InsertOne($datosRecibidosQS,$datosRecibidosBody)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
- 		$objEntidad = Funciones::getObjEntidad ($datosRecibidosQS['t']);
+ 		$objEntidad = self::getObjEntidad ($datosRecibidosQS['t']);
 			
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));

@@ -27,18 +27,28 @@
 
     $app->group('/generic', function () {
         $this->get('/all[/]', \GenericApi::class . ':GetAll');      
+        $this->get('/one/{id}', \GenericApi::class . ':GetOne');      
         $this->put('/put[/]', \GenericApi::class . ':UpdateOne');
         $this->post('/post[/]', \GenericApi::class . ':Insert');
         $this->delete('/del[/]', \GenericApi::class . ':DeleteOne');
-    
-        //https://github.com/pablo86v/miApiRestGenerica/blob/master/README.md
-        //http://localhost/consorcioAdminAPI/index.php/generic/all?t=usuarios
+		/*
+			https://github.com/pablo86v/miApiRestGenerica/blob/master/README.md
+            /generic/all?t=usuarios
+		    /generic/one/2?t=adherentes
+		*/
     });
 
 
-    $app->group('/usuario', function () {
+    $app->group('/usuarios', function () {
 		$this->get('/getAll[/]', \UsuarioApi::class . ':GetAll');      
 		$this->post('/insert'   , \UsuarioApi::class . ':Insert');      
 	});
+
+
+	$app->group('/adherentes', function () {
+		$this->get('/getWithPaged[/]', \AdherenteApi::class . ':GetWithPaged');      
+	});
+
+
 
 	$app->run();

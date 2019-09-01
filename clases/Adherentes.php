@@ -27,4 +27,13 @@ class Adherentes
 	}
 
 
+	public static function GetWithPaged(){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from usuarios");
+		$consulta->execute();
+		$arrResult= $consulta->fetchAll(PDO::FETCH_CLASS, "Usuarios");	
+		return $arrResult;					
+	}
+
+
 }//class

@@ -13,6 +13,14 @@
 			$listado=\Funciones::GetAll($datosRecibidos["t"]);
     		return $response->write(json_encode($listado));           
         } 
+		
+		public static function GetOne($request, $response, $args)
+        {
+           	$datosRecibidos = $request->getQueryParams();
+			$id = json_decode($args['id']);
+      		$objEntidad=\Funciones::GetOne($id,$datosRecibidos["t"]);
+    		return $response->write(json_encode($objEntidad));           
+        } 
 
         public static function UpdateOne($request, $response, $args)
         {
