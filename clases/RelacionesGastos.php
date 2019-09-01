@@ -13,8 +13,11 @@ class RelacionesGastos
 
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad){
-		$consulta->bindValue(':id'             	      ,$objEntidad->id                    ,\PDO::PARAM_INT);
+	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+
+		if($includePK == true)
+			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+		
 		$consulta->bindValue(':idGastosLiquidaciones' ,$objEntidad->idGastosLiquidaciones ,\PDO::PARAM_INT);
 		$consulta->bindValue(':entidad'   	          ,$objEntidad->entidad	              ,\PDO::PARAM_STR);
 		$consulta->bindValue(':numero'	              ,$objEntidad->entidad               ,\PDO::PARAM_INT);

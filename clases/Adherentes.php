@@ -9,30 +9,40 @@ class Adherentes
 	public $id;
 	public $nombre;
 	public $apellido;
-	public $dni;
+	public $nroDocumento;
 	public $telefono;
 	public $email;
  	
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad){
-		$consulta->bindValue(':id'       ,$objEntidad->id        ,\PDO::PARAM_INT);
-		$consulta->bindValue(':nombre'   ,$objEntidad->nombre    ,\PDO::PARAM_STR);
-		$consulta->bindValue(':apellido' ,$objEntidad->apellido  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':dni'      ,$objEntidad->dni       ,\PDO::PARAM_INT);
-		$consulta->bindValue(':telefono' ,$objEntidad->telefono  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':email'    ,$objEntidad->email     ,\PDO::PARAM_STR);
+	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+
+		if($includePK == true)
+			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+		
+		$consulta->bindValue(':nombre'       ,$objEntidad->nombre        ,\PDO::PARAM_STR);
+		$consulta->bindValue(':apellido'     ,$objEntidad->apellido      ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nroDocumento' ,$objEntidad->nroDocumento  ,\PDO::PARAM_INT);
+		$consulta->bindValue(':telefono'     ,$objEntidad->telefono      ,\PDO::PARAM_STR);
+		$consulta->bindValue(':email'        ,$objEntidad->email         ,\PDO::PARAM_STR);
 		
 		return $consulta;
 	}
 
 
-	public static function GetWithPaged(){
+	public static function GetWithPaged($rows,$page){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from usuarios");
+		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetAdherentesWithPaged($rows,$page,@o_total_pages)");
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_CLASS, "Usuarios");	
-		return $arrResult;					
+		$arrResult= $consulta->fetchAll(PDO::FETCH_CLASS, "Adherentes");	
+		$consulta->closeCursor();
+		
+		$output = $objetoAccesoDato->Query("select @o_total_pages as total_pages")->fetchObject();
+		
+		$result->total_pages = $output->total_pages;
+		$result->data = $arrResult;
+		
+		return json_encode($result);					
 	}
 
 

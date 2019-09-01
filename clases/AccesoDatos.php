@@ -32,6 +32,11 @@ class AccesoDatos
     { 
         return $this->objetoPDO->prepare($sql); 
     }
+	
+	public function Query($sql)
+    { 
+        return $this->objetoPDO->query($sql); 
+    }
     
      public function RetornarUltimoIdInsertado()
     { 

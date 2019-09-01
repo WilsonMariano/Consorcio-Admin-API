@@ -16,8 +16,11 @@ class UF
  
  	
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad){
-		$consulta->bindValue(':id'           ,$objEntidad->id            ,\PDO::PARAM_INT);
+	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+
+		if($includePK == true)
+			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+		
 		$consulta->bindValue(':idManzana'    ,$objEntidad->idManzana     ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idAdherente'  ,$objEntidad->idAdherente   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':nroEdificio'  ,$objEntidad->nroEdificio   ,\PDO::PARAM_INT);

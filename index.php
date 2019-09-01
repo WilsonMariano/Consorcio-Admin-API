@@ -5,10 +5,12 @@
 
     require_once 'composer/vendor/autoload.php';
     require_once 'clases/AccesoDatos.php';
-    require_once 'clases/apis/genericApi.php';
-	require_once 'clases/apis/usuarioApi.php';
-    
-   
+	
+	//Incluir todas las apis creadas
+	foreach (glob("clases/apis/*.php") as $filename){
+		require_once $filename;
+	}
+      
     $config['displayErrorDetails'] = true;
     $config['addContentLengthHeader'] = false;
 
@@ -22,7 +24,6 @@
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 	});
-
 
 
     $app->group('/generic', function () {
@@ -39,6 +40,10 @@
     });
 
 
+	// *********************************************************************************
+	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
+	// *********************************************************************************
+
     $app->group('/usuarios', function () {
 		$this->get('/getAll[/]', \UsuarioApi::class . ':GetAll');      
 		$this->post('/insert'   , \UsuarioApi::class . ':Insert');      
@@ -48,6 +53,9 @@
 	$app->group('/adherentes', function () {
 		$this->get('/getWithPaged[/]', \AdherenteApi::class . ':GetWithPaged');      
 	});
+
+
+
 
 
 

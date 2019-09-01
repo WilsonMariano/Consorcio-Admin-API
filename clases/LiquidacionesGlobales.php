@@ -16,8 +16,11 @@ class LiquidacionesGlobales
 
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad){
-		$consulta->bindValue(':id'           		,$objEntidad->id         		   ,\PDO::PARAM_INT);
+	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+
+		if($includePK == true)
+			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+		
 		$consulta->bindValue(':mes'         		,$objEntidad->mes        		   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':anio'        		,$objEntidad->anio     			   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':primerVencimiento'   ,$objEntidad->primerVencimiento    ,\PDO::PARAM_STR);

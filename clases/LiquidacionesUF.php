@@ -17,8 +17,11 @@ class LiquidacionesUF
 
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad){
-		$consulta->bindValue(':id'					   ,$objEntidad->id                   ,\PDO::PARAM_INT);
+	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+
+		if($includePK == true)
+			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+		
 		$consulta->bindValue(':idLiquidacionGlobal'    ,$objEntidad->idLiquidacionGlobal  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idCtaCte'               ,$objEntidad->idCtaCte             ,\PDO::PARAM_INT);
 		$consulta->bindValue(':coeficiente'            ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
