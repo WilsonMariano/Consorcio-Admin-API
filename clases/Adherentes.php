@@ -38,11 +38,13 @@ class Adherentes
 		$consulta->closeCursor();
 		
 		$output = $objetoAccesoDato->Query("select @o_total_pages as total_pages")->fetchObject();
-		
+			
+		$result = new \stdClass();
 		$result->total_pages = $output->total_pages;
 		$result->data = $arrResult;
 		
-		return json_encode($result);					
+		// return json_encode($result);					
+		return $result;					
 	}
 
 
