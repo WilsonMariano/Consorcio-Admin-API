@@ -14,6 +14,16 @@
     		return $response->write(json_encode($listado));           
         } 
 		
+		public static function GetWithPaged($request, $response, $args)
+        {
+			$datosRecibidos = $request->getQueryParams();
+			$v = $datosRecibidos['entity'];
+			$r = $datosRecibidos['rows'];
+			$p = $datosRecibidos['page'];
+			 	
+			return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
+        } 
+		
 		public static function GetOne($request, $response, $args)
         {
            	$datosRecibidos = $request->getQueryParams();

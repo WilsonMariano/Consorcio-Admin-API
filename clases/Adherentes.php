@@ -29,23 +29,37 @@ class Adherentes
 		return $consulta;
 	}
 
+	
 
-	public static function GetWithPaged($rows,$page){
+	public static function Insert($adherente){
+		
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetAdherentesWithPaged($rows,$page,@o_total_pages)");
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"INSERT into adherentes (nombre,apellido,nroDocumento,telefono,email) values(:nombre,:apellido,:nroDocumento,:telefono,:email)");
+		self::setQueryParams($consulta,$adherente, false);
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_CLASS, "Adherentes");	
-		$consulta->closeCursor();
-		
-		$output = $objetoAccesoDato->Query("select @o_total_pages as total_pages")->fetchObject();
-			
-		$result = new \stdClass();
-		$result->total_pages = $output->total_pages;
-		$result->data = $arrResult;
-		
-		// return json_encode($result);					
-		return $result;					
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+	
 	}
+
+	
+	// public static function GetWithPaged($rows,$page){
+		// $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		// $consulta =$objetoAccesoDato->RetornarConsulta("call spGetAdherentesWithPaged($rows,$page,@o_total_pages)");
+		// $consulta->execute();
+		// $arrResult= $consulta->fetchAll(PDO::FETCH_CLASS, "Adherentes");	
+		// $consulta->closeCursor();
+		
+		// $output = $objetoAccesoDato->Query("select @o_total_pages as total_pages")->fetchObject();
+			
+		// $result = new \stdClass();
+		// $result->total_pages = $output->total_pages;
+		// $result->data = $arrResult;
+		
+ 		// return $result;					
+		
+	// }
 
 
 }//class

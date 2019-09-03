@@ -27,22 +27,22 @@
 
 
     $app->group('/generic', function () {
-        $this->get('/all[/]', \GenericApi::class . ':GetAll');      
-        $this->get('/one/{id}', \GenericApi::class . ':GetOne');      
-        $this->put('/put[/]', \GenericApi::class . ':UpdateOne');
-        $this->post('/post[/]', \GenericApi::class . ':Insert');
+		
+		// Métodos base de test
+		$this->post('/post[/]', \GenericApi::class . ':Insert');
+		$this->get('/all[/]', \GenericApi::class . ':GetAll');      
+        $this->put('/put[/]', \GenericApi::class . ':UpdateOne');      
         $this->delete('/del[/]', \GenericApi::class . ':DeleteOne');
-		/*
-			https://github.com/pablo86v/miApiRestGenerica/blob/master/README.md
-            /generic/all?t=usuarios
-		    /generic/one/2?t=adherentes
-		*/
+		//
+		
+		$this->get('/paged[/]', \GenericApi::class . ':GetWithPaged');      
+        $this->get('/one/{id}', \GenericApi::class . ':GetOne');       
     });
 
 
-	// *********************************************************************************
+
 	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
-	// *********************************************************************************
+
 
     $app->group('/usuarios', function () {
 		$this->get('/getAll[/]', \UsuarioApi::class . ':GetAll');      
@@ -51,7 +51,7 @@
 
 
 	$app->group('/adherentes', function () {
-		$this->get('/getWithPaged[/]', \AdherenteApi::class . ':GetWithPaged');      
+		$this->get('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});
 
 
