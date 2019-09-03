@@ -35,8 +35,8 @@ class Adherentes
 		
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into adherentes (nombre,apellido,nroDocumento,telefono,email) values(:nombre,:apellido,:nroDocumento,:telefono,:email)");
-		self::setQueryParams($consulta,$adherente, false);
+			"INSERT into adherentes values(:id,:nombre,:apellido,:nroDocumento,:telefono,:email)");
+		self::setQueryParams($consulta,$adherente, true);
 		$consulta->execute();
 
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();

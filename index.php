@@ -51,7 +51,7 @@
 
 
 	$app->group('/adherentes', function () {
-		$this->get('/insert[/]', \AdherenteApi::class . ':Insert');      
+		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});
 
 

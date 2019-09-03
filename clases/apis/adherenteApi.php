@@ -10,6 +10,7 @@
             $datosRecibidos = $request->getParsedBody();
 
             $adherente = new Adherentes();
+            $adherente->id           = $datosRecibidos['id'];
             $adherente->nombre       = $datosRecibidos['nombre'];
             $adherente->apellido     = $datosRecibidos['apellido'];
             $adherente->nroDocumento = $datosRecibidos['nroDocumento'];
