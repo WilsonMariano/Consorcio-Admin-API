@@ -81,10 +81,10 @@ class Funciones
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));
 		$myQuery = "insert into " . $datosRecibidosQS['t'] ." (" ;
-		$myQueryAux ;
+		$myQueryAux = "";
 		foreach ($vars_clase as $nombre => $valor) {
-			//Armo la query según los atributos de mi objeto
-			if ($nombre != null ){
+			//Armo la query según los atributos de mi objeto. Excluyo el campo id ya que es autoincremental.
+			if ($nombre != null && $nombre != "id" ){
 				$myQuery .= $nombre .  ",";
 				$myQueryAux .= ":".$nombre.","; 
 				//Bindeo los atributos de mi objeto con el array recibido por queryString para configurar parametros en setQueryParams(..)
@@ -95,7 +95,7 @@ class Funciones
 		$myQuery = rtrim($myQuery,",").") values (" . rtrim($myQueryAux,",") . ")" ;
 						
 		$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
-		$objEntidad->setQueryParams($consulta,$objEntidad);
+		$objEntidad->setQueryParams($consulta,$objEntidad,false);
 		$consulta->execute();
 		
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();
