@@ -8,11 +8,22 @@ foreach (glob("clases/*.php") as $filename){
 class Funciones
 {
 
-	public static function getObjEntidad($entityName){
+	private static function GetObjEntidad($entityName){
 		$class = $entityName;
 		// $class = 'Class'.$entityName;
 		$object = new $class();
 		return $object;
+	}
+
+	public static function  IsDuplicated($entityObject){
+		$entityName = get_class($entityObject);
+		
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
+		$consulta->bindValue(':id', $entityObject->id, PDO::PARAM_INT);
+		$consulta->execute();
+		
+		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 
@@ -53,7 +64,7 @@ class Funciones
 
 	public static function GetOne($idParametro,$entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = self::getObjEntidad ($entityName);
+		$objEntidad = self::GetObjEntidad ($entityName);
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
@@ -66,7 +77,7 @@ class Funciones
 	 
 	public static function UpdateOne($datosRecibidos){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = self::getObjEntidad ($datosRecibidos['t']);
+		$objEntidad = self::GetObjEntidad ($datosRecibidos['t']);
 	
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));
@@ -101,7 +112,7 @@ class Funciones
 	public static function InsertOne($datosRecibidosQS,$datosRecibidosBody)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
- 		$objEntidad = self::getObjEntidad ($datosRecibidosQS['t']);
+ 		$objEntidad = self::GetObjEntidad ($datosRecibidosQS['t']);
 			
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));

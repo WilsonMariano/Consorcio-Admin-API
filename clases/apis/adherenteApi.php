@@ -1,6 +1,7 @@
 <?php
 
     include_once __DIR__ . '/../Adherentes.php';
+    include_once __DIR__ . '/../_FuncionesEntidades.php';
 
     class AdherenteApi
     {
@@ -9,20 +10,25 @@
 
             $datosRecibidos = $request->getParsedBody();
 
-            $adherente = new Adherentes();
-            $adherente->id           = $datosRecibidos['id'];
-            $adherente->nombre       = $datosRecibidos['nombre'];
-            $adherente->apellido     = $datosRecibidos['apellido'];
-            $adherente->nroDocumento = $datosRecibidos['nroDocumento'];
-            $adherente->telefono     = $datosRecibidos['telefono'];
-            $adherente->email        = $datosRecibidos['email'];
+            $objAdherente = new Adherentes();
+            $objAdherente->id           = $datosRecibidos['id'];
+            $objAdherente->nombre       = $datosRecibidos['nombre'];
+            $objAdherente->apellido     = $datosRecibidos['apellido'];
+            $objAdherente->nroDocumento = $datosRecibidos['nroDocumento'];
+            $objAdherente->telefono     = $datosRecibidos['telefono'];
+            $objAdherente->email        = $datosRecibidos['email'];
  
-            $resultado = adherentes::Insert($adherente);
-    
+			//Valido que el id no esté duplicado antes de insertar
+			if(!Funciones::IsDuplicated($objAdherente))
+				$resultado = Adherentes::Insert($objAdherente);
+			else 
+				return $response->withJson("El nro de adherente ingresado no se encuentra disponible.", 501);
+	
+	
             if(is_numeric($resultado) == true)
                 return $response->withJson(true, 200);
             else
-                return $response->withJson("Ha ocurrido un error insertando el adherente. Inténtelo nuevamente.", 500);
+                return $response->withJson("Ha ocurrido un error insertando el adherente. Intentelo nuevamente.", 500);
         }
 
 		

@@ -33,4 +33,15 @@ class UF
 	}
 
 
+	public static function Insert($uf){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"INSERT into uf values(:id,:idManzana,:idAdherente,:nroEdificio,:departamento,:codSitLegal,:coeficiente,:codAlquila)");
+		self::setQueryParams($consulta,$uf);
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+	
+	}
+
 }//class

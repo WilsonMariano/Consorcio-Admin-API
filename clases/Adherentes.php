@@ -36,14 +36,14 @@ class Adherentes
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta(
 			"INSERT into adherentes values(:id,:nombre,:apellido,:nroDocumento,:telefono,:email)");
-		self::setQueryParams($consulta,$adherente, true);
+		self::setQueryParams($consulta,$adherente);
 		$consulta->execute();
 
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();
 	
 	}
-
 	
+		
 	// public static function GetWithPaged($rows,$page){
 		// $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		// $consulta =$objetoAccesoDato->RetornarConsulta("call spGetAdherentesWithPaged($rows,$page,@o_total_pages)");

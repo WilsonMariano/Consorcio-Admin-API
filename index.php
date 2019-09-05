@@ -54,7 +54,9 @@
 		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});
 
-
+	$app->group('/uf', function () {
+		$this->post('/insert[/]', \UFApi::class . ':Insert');      
+	});
 
 
 
