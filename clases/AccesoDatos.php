@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/../credentials.php';
+
 class AccesoDatos
 {
     private static $ObjetoAccesoDatos;
@@ -7,15 +10,12 @@ class AccesoDatos
     private function __construct()
     {
         //***************** CONFIGURAR CONEXIÓN EN LAS SIGUIENTES VARIABLES *****************
-            $myServer 	= "localhost";                
-            $myDBName 	= "gestion_expensas";
-            $myUser 	= "root";
-            $myPassWord = "";
-			
-			// $myServer 	= "localhost";                
-            // $myDBName 	= "u524020682_lab4";
-            // $myUser 	= "u524020682_lab4";
-            // $myPassWord = "quesito";
+
+            // Definidos en credentials.php
+            $myServer 	= HOST;                
+            $myDBName 	= DBNAME;
+            $myUser 	= USERNAME;
+            $myPassWord = PASSWORD;
 			
         //***********************************************************************************    
         try {
