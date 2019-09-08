@@ -11,7 +11,13 @@
            	//Traigo  todos los items
 			$datosRecibidos = $request->getQueryParams();
 			$listado=\Funciones::GetAll($datosRecibidos["t"]);
-    		return $response->write(json_encode($listado));           
+    		
+			// return $response->write(json_encode($listado));         
+			if($listado != false)
+				return $response->withJson($listado, 200); 
+			else
+			   return $response->withJson(false, 400);  
+			
         } 
 		
 		
@@ -24,7 +30,12 @@
 			$r = $datosRecibidos['rows'];
 			$p = $datosRecibidos['page'];
 			 	
-			return $response->withJson(Funciones::GetWithFilter($e,$c,$t,$r,$p), 200); 
+            $data = Funciones::GetWithFilter($e,$c,$t,$r,$p);
+			
+			if($data != false)
+				return $response->withJson($data, 200); 
+			else
+			   return $response->withJson(false, 400);  
         } 
 		
 		
@@ -35,7 +46,13 @@
 			$r = $datosRecibidos['rows'];
 			$p = $datosRecibidos['page'];
 			 	
-			return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
+			// return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
+			$data = Funciones::GetWithPaged($v,$r,$p);
+			
+			if($data != false)
+				return $response->withJson($data, 200); 
+			else
+			   return $response->withJson(false, 400);  
         } 
 		
 		
@@ -44,7 +61,12 @@
            	$datosRecibidos = $request->getQueryParams();
 			$id = json_decode($args['id']);
       		$objEntidad=\Funciones::GetOne($id,$datosRecibidos["t"]);
-    		return $response->write(json_encode($objEntidad));           
+    		
+			
+			if($objEntidad != false)
+				return $response->withJson($objEntidad, 200); 
+			else
+			   return $response->withJson(false, 400);  
         } 
 
 
