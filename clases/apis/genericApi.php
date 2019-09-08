@@ -56,7 +56,7 @@
             //Datos recibidos por body
             $datosRecibidosBody = $request->getParsedBody();	
 
-            return $response->write(json_encode(Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody)));
+            return $response->write(json_encode(Funciones::UpdateOne($datosRecibidosQS,$datosRecibidosBody)));
         }
 
 
