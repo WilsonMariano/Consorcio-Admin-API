@@ -14,6 +14,20 @@
     		return $response->write(json_encode($listado));           
         } 
 		
+		
+		public static function GetWithFilter($request, $response, $args)
+        {
+			$datosRecibidos = $request->getQueryParams();
+			$e = $datosRecibidos['entity'];
+			$c = $datosRecibidos['column'];
+			$t = $datosRecibidos['text'];
+			$r = $datosRecibidos['rows'];
+			$p = $datosRecibidos['page'];
+			 	
+			return $response->withJson(Funciones::GetWithFilter($e,$c,$t,$r,$p), 200); 
+        } 
+		
+		
 		public static function GetWithPaged($request, $response, $args)
         {
 			$datosRecibidos = $request->getQueryParams();
@@ -24,6 +38,7 @@
 			return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
         } 
 		
+		
 		public static function GetOne($request, $response, $args)
         {
            	$datosRecibidos = $request->getQueryParams();
@@ -32,13 +47,31 @@
     		return $response->write(json_encode($objEntidad));           
         } 
 
+
         public static function UpdateOne($request, $response, $args)
         {
-            //Recibo los datos y los asigno a un nuevo usuario
-            $datosRecibidos = $request->getQueryParams();
-            return $response->write(json_encode(Funciones::UpdateOne($datosRecibidos)));
+         //Datos recibidos por QueryString
+            $datosRecibidosQS = $request->getQueryParams();
+                    
+            //Datos recibidos por body
+            $datosRecibidosBody = $request->getParsedBody();	
+
+            return $response->write(json_encode(Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody)));
         }
 
+
+        public static function Insert($request, $response, $args)
+        {
+            //Datos recibidos por QueryString
+            $datosRecibidosQS = $request->getQueryParams();
+                    
+            //Datos recibidos por body
+            $datosRecibidosBody = $request->getParsedBody();	
+
+            return $response->write(json_encode(Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody)));
+        }
+    
+	
         public static function DeleteOne($request, $response, $args)
         {
              $datosRecibidos = $request->getQueryParams();
@@ -58,18 +91,5 @@
             }
             return $response;
         }
-
-        public static function Insert($request, $response, $args)
-        {
-            //Datos recibidos por QueryString
-            $datosRecibidosQS = $request->getQueryParams();
-                    
-            //Datos recibidos por body
-            $datosRecibidosBody = $request->getParsedBody();	
-
-            return $response->write(json_encode(Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody)));
-        }
-    
-
 
     }

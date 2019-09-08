@@ -35,15 +35,34 @@ class Funciones
 		
 		return $arrObjEntidad;
 	}//GetAll
+
+	
+	public static function GetWithFilter($entityName,$column,$text,$rows,$page){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithFilter('$entityName','$column','$text',$rows,$page,@o_total_rows)");
+		$consulta->execute();
+		$arrResult= $consulta->fetchAll();	
+		$consulta->closeCursor();
+		
+		$output = $objetoAccesoDato->Query("select @o_total_rows as total_rows")->fetchObject();
+			
+		$result = new \stdClass();
+		$result->total_pages = ceil(intval($output->total_rows)/intval($rows));
+		$result->total_rows = $output->total_rows;
+		$result->data = $arrResult;
+		
+ 		return $result;					
+	}
+	
 	 
-	 
-	public static function GetWithpaged($entityName,$rows,$page){
+	public static function GetWithPaged($entityName,$rows,$page){
 		
 		//Obtengo los datos con paginado
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithpaged('$entityName' ,$rows , $page)" );
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_CLASS,'Adherentes');	
+		// $arrResult= $consulta->fetchAll(PDO::FETCH_CLASS,'Adherentes');	
+		$arrResult= $consulta->fetchAll();	
 		$consulta->closeCursor();
 	
 		//Calculo el total de páginas necesarias
@@ -75,20 +94,20 @@ class Funciones
 	}//GetOne	 
 	 
 	 
-	public static function UpdateOne($datosRecibidos){
+	public static function UpdateOne($datosRecibidosQS,$datosRecibidosBody){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = self::GetObjEntidad ($datosRecibidos['t']);
+ 		$objEntidad = self::GetObjEntidad ($datosRecibidosQS['t']);
 	
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));
-		$myQuery = "update " . $datosRecibidos['t'] . " set ";
+		$myQuery = "update " . $datosRecibidosQS['t'] . " set ";
 		foreach ($vars_clase as $nombre => $valor) {
 			//Armo la query UPDATE según los atributos de mi objeto
 			if ($nombre != null and $nombre != "id"){
 				$myQuery .= $nombre . "=:" . $nombre . ",";
 			}
 			//Bindeo los atributos de mi objeto con el array recibido por queryString para configurar parametros en setQueryParams(..)
-			$objEntidad->$nombre = $datosRecibidos[$nombre];
+			$objEntidad->$nombre = $datosRecibidosBody[$nombre];
 		}
 		
 		$myQuery = rtrim($myQuery,",")." where  id=:id ";
@@ -97,16 +116,6 @@ class Funciones
 		
 		return $consulta->execute();
 	}//UpdateOne
-
-
-	public static function DeleteOne($idParametro,$entityName){	
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . $entityName ." WHERE id=:id");	
-        $consulta->bindValue(':id',$idParametro, PDO::PARAM_INT);		
-		$consulta->execute();
-		
-		return $consulta->rowCount();
-	}//DeleteOne
 
 
 	public static function InsertOne($datosRecibidosQS,$datosRecibidosBody)
@@ -138,6 +147,13 @@ class Funciones
 	}//InsertOne
    
    
-
+	public static function DeleteOne($idParametro,$entityName){	
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . $entityName ." WHERE id=:id");	
+        $consulta->bindValue(':id',$idParametro, PDO::PARAM_INT);		
+		$consulta->execute();
+		
+		return $consulta->rowCount();
+	}//DeleteOne
 
 }//Class
