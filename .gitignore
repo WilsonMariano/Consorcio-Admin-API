@@ -1,1 +1,5 @@
+#Librerias
 /composer/vendor
+
+#Credenciales
+credentials.php
