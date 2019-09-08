@@ -74,6 +74,7 @@ class Funciones
 		
 		// Se utliza funcion ceil() de php para rounding
 		$result->total_pages = ceil(intval($row_quantity->rows_q)/intval($rows));
+		$result->total_rows = $row_quantity->rows_q;
 		$result->data = $arrResult;
 		
 		return $result;					
