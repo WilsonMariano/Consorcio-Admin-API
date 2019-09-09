@@ -115,7 +115,10 @@ class Funciones
 		$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
 		$objEntidad->setQueryParams($consulta,$objEntidad);
 		
-		return $consulta->execute();
+		$consulta->execute();
+		
+		return $consulta->rowCount() > 0 ? true : false;
+		
 	}//UpdateOne
 
 
@@ -144,7 +147,7 @@ class Funciones
 		$objEntidad->setQueryParams($consulta,$objEntidad,false);
 		$consulta->execute();
 		
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+		return $objetoAccesoDato->RetornarUltimoIdInsertado()> 0 ? true : false;
 	}//InsertOne
    
    
@@ -154,7 +157,7 @@ class Funciones
         $consulta->bindValue(':id',$idParametro, PDO::PARAM_INT);		
 		$consulta->execute();
 		
-		return $consulta->rowCount();
+		return $consulta->rowCount() > 0 ? true : false;
 	}//DeleteOne
 
 }//Class

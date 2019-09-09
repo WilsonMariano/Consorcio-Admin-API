@@ -10,14 +10,12 @@
         {
            	//Traigo  todos los items
 			$datosRecibidos = $request->getQueryParams();
-			$listado=\Funciones::GetAll($datosRecibidos["t"]);
+			$listado= Funciones::GetAll($datosRecibidos["t"]);
     		
-			// return $response->write(json_encode($listado));         
-			if($listado != false)
-				return $response->withJson($listado, 200); 
-			else
-			   return $response->withJson(false, 400);  
-			
+			if($listado)
+				return $response->withJson($listado, 200); 		
+			else   
+				return $response->withJson(false, 400);
         } 
 		
 		
@@ -32,10 +30,10 @@
 			 	
             $data = Funciones::GetWithFilter($e,$c,$t,$r,$p);
 			
-			if($data != false)
+			if($data)
 				return $response->withJson($data, 200); 
 			else
-			   return $response->withJson(false, 400);  
+			    return $response->withJson(false, 400);  
         } 
 		
 		
@@ -49,7 +47,7 @@
 			// return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
 			$data = Funciones::GetWithPaged($v,$r,$p);
 			
-			if($data != false)
+			if($data)
 				return $response->withJson($data, 200); 
 			else
 			   return $response->withJson(false, 400);  
@@ -63,7 +61,7 @@
       		$objEntidad=\Funciones::GetOne($id,$datosRecibidos["t"]);
     		
 			
-			if($objEntidad != false)
+			if($objEntidad)
 				return $response->withJson($objEntidad, 200); 
 			else
 			   return $response->withJson(false, 400);  
@@ -79,12 +77,11 @@
             $datosRecibidosBody = $request->getParsedBody();	
 
             $result = Funciones::UpdateOne($datosRecibidosQS,$datosRecibidosBody);
-			
-			if($result != false)
+					
+			if($result)
 				return $response->withJson(true, 200); 
 			else
-			   return $response->withJson(false, 400);  
-			
+				return $response->withJson(false, 400);  			
         }
 
 
@@ -96,28 +93,36 @@
             //Datos recibidos por body
             $datosRecibidosBody = $request->getParsedBody();	
 
-            return $response->write(json_encode(Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody)));
+			$result = Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody);
+			
+			if($result)
+				return $response->withJson(true, 200); 
+			else
+				return $response->withJson(false, 400);  			
+            
         }
     
 	
         public static function DeleteOne($request, $response, $args)
         {
              $datosRecibidos = $request->getQueryParams();
-             $id = $datosRecibidos['id'];
+             $id = json_decode($args['id']);
        
-
             //Busco el Persona mediante el id
             $objEntidad = Funciones::GetOne($id,$datosRecibidos['t']); 
-            // //Si no se encontró grabo un mensaje
+            
+			//Si no se encontró grabo un mensaje
             if($objEntidad == null)
             {
                 $response->write("Registro no encontrado");
             }else{
-            //Sino borro el registro y muestro los datos 
-                Funciones::DeleteOne($id,$datosRecibidos['t']);
-                $response->write(json_encode($objEntidad));
+				//Sino borro el registro
+                $result = Funciones::DeleteOne($id,$datosRecibidos['t']);
+				if($result)
+					return $response->withJson(true, 200); 
+				else
+					return $response->withJson(false, 400);  			
             }
-            return $response;
         }
 
     }

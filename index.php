@@ -32,7 +32,7 @@
 		$this->post('/post[/]', \GenericApi::class . ':Insert');
 		$this->get('/all[/]', \GenericApi::class . ':GetAll');      
         $this->put('/put[/]', \GenericApi::class . ':UpdateOne');      
-        $this->delete('/del[/]', \GenericApi::class . ':DeleteOne');
+        $this->delete('/del/{id}', \GenericApi::class . ':DeleteOne');
 		//
 		
 		$this->get('/filter[/]', \GenericApi::class . ':GetWithFilter');      
