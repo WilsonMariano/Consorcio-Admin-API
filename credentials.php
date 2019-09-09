@@ -1,14 +1,15 @@
 <?php
 
-// $environment = "prod";
-$environment = "dev";
+$environment = "prod";
+// $environment = "dev";
 
 if($environment == "prod"){
 
-    define("USERNAME",  "id10303673_pepusa");
-    define("PASSWORD",  "quesito123");
-    define("DBNAME",    "gestion_expensas");
-    define("HOST",      "localhost");
+    define("USERNAME",  "bbf8ba6b8fd24e");
+    define("PASSWORD",  "db00fd24");
+    define("DBNAME",    "heroku_97775c85b932729");
+    define("HOST",      "us-cdbr-iron-east-02.cleardb.net");
+
 }else{
 
     define("USERNAME",  "root");
