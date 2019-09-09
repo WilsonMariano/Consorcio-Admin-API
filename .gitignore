@@ -1,5 +1,5 @@
 #Librerias
-/composer/vendor
+/vendor
 
 #Credenciales
 credentials.php
