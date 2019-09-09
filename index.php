@@ -59,6 +59,11 @@
 		$this->post('/insert[/]', \UFApi::class . ':Insert');      
 	});
 
+	$app->get('/ok[/]', function (Request $request, Response $response, $args) {
+		$response->getBody()->write("OK", 200);
+		return $response;
+	});
+
 
 
 
