@@ -24,13 +24,13 @@
 			if(!Funciones::IsDuplicated($objUF))
 				$resultado = UF::Insert($objUF);
 			else 
-				return $response->withJson("El nro de unidad funcional ingresado no se encuentra disponible.", 501);
+				return $response->withJson("El nro de unidad funcional ingresado no se encuentra disponible.", 500);
 	
 	
             if(is_numeric($resultado) == true)
                 return $response->withJson(true, 200);
             else
-                return $response->withJson("Ha ocurrido un error insertando la unidad funcional. Intentelo nuevamente.", 500);
+                return $response->withJson(false, 400);
         }
 	
 
