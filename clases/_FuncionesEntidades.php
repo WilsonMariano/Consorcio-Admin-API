@@ -31,7 +31,7 @@ class Funciones
     	$objetoAccesoDato = \AccesoDatos::dameUnObjetoAcceso(); 
 	    $consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
 		$consulta->execute();		
-		$arrObjEntidad= $consulta->fetchAll(\PDO::FETCH_CLASS, $entityName );	
+		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;
 	}//GetAll
@@ -41,7 +41,7 @@ class Funciones
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithFilter('$entityName','$column','$text',$rows,$page,@o_total_rows)");
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll();	
+		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		$consulta->closeCursor();
 		
 		$output = $objetoAccesoDato->Query("select @o_total_rows as total_rows")->fetchObject();
@@ -61,8 +61,7 @@ class Funciones
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithpaged('$entityName' ,$rows , $page)" );
 		$consulta->execute();
-		// $arrResult= $consulta->fetchAll(PDO::FETCH_CLASS,'Adherentes');	
-		$arrResult= $consulta->fetchAll();	
+		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		$consulta->closeCursor();
 	
 		//Calculo el total de páginas necesarias
