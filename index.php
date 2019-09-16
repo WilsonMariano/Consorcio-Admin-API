@@ -58,6 +58,10 @@
 	$app->group('/uf', function () {
 		$this->post('/insert[/]', \UFApi::class . ':Insert');      
 	});
+	
+	$app->group('/concepto-gasto', function () {
+		$this->post('/insert[/]', \ConceptoGastoApi::class . ':Insert');      
+	});
 
 	$app->get('/ok[/]', function (Request $request, Response $response, $args) {
 		$response->getBody()->write("OK", 200);
