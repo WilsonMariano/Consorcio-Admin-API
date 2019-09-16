@@ -22,7 +22,7 @@
 			if(!Funciones::IsDuplicated($objAdherente))
 				$resultado = Adherentes::Insert($objAdherente);
 			else 
-				return $response->withJson("El nro de adherente ingresado no se encuentra disponible.", 500);
+				return $response->withJson("El nro de adherente ingresado no se encuentra disponible.", 409);
 	
 	
             if(is_numeric($resultado) == true)
