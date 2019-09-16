@@ -46,8 +46,8 @@
 
 
     $app->group('/usuarios', function () {
-		$this->get('/getAll[/]', \UsuarioApi::class . ':GetAll');      
-		$this->post('/insert'   , \UsuarioApi::class . ':Insert');      
+		$this->get('/all[/]', \UsuarioApi::class . ':GetAll');      
+		$this->post('/insert[/]'   , \UsuarioApi::class . ':Insert');      
 	});
 
 
@@ -60,10 +60,17 @@
 	});
 	
 	$app->group('/concepto-gasto', function () {
-		$this->post('/insert[/]', \ConceptoGastoApi::class . ':Insert');      
+		$this->get('/one[/]'     , \ConceptoGastoApi::class . ':GetOne'); 
+		$this->post('/insert[/]' , \ConceptoGastoApi::class . ':Insert');      
 	});
 
-	$app->get('/ok[/]', function (Request $request, Response $response, $args) {
+	$app->group('/diccionario', function () {
+		$this->get('/all[/]'  , \DiccionarioApi::class . ':GetAll');      
+		$this->get('/one[/]'  , \DiccionarioApi::class . ':GetOne'); 
+	});
+
+
+	$app->get('/ok', function (Request $request, Response $response, $args) {
 		$response->getBody()->write("OK", 200);
 		return $response;
 	});

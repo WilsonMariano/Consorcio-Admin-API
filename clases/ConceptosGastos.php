@@ -40,11 +40,25 @@ class ConceptosGastos
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta(
 			"INSERT into conceptosGastos values(:id,:codigo,:conceptoGasto)");
-		self::setQueryParams($consulta,$entityObject);
+		self::setQueryParams($consulta,$entityObject,false);
 		$consulta->execute();
 
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();
 	
 	}
+
+	public static function GetOne($codigo){	
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new ConceptosGastos();
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from conceptosGastos where codigo =:codigo");
+		$consulta->bindValue(':codigo', $codigo , PDO::PARAM_STR);
+		$consulta->execute();
+		$objEntidad= $consulta->fetchObject("ConceptosGastos");
+		
+		return $objEntidad;						
+	}//GetOne	
+
+
 
 }//class

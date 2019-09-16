@@ -11,7 +11,6 @@
             $datosRecibidos = $request->getParsedBody();
 
             $objConceptoGasto = new ConceptosGastos();
-            $objConceptoGasto->id             = $datosRecibidos['id'];
             $objConceptoGasto->codigo         = $datosRecibidos['codigo'];
             $objConceptoGasto->conceptoGasto  = $datosRecibidos['conceptoGasto'];
  
@@ -31,7 +30,18 @@
 
 
 
-
+		public static function GetOne ($request, $response, $args)
+		{
+         	$datosRecibidos = $request->getQueryParams();
+ 	
+			$objEntidad=ConceptosGastos::GetOne($datosRecibidos["codigo"]);
+			
+			if($objEntidad)
+				return $response->withJson($objEntidad, 200); 
+			else
+			   return $response->withJson(false, 400);  
+			
+		}
 
 
     }
