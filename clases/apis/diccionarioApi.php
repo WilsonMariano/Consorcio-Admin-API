@@ -19,20 +19,7 @@
 				return $response->withJson(false, 400);
 		} 
 		
-
-		public static function GetAllByCode($request, $response, $args)
-        {
-           	//Traigo  todos los items
-			$datosRecibidos = $request->getQueryParams();
-					
-			$listado= Diccionario::GetAllByCode($datosRecibidos["codigo"]);
-    		
-			if($listado)
-				return $response->withJson($listado, 200); 		
-			else   
-				return $response->withJson(false, 400);
-        } 
-
+		
 
 		public static function GetOne ($request, $response, $args)
 		{
