@@ -39,7 +39,7 @@ class ConceptosGastos
 		
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into conceptosGastos values(:id,:codigo,:conceptoGasto)");
+			"INSERT into conceptosGastos(codigo, conceptoGasto) values(:codigo,:conceptoGasto)");
 		self::setQueryParams($consulta,$entityObject,false);
 		$consulta->execute();
 
