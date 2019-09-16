@@ -50,4 +50,20 @@ class Diccionario
 	}//GetOne	
 
 
+	public static function GetAllByCode($codigo){	
+		
+		$text = $codigo . '%';
+
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new Diccionario();
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from diccionario where codigo like :text");
+		$consulta->bindValue(':text', $text , PDO::PARAM_STR);
+		$consulta->execute();
+		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		
+		return $arrObjEntidad;						
+	}
+
+
 }//class

@@ -65,8 +65,9 @@
 	});
 
 	$app->group('/diccionario', function () {
-		$this->get('/all[/]'  , \DiccionarioApi::class . ':GetAll');      
-		$this->get('/one[/]'  , \DiccionarioApi::class . ':GetOne'); 
+		$this->get('/all[/]'  , 		\DiccionarioApi::class . ':GetAll');      
+		$this->get('/all-by-code[/]'  , \DiccionarioApi::class . ':GetAllByCode');      
+		$this->get('/one[/]'  , 		\DiccionarioApi::class . ':GetOne'); 
 	});
 
 
