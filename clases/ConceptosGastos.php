@@ -35,4 +35,16 @@ class ConceptosGastos
 	}
 
 
+	public static function Insert($entityObject){
+		
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"INSERT into conceptosGastos values(:id,:codigo,:conceptoGasto)");
+		self::setQueryParams($consulta,$entityObject);
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+	
+	}
+
 }//class
