@@ -22,11 +22,22 @@
 		public static function GetPagedWithOptionalFilter($request, $response, $args)
         {
 			$datosRecibidos = $request->getQueryParams();
+			
+			$c = null;
+			$t = null;
 			$e = $datosRecibidos['entity'];
-			$c = $datosRecibidos['column'];
-			$t = $datosRecibidos['text'];
 			$r = $datosRecibidos['rows'];
 			$p = $datosRecibidos['page'];
+
+			
+			// Si recibo los atributos a buscar los seteo
+			if(isset($datosRecibidos['column']) && isset($datosRecibidos['text'])) {
+
+				$c = $datosRecibidos['column'];
+				$t = $datosRecibidos['text'];
+			}
+
+
 			 	
             $data = Funciones::GetPagedWithOptionalFilter($e,$c,$t,$r,$p);
 			

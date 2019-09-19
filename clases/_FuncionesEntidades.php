@@ -39,6 +39,11 @@ class Funciones
 	
 	public static function GetPagedWithOptionalFilter($entityName,$column,$text,$rows,$page){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+
+
+		$column = "";
+		$text = "";
+
 		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetPagedWithOptionalFilter('$entityName', '$column', '$text', $rows, $page, @o_total_rows)");
 		$consulta->execute();
 		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
