@@ -35,8 +35,7 @@
         $this->delete('/del/{id}', \GenericApi::class . ':DeleteOne');
 		//
 		
-		$this->get('/filter[/]', \GenericApi::class . ':GetWithFilter');      
-		$this->get('/paged[/]', \GenericApi::class . ':GetWithPaged');      
+		$this->get('/paged[/]', \GenericApi::class . ':GetPagedWithOptionalFilter');         
         $this->get('/one/{id}', \GenericApi::class . ':GetOne');       
     });
 

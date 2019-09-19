@@ -37,9 +37,9 @@ class Funciones
 	}//GetAll
 
 	
-	public static function GetWithFilter($entityName,$column,$text,$rows,$page){
+	public static function GetPagedWithOptionalFilter($entityName,$column,$text,$rows,$page){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithFilter('$entityName','$column','$text',$rows,$page,@o_total_rows)");
+		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetPagedWithOptionalFilter('$entityName', '$column', '$text', $rows, $page, @o_total_rows)");
 		$consulta->execute();
 		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		$consulta->closeCursor();
@@ -55,30 +55,30 @@ class Funciones
 	}
 	
 	 
-	public static function GetWithPaged($entityName,$rows,$page){
+	// public static function GetWithPaged($entityName,$rows,$page){
 		
-		//Obtengo los datos con paginado
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithpaged('$entityName' ,$rows , $page)" );
-		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
-		$consulta->closeCursor();
+		// //Obtengo los datos con paginado
+		// $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		// $consulta =$objetoAccesoDato->RetornarConsulta("call spGetViewWithpaged('$entityName' ,$rows , $page)" );
+		// $consulta->execute();
+		// $arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		// $consulta->closeCursor();
 	
-		//Calculo el total de páginas necesarias
-		$consulta =$objetoAccesoDato->RetornarConsulta("select count(*) as rows_q from " . $entityName);
-		$consulta->execute();
-		$row_quantity =$consulta->fetchObject();	
+		// //Calculo el total de páginas necesarias
+		// $consulta =$objetoAccesoDato->RetornarConsulta("select count(*) as rows_q from " . $entityName);
+		// $consulta->execute();
+		// $row_quantity =$consulta->fetchObject();	
 		
-		$result = new \stdClass();
+		// $result = new \stdClass();
 		
-		// Se utliza funcion ceil() de php para rounding
-		$result->total_pages = ceil(intval($row_quantity->rows_q)/intval($rows));
-		$result->total_rows = $row_quantity->rows_q;
-		$result->data = $arrResult;
+		// // Se utliza funcion ceil() de php para rounding
+		// $result->total_pages = ceil(intval($row_quantity->rows_q)/intval($rows));
+		// $result->total_rows = $row_quantity->rows_q;
+		// $result->data = $arrResult;
 		
-		return $result;					
+		// return $result;					
 		
-	} 
+	// } 
 
 
 	public static function GetOne($idParametro,$entityName){	

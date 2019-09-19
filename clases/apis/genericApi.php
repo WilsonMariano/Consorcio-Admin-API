@@ -19,7 +19,7 @@
         } 
 		
 		
-		public static function GetWithFilter($request, $response, $args)
+		public static function GetPagedWithOptionalFilter($request, $response, $args)
         {
 			$datosRecibidos = $request->getQueryParams();
 			$e = $datosRecibidos['entity'];
@@ -28,7 +28,7 @@
 			$r = $datosRecibidos['rows'];
 			$p = $datosRecibidos['page'];
 			 	
-            $data = Funciones::GetWithFilter($e,$c,$t,$r,$p);
+            $data = Funciones::GetPagedWithOptionalFilter($e,$c,$t,$r,$p);
 			
 			if($data)
 				return $response->withJson($data, 200); 
