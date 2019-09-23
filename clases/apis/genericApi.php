@@ -23,21 +23,17 @@
         {
 			$datosRecibidos = $request->getQueryParams();
 			
-			$c = null;
-			$t = null;
 			$e = $datosRecibidos['entity'];
+			$c = null; 
+			$t = null;
 			$r = $datosRecibidos['rows'];
 			$p = $datosRecibidos['page'];
-
-			
+		
 			// Si recibo los atributos a buscar los seteo
 			if(isset($datosRecibidos['column']) && isset($datosRecibidos['text'])) {
-
 				$c = $datosRecibidos['column'];
 				$t = $datosRecibidos['text'];
 			}
-
-
 			 	
             $data = Funciones::GetPagedWithOptionalFilter($e,$c,$t,$r,$p);
 			

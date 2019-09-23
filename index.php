@@ -26,22 +26,29 @@
 	});
 
 
+	//Test method
+	$app->get('/ok', function (Request $request, Response $response, $args) {
+		$response->getBody()->write("OK", 200);
+		return $response;
+	});
+
+
+	//Generic
     $app->group('/generic', function () {
-		
-		// Métodos base de test
 		$this->post('/post[/]', \GenericApi::class . ':Insert');
 		$this->get('/all[/]', \GenericApi::class . ':GetAll');      
         $this->put('/put[/]', \GenericApi::class . ':UpdateOne');      
         $this->delete('/del/{id}', \GenericApi::class . ':DeleteOne');
-		//
-		
+
 		$this->get('/paged[/]', \GenericApi::class . ':GetPagedWithOptionalFilter');         
         $this->get('/one/{id}', \GenericApi::class . ':GetOne');       
     });
 
 
 
+	// *********************************************************************************
 	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
+	// *********************************************************************************
 
 
     $app->group('/usuarios', function () {
@@ -49,13 +56,12 @@
 		$this->post('/insert[/]'   , \UsuarioApi::class . ':Insert');      
 	});
 
-
 	$app->group('/adherentes', function () {
 		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});
 
 	$app->group('/uf', function () {
-		$this->post('/insert[/]', \UFApi::class . ':Insert');      
+		$this->post('/insert[/]',  \UFApi::class . ':Insert');      
 	});
 	
 	$app->group('/concepto-gasto', function () {
@@ -64,16 +70,13 @@
 	});
 
 	$app->group('/diccionario', function () {
-		$this->get('/all[/]'  , 		\DiccionarioApi::class . ':GetAll');          
-		$this->get('/one[/]'  , 		\DiccionarioApi::class . ':GetOne'); 
+		$this->get('/all[/]',    \DiccionarioApi::class . ':GetAll');          
+		$this->get('/one[/]',    \DiccionarioApi::class . ':GetOne'); 
 	});
 
-
-	$app->get('/ok', function (Request $request, Response $response, $args) {
-		$response->getBody()->write("OK", 200);
-		return $response;
+	$app->group('/manzana', function () {
+		$this->get('/getCoef[/]', \ManzanaApi::class . ':GetCoeficientes');          
 	});
-
 
 
 
