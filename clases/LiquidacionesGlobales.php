@@ -32,4 +32,39 @@ class LiquidacionesGlobales
 	}
 
 
+	public function AddNewExpense($liquidacionGlobal , $arrGastos){
+		try {  
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objetoAccesoDato->beginTransaction();
+			$objetoAccesoDato->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	
+			//Guardo la liquidación global, si anduvo ok, continuo procesando los gastos.
+			if(is_numeric(Insert($objetoAccesoDato,$liquidacionGlobal)))
+			{
+				//INSERTAR GASTOS
+
+				//INSERTAR RELACIONESGASTOS
+
+				$objetoAccesoDato->commit();
+				return true;
+			} else {
+				$objetoAccesoDato->rollBack();
+				return false;	
+			}				
+		} catch (Exception $e) {
+			$objetoAccesoDato->rollBack();
+			echo "Error: " . $e->getMessage();
+		}
+	}
+
+	public static function Insert($objetoAccesoDato,$liquidacionGlobal){
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"INSERT into liquidacionesGlobales values(:id, :mes, :anio, :primerVencimiento, :segundoVencimiento, :fechaEmision, :tasaInteres )");
+		self::setQueryParams($consulta,$liquidacionGlobal);
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+	}
+
+
 }
