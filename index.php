@@ -78,6 +78,8 @@
 		$this->get('/getCoef[/]', \ManzanaApi::class . ':GetCoeficientes');          
 	});
 
-
+	$app->group('/liquidaciongbl', function () {
+		$this->post('/addExpense[/]', \LiquidacionGlobalApi::class . ':AddNewExpense');          
+	});
 
 	$app->run();

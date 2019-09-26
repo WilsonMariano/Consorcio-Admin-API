@@ -36,10 +36,10 @@ class LiquidacionesGlobales
 		try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
-			$objetoAccesoDato->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			// $objetoAccesoDato->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
 			//Guardo la liquidación global, si anduvo ok, continuo procesando los gastos.
-			if(is_numeric(Insert($objetoAccesoDato,$liquidacionGlobal)))
+			if(is_numeric(self::Insert($objetoAccesoDato,$liquidacionGlobal)))
 			{
 				//INSERTAR GASTOS
 
@@ -59,8 +59,9 @@ class LiquidacionesGlobales
 
 	public static function Insert($objetoAccesoDato,$liquidacionGlobal){
 		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into liquidacionesGlobales values(:id, :mes, :anio, :primerVencimiento, :segundoVencimiento, :fechaEmision, :tasaInteres )");
-		self::setQueryParams($consulta,$liquidacionGlobal);
+			"INSERT into liquidacionesGlobales (mes, anio, primerVencimiento, segundoVencimiento, fechaEmision, tasaInteres)
+			 values(:mes, :anio, :primerVencimiento, :segundoVencimiento, :fechaEmision, :tasaInteres )");
+		self::setQueryParams($consulta,$liquidacionGlobal,false);
 		$consulta->execute();
 
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();
