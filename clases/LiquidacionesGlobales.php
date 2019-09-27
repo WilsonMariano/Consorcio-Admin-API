@@ -67,5 +67,15 @@ class LiquidacionesGlobales
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();
 	}
 
-
+    public static function GetInstanceFromArray($arrData){
+        $liquidacionGbl = new LiquidacionesGlobales();
+        $liquidacionGbl->id = $arrData["id"];
+        $liquidacionGbl->mes = $arrData["mes"];
+        $liquidacionGbl->anio = $arrData["anio"];
+        $liquidacionGbl->primerVencimiento = $arrData["primerVencimiento"];
+        $liquidacionGbl->segundoVencimiento = $arrData["segundoVencimiento"];
+        $liquidacionGbl->fechaEmision = $arrData["fechaEmision"];
+        $liquidacionGbl->tasaInteres = $arrData["tasaInteres"];
+        return $liquidacionGbl;
+    }
 }
