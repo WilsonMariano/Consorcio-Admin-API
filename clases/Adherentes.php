@@ -25,8 +25,6 @@ class Adherentes
 		$consulta->bindValue(':nroDocumento' ,$objEntidad->nroDocumento  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':telefono'     ,$objEntidad->telefono      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':email'        ,$objEntidad->email         ,\PDO::PARAM_STR);
-		
-		return $consulta;
 	}
 
 	

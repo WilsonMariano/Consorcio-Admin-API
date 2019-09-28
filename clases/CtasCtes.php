@@ -24,8 +24,6 @@ class CtasCtes
 		$consulta->bindValue(':descripcion' ,$objEntidad->descripcion  ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'       ,$objEntidad->monto        ,\PDO::PARAM_STR);
 		$consulta->bindValue(':saldo'       ,$objEntidad->saldo        ,\PDO::PARAM_STR);
-				
-		return $consulta;
 	}
 
 

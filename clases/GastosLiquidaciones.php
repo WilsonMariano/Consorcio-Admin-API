@@ -11,6 +11,24 @@ class GastosLiquidaciones
 	public $monto;
 	public $codConceptoGasto;
 	
+	// Constructor customizado
+	function __construct($arrData){
+		$this->id = $arrData['id'];
+		$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
+		$this->monto = $arrData['monto'];
+		$this->codConceptoGasto = $arrData['codConceptoGasto'];
+	}
+
+	public static function Insert($gasto){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"INSERT into gastosliquidaciones (idLiquidacionGlobal, monto, codConceptoGasto)
+			 values(:idLiquidacionGlobal, :monto, :codConceptoGasto)");
+		self::setQueryParams($consulta,$gasto,false);
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();
+	}
 
 	//	Configurar parámetros para las consultas
 	public function setQueryParams($consulta,$objEntidad, $includePK = true){
@@ -21,18 +39,9 @@ class GastosLiquidaciones
 		$consulta->bindValue(':idLiquidacionGlobal'	 ,$objEntidad->idLiquidacionGlobal  ,\PDO::PARAM_INT);
  		$consulta->bindValue(':monto'		         ,$objEntidad->monto                ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codConceptoGasto'	 ,$objEntidad->codConceptoGasto     ,\PDO::PARAM_STR);
-		
-		return $consulta;
 	}
 
-	public static function GetInstanceFromArray($arrData){
-		$gasto = new GastosLiquidaciones();
-		$gasto->id = $arrData['id'];
-		$gasto->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
-		$gasto->monto = $arrData['monto'];
-		$gasto->codConceptoGasto = $arrData['codConceptoGasto'];
-		return $gasto;
-	}
+
 
 
 }//class

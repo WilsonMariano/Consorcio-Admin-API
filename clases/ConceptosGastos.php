@@ -19,8 +19,6 @@ class ConceptosGastos
 		
 		$consulta->bindValue(':codigo'	       ,$objEntidad->codigo         ,\PDO::PARAM_STR);
 		$consulta->bindValue(':conceptoGasto'  ,$objEntidad->conceptoGasto  ,\PDO::PARAM_STR);
- 
-		return $consulta;
 	}
 
 

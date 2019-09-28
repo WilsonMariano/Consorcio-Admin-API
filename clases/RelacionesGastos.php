@@ -11,6 +11,14 @@ class RelacionesGastos
 	public $entidad;
 	public $numero;
 
+	// Constructor customizado
+	function __constructor($arrData){
+		$this->id = $arrData["id"];
+		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"];
+		$this->entidad = $arrData["entidad"];
+		$this->numero = $arrData["numero"];
+	}
+
 
 	//	Configurar parámetros para las consultas
 	public function setQueryParams($consulta,$objEntidad, $includePK = true){
@@ -21,8 +29,6 @@ class RelacionesGastos
 		$consulta->bindValue(':idGastosLiquidaciones' ,$objEntidad->idGastosLiquidaciones ,\PDO::PARAM_INT);
 		$consulta->bindValue(':entidad'   	          ,$objEntidad->entidad	              ,\PDO::PARAM_STR);
 		$consulta->bindValue(':numero'	              ,$objEntidad->entidad               ,\PDO::PARAM_INT);
-		
-		return $consulta;
 	}
 
 
