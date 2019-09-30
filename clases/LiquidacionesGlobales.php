@@ -50,7 +50,7 @@ class LiquidacionesGlobales
 		$consulta->bindValue(':tasaInteres'         ,$objEntidad->tasaInteres          ,\PDO::PARAM_STR);
 	}
 
-	public function AddNewExpense($liquidacionGlobal , $arrGastos){
+	public function AddNewExpense($liquidacionGlobal, $arrGastos, $arrRelaciones){
 		try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
@@ -59,8 +59,13 @@ class LiquidacionesGlobales
 			//Guardo la liquidación global, si anduvo ok, continuo procesando los gastos.
 			if(is_numeric(self::Insert($liquidacionGlobal)))
 			{
-				// INSERTAR GASTOS
-
+				// Guardo los gastos y sus relaciones
+				foreach($arrGastos as $gasto){
+					if(is_numeric(GastosLiquidaciones::Insert($gasto)))
+						foreach($arrRelaciones as $relacion)	
+							if($relacion->idGastosLiquidaciones == $gasto->id)
+								RelacionesGastos::Insert($relacion);
+				}
 				$objetoAccesoDato->commit();
 				return true;
 			} else {

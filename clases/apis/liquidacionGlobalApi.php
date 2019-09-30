@@ -22,8 +22,15 @@ class LiquidacionGlobalApi
             array_push($arrGastos, $gasto);             
         }
 
+        //Genero un array de objetos del tipo RelacionesGastos    
+        $arrRelaciones = [];
+        for ($i = 0; $i < sizeof($datosRecibidos["RelacionGasto"]); $i++) {
+            $relacion = new RelacionesGastos($datosRecibidos["RelacionGasto"][$i]);
+            array_push($arrRelaciones, $relacion);             
+        }
+
         //Envio los datos para el alta de la expensa con sus gastos y relaciones
-        $data = LiquidacionesGlobales::AddNewExpense($liquidacionGbl,$arrGastos);
+        $data = LiquidacionesGlobales::AddNewExpense($liquidacionGbl, $arrGastos, $arrRelaciones);
 
 		if($data)
 				return $response->withJson($data, 200); 		
