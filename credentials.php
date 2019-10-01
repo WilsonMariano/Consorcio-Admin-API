@@ -5,10 +5,10 @@ $environment = "prod";
 
 if($environment == "prod"){
 
-    define("USERNAME",  "bc6fe4391dae63");
-    define("PASSWORD",  "f8ee7a1e");
-    define("DBNAME",    "heroku_d09773922a4b3a0");
-    define("HOST",      "us-cdbr-iron-east-05.cleardb.net");
+    define("USERNAME",  "bbf8ba6b8fd24e");
+    define("PASSWORD",  "db00fd24");
+    define("DBNAME",    "heroku_97775c85b932729");
+    define("HOST",      "us-cdbr-iron-east-02.cleardb.net");
 
 }else{
 
