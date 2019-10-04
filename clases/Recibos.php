@@ -23,8 +23,6 @@ class Recibos
 		$consulta->bindValue(':nroRecibo'    ,$objEntidad->nroRecibo	    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codMedioPago' ,$objEntidad->codMedioPago     ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'	     ,$objEntidad->monto            ,\PDO::PARAM_STR);
-		
-		return $consulta;
 	}
 
 

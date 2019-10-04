@@ -32,6 +32,21 @@ class AccesoDatos
     { 
         return $this->objetoPDO->prepare($sql); 
     }
+    
+    public function beginTransaction()
+    { 
+        return $this->objetoPDO->beginTransaction(); 
+    }
+    
+    public function commit()
+    { 
+        return $this->objetoPDO->commit(); 
+    }
+    
+    public function rollBack()
+    { 
+        return $this->objetoPDO->rollBack(); 
+    }
 	
 	public function Query($sql)
     { 

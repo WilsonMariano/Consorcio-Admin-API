@@ -19,8 +19,6 @@ class Usuarios
 		
 		$consulta->bindValue(':email'	 ,$objEntidad->email    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':password' ,$objEntidad->password ,\PDO::PARAM_STR);
-				
-		return $consulta;
 	}
 
 

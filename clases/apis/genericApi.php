@@ -100,7 +100,7 @@
             //Datos recibidos por body
             $datosRecibidosBody = $request->getParsedBody();	
 
-			$result = Funciones::InsertOne($datosRecibidosQS,$datosRecibidosBody);
+			$result = Funciones::InsertOne($datosRecibidosQS['t'],$datosRecibidosBody);
 			
 			if($result)
 				return $response->withJson(true, 200); 

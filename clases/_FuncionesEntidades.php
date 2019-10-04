@@ -122,14 +122,14 @@ class Funciones
 	}//UpdateOne
 
 
-	public static function InsertOne($datosRecibidosQS,$datosRecibidosBody)
+	public static function InsertOne($entityName,$datosRecibidosBody)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
- 		$objEntidad = self::GetObjEntidad ($datosRecibidosQS['t']);
+ 		$objEntidad = self::GetObjEntidad ($entityName);
 			
 		//Consulto los atributos de la clase para armar la query	    	
 		$vars_clase = get_class_vars(get_class($objEntidad));
-		$myQuery = "insert into " . $datosRecibidosQS['t'] ." (" ;
+		$myQuery = "insert into " . $entityName ." (" ;
 		$myQueryAux = "";
 		foreach ($vars_clase as $nombre => $valor) {
 			//Armo la query según los atributos de mi objeto. Excluyo el campo id ya que es autoincremental.
