@@ -35,7 +35,7 @@ class Manzanas
 			foreach ($arrManzanas as $id) {
 				foreach ($manzanas as $manzana) {
 					if($id == $manzana['id']) {
-						$result->$id = intval($manzana['mtsCuadrados']);
+						 $result->$id = intval($manzana['mtsCuadrados']);
 						$totalMts += intval($manzana['mtsCuadrados']);
 						break;
 					}

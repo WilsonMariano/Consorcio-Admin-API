@@ -13,6 +13,7 @@ class LiquidacionesGlobales
 	public $segundoVencimiento;
 	public $fechaEmision;
 	public $tasaInteres;
+	public $codEstado;
 
 	// Constructor customizado
 	function __construct($arrData = null){

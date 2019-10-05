@@ -12,11 +12,13 @@ class GastosLiquidaciones
 	public $codConceptoGasto;
 	
 	// Constructor customizado
-	function __construct($arrData){
-		$this->id = $arrData['id'];
-		$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
-		$this->monto = $arrData['monto'];
-		$this->codConceptoGasto = $arrData['codConceptoGasto'];
+	function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
+			$this->monto = $arrData['monto'];
+			$this->codConceptoGasto = $arrData['codConceptoGasto'];
+		}
 	}
 
 	public static function Insert($gasto){
