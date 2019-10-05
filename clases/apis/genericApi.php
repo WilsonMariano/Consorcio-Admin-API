@@ -1,6 +1,7 @@
 <?php
 
     include_once __DIR__ . '/../_FuncionesEntidades.php';
+    include_once __DIR__ . '/../Helper.php';
    
 
     class GenericApi
@@ -9,8 +10,8 @@
         public static function GetAll($request, $response, $args)
         {
            	//Traigo  todos los items
-			$datosRecibidos = $request->getQueryParams();
-			$listado= Funciones::GetAll($datosRecibidos["t"]);
+			$apiParam = $request->getQueryParams();
+			$listado= Funciones::GetAll($apiParam["t"]);
     		
 			if($listado)
 				return $response->withJson($listado, 200); 		
@@ -21,21 +22,17 @@
 		
 		public static function GetPagedWithOptionalFilter($request, $response, $args)
         {
-			$datosRecibidos = $request->getQueryParams();
+			$apiParam = $request->getQueryParams();
 			
-			$e = $datosRecibidos['entity'];
-			$c = null; 
-			$t = null;
-			$r = $datosRecibidos['rows'];
-			$p = $datosRecibidos['page'];
-		
-			// Si recibo los atributos a buscar los seteo
-			if(isset($datosRecibidos['column']) && isset($datosRecibidos['text'])) {
-				$c = $datosRecibidos['column'];
-				$t = $datosRecibidos['text'];
-			}
-			 	
-            $data = Funciones::GetPagedWithOptionalFilter($e,$c,$t,$r,$p);
+			$e  = $apiParam['entity'];
+			$c1 = $apiParam['col1'] ?? null; 
+			$t1 = $apiParam['txt1'] ?? null; 
+			$c2 = $apiParam['col2'] ?? null; 
+			$t2 = $apiParam['txt2'] ?? null; 
+			$r = $apiParam['rows'];
+			$p = $apiParam['page'];
+					 
+			$data = Funciones::GetPagedWithOptionalFilter($e, $c1, $t1, $c2, $t2, $r, $p);
 			
 			if($data)
 				return $response->withJson($data, 200); 
@@ -44,12 +41,12 @@
         } 
 		
 		
-		public static function GetWithPaged($request, $response, $args)
+		private static function GetWithPaged($request, $response, $args)
         {
-			$datosRecibidos = $request->getQueryParams();
-			$v = $datosRecibidos['entity'];
-			$r = $datosRecibidos['rows'];
-			$p = $datosRecibidos['page'];
+			$apiParam = $request->getQueryParams();
+			$v = $apiParam['entity'];
+			$r = $apiParam['rows'];
+			$p = $apiParam['page'];
 			 	
 			// return $response->withJson(Funciones::GetWithPaged($v,$r,$p), 200); 
 			$data = Funciones::GetWithPaged($v,$r,$p);
@@ -63,9 +60,9 @@
 		
 		public static function GetOne($request, $response, $args)
         {
-           	$datosRecibidos = $request->getQueryParams();
+           	$apiParam = $request->getQueryParams();
 			$id = json_decode($args['id']);
-      		$objEntidad= Funciones::GetOne($id,$datosRecibidos["t"]);
+      		$objEntidad= Funciones::GetOne($id,$apiParam["t"]);
     		
 			
 			if($objEntidad)
@@ -78,12 +75,12 @@
         public static function UpdateOne($request, $response, $args)
         {
          //Datos recibidos por QueryString
-            $datosRecibidosQS = $request->getQueryParams();
+            $apiParamQS = $request->getQueryParams();
                     
             //Datos recibidos por body
-            $datosRecibidosBody = $request->getParsedBody();	
+            $apiParamBody = $request->getParsedBody();	
 
-            $result = Funciones::UpdateOne($datosRecibidosQS,$datosRecibidosBody);
+            $result = Funciones::UpdateOne($apiParamQS,$apiParamBody);
 					
 			if($result)
 				return $response->withJson(true, 200); 
@@ -95,12 +92,12 @@
         public static function Insert($request, $response, $args)
         {
             //Datos recibidos por QueryString
-            $datosRecibidosQS = $request->getQueryParams();
+            $apiParamQS = $request->getQueryParams();
                     
             //Datos recibidos por body
-            $datosRecibidosBody = $request->getParsedBody();	
+            $apiParamBody = $request->getParsedBody();	
 
-			$result = Funciones::InsertOne($datosRecibidosQS['t'],$datosRecibidosBody);
+			$result = Funciones::InsertOne($apiParamQS['t'],$apiParamBody);
 			
 			if($result)
 				return $response->withJson(true, 200); 
@@ -112,11 +109,11 @@
 	
         public static function DeleteOne($request, $response, $args)
         {
-             $datosRecibidos = $request->getQueryParams();
+             $apiParam = $request->getQueryParams();
              $id = json_decode($args['id']);
        
             //Busco el Persona mediante el id
-            $objEntidad = Funciones::GetOne($id,$datosRecibidos['t']); 
+            $objEntidad = Funciones::GetOne($id,$apiParam['t']); 
             
 			//Si no se encontró grabo un mensaje
             if($objEntidad == null)
@@ -124,7 +121,7 @@
                 $response->write("Registro no encontrado");
             }else{
 				//Sino borro el registro
-                $result = Funciones::DeleteOne($id,$datosRecibidos['t']);
+                $result = Funciones::DeleteOne($id,$apiParam['t']);
 				if($result)
 					return $response->withJson(true, 200); 
 				else
