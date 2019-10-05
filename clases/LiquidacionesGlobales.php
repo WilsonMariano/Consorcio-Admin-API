@@ -15,14 +15,16 @@ class LiquidacionesGlobales
 	public $tasaInteres;
 
 	// Constructor customizado
-	function __construct($arrData){
-        $this->id = $arrData["id"];
-        $this->mes = $arrData["mes"];
-        $this->anio = $arrData["anio"];
-        $this->primerVencimiento = $arrData["primerVencimiento"];
-        $this->segundoVencimiento = $arrData["segundoVencimiento"];
-        $this->fechaEmision = $arrData["fechaEmision"];
-        $this->tasaInteres = $arrData["tasaInteres"];
+	function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData["id"];
+			$this->mes = $arrData["mes"];
+			$this->anio = $arrData["anio"];
+			$this->primerVencimiento = $arrData["primerVencimiento"];
+			$this->segundoVencimiento = $arrData["segundoVencimiento"];
+			$this->fechaEmision = $arrData["fechaEmision"];
+			$this->tasaInteres = $arrData["tasaInteres"];
+		}
     }
 
 	// Insert privado. (uso interno)
@@ -38,7 +40,7 @@ class LiquidacionesGlobales
 	}
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	public function setQueryParams($consulta, $objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -72,7 +74,7 @@ class LiquidacionesGlobales
 				$objetoAccesoDato->rollBack();
 				return false;	
 			}				
-		} catch (Exception $e) {
+		} catch (Exception $e){
 			$objetoAccesoDato->rollBack();
 			echo "Error: " . $e->getMessage();
 		}
