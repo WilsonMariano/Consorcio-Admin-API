@@ -65,7 +65,7 @@
         {
            	$datosRecibidos = $request->getQueryParams();
 			$id = json_decode($args['id']);
-      		$objEntidad=\Funciones::GetOne($id,$datosRecibidos["t"]);
+      		$objEntidad= Funciones::GetOne($id,$datosRecibidos["t"]);
     		
 			
 			if($objEntidad)

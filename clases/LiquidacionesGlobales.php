@@ -27,7 +27,7 @@ class LiquidacionesGlobales
 			$this->tasaInteres = $arrData["tasaInteres"];
 		}
     }
-
+ 
 	// Insert privado. (uso interno)
 	private static function Insert($liquidacionGlobal){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -81,7 +81,16 @@ class LiquidacionesGlobales
 		}
 	}
 
-	
-
+	public static function GetOneFromView($id){	
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new ConceptosGastos();
+		
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwLiquidacionesGlobales where id =:id");
+		$consulta->bindValue(':id', $id , PDO::PARAM_STR);
+		$consulta->execute();
+		$objEntidad= $consulta->fetchObject();
+		
+		return $objEntidad;						
+	}//GetOne	
     
 }

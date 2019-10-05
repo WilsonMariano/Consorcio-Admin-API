@@ -34,7 +34,7 @@
 		{
          	$datosRecibidos = $request->getQueryParams();
  	
-			$objEntidad=ConceptosGastos::GetOne($datosRecibidos["codigo"]);
+			$objEntidad = ConceptosGastos::GetOne($datosRecibidos["codigo"]);
 			
 			if($objEntidad)
 				return $response->withJson($objEntidad, 200); 

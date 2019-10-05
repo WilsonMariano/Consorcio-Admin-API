@@ -79,6 +79,7 @@
 	});
 
 	$app->group('/liquidaciongbl', function () {
+		$this->get('/getOneFromView/{id}', \LiquidacionGlobalApi::class . ':GetOneFromView');          
 		$this->post('/addExpense[/]', \LiquidacionGlobalApi::class . ':AddNewExpense');          
 	});
 
