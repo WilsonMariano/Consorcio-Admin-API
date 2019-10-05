@@ -28,7 +28,7 @@ class Funciones
 
 
 	public static function GetAll($entityName){
-    	$objetoAccesoDato = \AccesoDatos::dameUnObjetoAcceso(); 
+    	$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 	    $consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
 		$consulta->execute();		
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
@@ -124,7 +124,7 @@ class Funciones
 	}//UpdateOne
 
 
-	public static function InsertOne($entityName,$datosRecibidosBody)
+	public static function InsertOne($entityName, $datosRecibidosBody)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
  		$objEntidad = self::GetObjEntidad ($entityName);

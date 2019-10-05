@@ -60,7 +60,7 @@ class LiquidacionesGlobales
 			// $objetoAccesoDato->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
 			//Guardo la liquidación global, si anduvo ok, continuo procesando los gastos.
-			if(is_numeric(Funciones::Insert($liquidacionGlobal)))
+			if(is_numeric(self::Insert($liquidacionGlobal)))
 			{
 				// Guardo los gastos y sus relaciones
 				foreach($arrGastos as $gasto){
