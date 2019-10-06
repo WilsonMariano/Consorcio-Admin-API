@@ -115,7 +115,7 @@ class Funciones
 		$objEntidad->BindQueryParams($consulta, $objEntidad, $includePK);
 		$consulta->execute();
 		
-		return $objetoAccesoDato->RetornarUltimoIdInsertado()> 0 ? true : false;
+		return $consulta->rowCount() > 0 ? true : false;
 	}
    
 	public static function DeleteOne($idParametro,$entityName){	
