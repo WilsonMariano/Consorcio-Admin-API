@@ -2,8 +2,8 @@
 
 require_once "AccesoDatos.php";
 
-class UF
-{
+class UF{
+	
 	//	Atributos
 	public $id;
 	public $idManzana;
@@ -13,10 +13,22 @@ class UF
 	public $codSitLegal;
 	public $coeficiente;
 	public $codAlquila;
- 
- 	
+
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->idManzana = $arrData['idManzana'];
+			$this->idAdherente = $arrData['idAdherente'];
+			$this->nroEdificio = $arrData['nroEdificio'];
+			$this->departamento = $arrData['departamento'];
+			$this->codSitLegal = $arrData['codSitLegal'];
+			$this->coeficiente = $arrData['coeficiente'];
+			$this->codAlquila = $arrData['codAlquila'];
+		}
+	}
+
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -28,18 +40,6 @@ class UF
 		$consulta->bindValue(':codSitLegal'  ,$objEntidad->codSitLegal   ,\PDO::PARAM_STR);
 		$consulta->bindValue(':coeficiente'  ,$objEntidad->coeficiente   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':codAlquila'   ,$objEntidad->codAlquila    ,\PDO::PARAM_STR);
-	}
-
-
-	public static function Insert($uf){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into uf values(:id,:idManzana,:idAdherente,:nroEdificio,:departamento,:codSitLegal,:coeficiente,:codAlquila)");
-		self::setQueryParams($consulta,$uf);
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();
-	
 	}
 
 }//class

@@ -5,15 +5,22 @@ require_once "AccesoDatos.php";
 class ConceptosGastos
 {
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $codigo;
 	public $conceptoGasto;
  
+	//Constructor customizado
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData["id"];
+			$this->codigo = $arrData["codigo"];
+			$this->conceptoGasto = $arrData["conceptoGasto"];
+		}
+	}
 
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
-
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -21,29 +28,14 @@ class ConceptosGastos
 		$consulta->bindValue(':conceptoGasto'  ,$objEntidad->conceptoGasto  ,\PDO::PARAM_STR);
 	}
 
-
  	public static function  IsDuplicated($entityObject){
-
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from ConceptosGastos where codigo =:codigo");
 		$consulta->bindValue(':codigo', $entityObject->codigo, PDO::PARAM_STR);
 		$consulta->execute();
 		
 		return $consulta->rowCount() > 0 ? true : false;
-	}
-
-
-	public static function Insert($entityObject){
-		
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into conceptosGastos(codigo, conceptoGasto) values(:codigo,:conceptoGasto)");
-		self::setQueryParams($consulta,$entityObject,false);
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();
-	
-	}
+	 }
 
 	public static function GetOne($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -55,8 +47,6 @@ class ConceptosGastos
 		$objEntidad= $consulta->fetchObject("ConceptosGastos");
 		
 		return $objEntidad;						
-	}//GetOne	
-
-
+	}
 
 }//class

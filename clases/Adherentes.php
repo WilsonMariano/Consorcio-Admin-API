@@ -5,17 +5,28 @@ require_once "AccesoDatos.php";
 class Adherentes
 {
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $nombre;
 	public $apellido;
 	public $nroDocumento;
 	public $telefono;
 	public $email;
- 	
+	 
+	//Constructor customizado
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData["id"];
+			$this->nombre = $arrData["nombre"];
+			$this->apellido = $arrData["apellido"];
+			$this->nroDocumento = $arrData["nroDocumento"];
+			$this->telefono = $arrData["telefono"];
+			$this->email = $arrData["email"];
+		}
+    }
 
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -26,20 +37,5 @@ class Adherentes
 		$consulta->bindValue(':telefono'     ,$objEntidad->telefono      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':email'        ,$objEntidad->email         ,\PDO::PARAM_STR);
 	}
-
-	
-
-	public static function Insert($adherente){
-		
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into adherentes values(:id,:nombre,:apellido,:nroDocumento,:telefono,:email)");
-		self::setQueryParams($consulta,$adherente);
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();
-	
-	}
-	
 		
 }//class

@@ -5,17 +5,25 @@ require_once "AccesoDatos.php";
 class Recibos
 {
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $idCtaCte;
 	public $nroRecibo;
 	public $codMedioPago;
 	public $monto;
 
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->idCtaCte = $arrData['idCtaCte'];
+			$this->nroRecibo = $arrData['nroRecibo'];
+			$this->codMedioPago = $arrData['codMedioPago'];
+			$this->monto = $arrData['monto'];
+		}
+	}
 
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
-
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -24,6 +32,5 @@ class Recibos
 		$consulta->bindValue(':codMedioPago' ,$objEntidad->codMedioPago     ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'	     ,$objEntidad->monto            ,\PDO::PARAM_STR);
 	}
-
 
 }//class

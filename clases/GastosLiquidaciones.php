@@ -12,7 +12,7 @@ class GastosLiquidaciones
 	public $codConceptoGasto;
 	
 	// Constructor customizado
-	function __construct($arrData = null){
+	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'];
 			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
@@ -21,20 +21,8 @@ class GastosLiquidaciones
 		}
 	}
 
-	public static function Insert($gasto){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"INSERT into gastosliquidaciones (idLiquidacionGlobal, monto, codConceptoGasto)
-			 values(:idLiquidacionGlobal, :monto, :codConceptoGasto)");
-		self::setQueryParams($consulta,$gasto,false);
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();
-	}
-
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
-
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -42,8 +30,5 @@ class GastosLiquidaciones
  		$consulta->bindValue(':monto'		         ,$objEntidad->monto                ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codConceptoGasto'	 ,$objEntidad->codConceptoGasto     ,\PDO::PARAM_STR);
 	}
-
-
-
 
 }//class

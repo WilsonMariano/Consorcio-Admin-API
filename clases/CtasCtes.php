@@ -5,7 +5,7 @@ require_once "AccesoDatos.php";
 class CtasCtes
 {
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $idUF;
 	public $fecha;
@@ -13,9 +13,20 @@ class CtasCtes
 	public $monto;
 	public $saldo;
 
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	//Constructor customizado
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData["id"];
+			$this->idUF = $arrData["idUF"];
+			$this->fecha = $arrData["fecha"];
+			$this->descripcion = $arrData["descripcion"];
+			$this->monto = $arrData["monto"];
+			$this->saldo = $arrData["saldo"];
+		}
+    }
 
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -26,5 +37,4 @@ class CtasCtes
 		$consulta->bindValue(':saldo'       ,$objEntidad->saldo        ,\PDO::PARAM_STR);
 	}
 
-
-}
+}//class

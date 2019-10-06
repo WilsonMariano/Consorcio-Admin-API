@@ -15,9 +15,21 @@ class LiquidacionesUF
 	public $fechaRecalculo;
 	public $saldo;
 
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
+			$this->idCtaCte = $arrData['idCtaCte'];
+			$this->coeficiente = $arrData['coeficiente'];
+			$this->interes = $arrData['interes'];
+			$this->monto = $arrData['monto'];
+			$this->fechaRecalculo = $arrData['fechaRecalculo'];
+			$this->saldo = $arrData['saldo'];
+		}
+	}
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -30,6 +42,5 @@ class LiquidacionesUF
 		$consulta->bindValue(':fechaRecalculo'         ,$objEntidad->fechaRecalculo       ,\PDO::PARAM_STR);
 		$consulta->bindValue(':saldo'                  ,$objEntidad->saldo       		  ,\PDO::PARAM_STR);
 	}
-
 
 }//class

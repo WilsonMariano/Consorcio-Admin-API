@@ -2,17 +2,24 @@
 
 require_once "AccesoDatos.php";
 
-class Diccionario
-{
+class Diccionario{
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $codigo;
 	public $valor;
  
-
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
+	//Constructor customizado
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData["id"];
+			$this->codigo = $arrData["codigo"];
+			$this->valor = $arrData["valor"];
+		}
+	}
+	
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -20,9 +27,7 @@ class Diccionario
 		$consulta->bindValue(':valor'	 ,$objEntidad->valor    ,\PDO::PARAM_STR);
 	}
 
-
  	public static function GetAll($codigo){
-		
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta(
 			"select * from diccionario where codigo like '" . $codigo . "%'");
@@ -30,9 +35,7 @@ class Diccionario
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;
-	
 	}
-
 
 	public static function GetOne($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -44,7 +47,6 @@ class Diccionario
 		$objEntidad= $consulta->fetchObject("Diccionario");
 		
 		return $objEntidad;						
-	}//GetOne	
-
+	}
 
 }//class

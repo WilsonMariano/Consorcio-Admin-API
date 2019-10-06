@@ -3,8 +3,7 @@
 require_once "AccesoDatos.php";
 require_once "_FuncionesEntidades.php";
 
-class Manzanas
-{
+class Manzanas{
 
 	//	Atributos
 	public $id;
@@ -12,10 +11,17 @@ class Manzanas
 	public $tipoVivienda;
 	public $nombreConsorcio;
 
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->mtsCuadrados = $arrData['mtsCuadrados'];
+			$this->tipoVivienda = $arrData['tipoVivienda'];
+			$this->nombreConsorcio = $arrData['nombreConsorcio'];
+		}
+	}
 
 	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
-
+	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
@@ -35,7 +41,7 @@ class Manzanas
 			foreach ($arrManzanas as $id) {
 				foreach ($manzanas as $manzana) {
 					if($id == $manzana['id']) {
-						 $result->$id = intval($manzana['mtsCuadrados']);
+						$result->$id = intval($manzana['mtsCuadrados']);
 						$totalMts += intval($manzana['mtsCuadrados']);
 						break;
 					}
@@ -46,9 +52,7 @@ class Manzanas
 				$valor =  (intval($result->$id) * 100) / intval($totalMts);
 				$result->$id =  number_format($valor, 2, ',', ' ');
 			}
-	
 			return $result;
-	
 		}else{
 			return false ;
 		}

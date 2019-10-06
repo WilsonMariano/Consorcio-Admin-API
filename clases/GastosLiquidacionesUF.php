@@ -2,26 +2,32 @@
 
 require_once "AccesoDatos.php";
 
-class GastosLiquidacionesUF
-{
+class GastosLiquidacionesUF{
 
-	//	Atributos
+	//Atributos
 	public $id;
 	public $idLiquidacionUF;
 	public $idGastosLiquidaciones;
 	public $monto;
 	
-
-	//	Configurar parámetros para las consultas
-	public function setQueryParams($consulta,$objEntidad, $includePK = true){
-
-		if($includePK == true)
-			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
-		
-		$consulta->bindValue(':idLiquidacionUF'		,$objEntidad->idLiquidacionUF    ,\PDO::PARAM_INT);
-		$consulta->bindValue(':idLiquidacionUF'		,$objEntidad->idLiquidacionUF    ,\PDO::PARAM_INT);
-		$consulta->bindValue(':monto'		        ,$objEntidad->monto              ,\PDO::PARAM_STR);
+	//Constructor customizado
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'];
+			$this->idLiquidacionUF = $arrData['idLiquidacionUF'];
+			$this->idGastosLiquidaciones = $arrData['idGastosLiquidaciones'];
+			$this->monto = $arrData['monto'];
+		}
 	}
 
+	//Configurar parámetros para las consultas
+	public function BindQueryParams($consulta, $objEntidad, $includePK = true){
+		if($includePK == true)
+			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
+		
+		$consulta->bindValue(':idLiquidacionUF' , $objEntidad->idLiquidacionUF , \PDO::PARAM_INT);
+		$consulta->bindValue(':idLiquidacionUF'	, $objEntidad->idLiquidacionUF , \PDO::PARAM_INT);
+		$consulta->bindValue(':monto'		    , $objEntidad->monto           , \PDO::PARAM_STR);
+	}
 
 }//class
