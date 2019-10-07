@@ -18,14 +18,14 @@ class LiquidacionesGlobales{
 	//Constructor customizado
 	function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"];
+			$this->id = $arrData["id"] ?? null;
 			$this->mes = $arrData["mes"];
 			$this->anio = $arrData["anio"];
 			$this->primerVencimiento = $arrData["primerVencimiento"];
 			$this->segundoVencimiento = $arrData["segundoVencimiento"];
-			$this->fechaEmision = $arrData["fechaEmision"];
-			$this->tasaInteres = $arrData["tasaInteres"];
-			$this->codEstado = $arrData["codEstado"] ?? null;
+			$this->fechaEmision = $arrData["fechaEmision"] ?? null;
+			$this->tasaInteres = $arrData["tasaInteres"] ?? null;
+			$this->codEstado = $arrData["codEstado"] ?? "COD_ESTADO_1";
 		}
     }
 
@@ -48,7 +48,7 @@ class LiquidacionesGlobales{
 		$objEntidad = new LiquidacionesGlobales();
 		
 		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwLiquidacionesGlobales where id =:id");
-		$consulta->bindValue(':id', $id , PDO::PARAM_STR);
+		$consulta->bindValue(':id', $id , PDO::PARAM_INT);
 		$consulta->execute();
 		$objEntidad= $consulta->fetchObject();
 		
