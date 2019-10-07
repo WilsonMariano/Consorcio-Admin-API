@@ -68,6 +68,10 @@
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
 	});
 
+	$app->group('/diccionario', function () {
+		$this->get('/getValue[/]', \GastoLiquidacionApi::class . ':Insert');          
+	});
+	
 	$app->group('/gastos-liq', function () {
 		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');          
 	});
