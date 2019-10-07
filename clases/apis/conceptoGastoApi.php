@@ -7,10 +7,8 @@ class ConceptoGastoApi{
     public static function Insert($request, $response, $args){
         $apiParams = $request->getParsedBody();
 
-        $objConceptoGasto = new ConceptosGastos();
-        $objConceptoGasto->codigo         = $apiParams['codigo'];
-        $objConceptoGasto->conceptoGasto  = $apiParams['conceptoGasto'];
-
+        $objConceptoGasto = new ConceptosGastos($apiParams);
+        
         //Valido que el código no esté duplicado antes de insertar
         if(!ConceptosGastos::IsDuplicated($objConceptoGasto))
             if(Funciones::InsertOne($objConceptoGasto))
