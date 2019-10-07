@@ -1,7 +1,7 @@
 <?php   
 
 include_once __DIR__ . '/../LiquidacionesGlobales.php';
-include_once __DIR__ . '/../GastosLiquidaciones.php';
+include_once __DIR__ . '/../Diccionario.php';
 
 class LiquidacionGlobalApi{
 
@@ -15,7 +15,8 @@ class LiquidacionGlobalApi{
         $apiParams = $request->getParsedBody();
 
         //Obtengo instancia de LiquidacionGlobal
-        $liquidacionGbl = new LiquidacionesGlobales($apiParams["LiquidacionGlobal"]);
+        $liquidacionGbl = new LiquidacionesGlobales($apiParams);
+        $liquidacionGbl->tasaInteres = Diccionario::GetValue("TASA_INTERES");
 
         if(self::IsValid($liquidacionGbl))
             if(Funciones::InsertOne($liquidacionGbl))
@@ -23,7 +24,7 @@ class LiquidacionGlobalApi{
             else
                 return $response->withJson(false, 500);
         else
-            return $response->withJson(false, 400);				
+            return $response->withJson("El período ingresado ya se encuentra registrado.", 400);				
     }
     
     public static function GetOneFromView($request, $response, $args){

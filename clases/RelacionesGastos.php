@@ -25,7 +25,7 @@ class RelacionesGastos{
 		
 		$consulta->bindValue(':idGastosLiquidaciones' ,$objEntidad->idGastosLiquidaciones ,\PDO::PARAM_INT);
 		$consulta->bindValue(':entidad'   	          ,$objEntidad->entidad	              ,\PDO::PARAM_STR);
-		$consulta->bindValue(':numero'	              ,$objEntidad->entidad               ,\PDO::PARAM_INT);
+		$consulta->bindValue(':numero'	              ,$objEntidad->numero                ,\PDO::PARAM_INT);
 	}
 
 }//class

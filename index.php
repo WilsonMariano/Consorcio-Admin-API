@@ -50,12 +50,6 @@
 	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
 	// *********************************************************************************
 
-
-    $app->group('/usuarios', function () {
-		$this->get('/all[/]', \UsuarioApi::class . ':GetAll');      
-		$this->post('/insert[/]'   , \UsuarioApi::class . ':Insert');      
-	});
-
 	$app->group('/adherentes', function () {
 		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});
@@ -69,18 +63,13 @@
 		$this->post('/insert[/]' , \ConceptoGastoApi::class . ':Insert');      
 	});
 
-	$app->group('/diccionario', function () {
-		$this->get('/all[/]',    \DiccionarioApi::class . ':GetAll');          
-		$this->get('/one[/]',    \DiccionarioApi::class . ':GetOne'); 
-	});
-
-	$app->group('/manzana', function () {
-		$this->get('/getCoef[/]', \ManzanaApi::class . ':GetCoeficientes');          
-	});
-
 	$app->group('/liquidaciongbl', function () {
 		$this->get('/getOneFromView/{id}', \LiquidacionGlobalApi::class . ':GetOneFromView');          
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
+	});
+
+	$app->group('/gastosLiq', function () {
+		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');          
 	});
 
 	$app->run();

@@ -37,7 +37,7 @@ class Diccionario{
 		return $arrObjEntidad;
 	}
 
-	public static function GetOne($codigo){	
+	public static function GetValue($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new Diccionario();
 		
@@ -46,7 +46,7 @@ class Diccionario{
 		$consulta->execute();
 		$objEntidad= $consulta->fetchObject("Diccionario");
 		
-		return $objEntidad;						
+		return $objEntidad->valor;						
 	}
 
 }//class
