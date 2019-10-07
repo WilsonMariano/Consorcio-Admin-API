@@ -9,7 +9,7 @@ class Funciones{
 		return new $entityName($apiParamsBody);
 	}
 
-	public static function  IsDuplicated($entityObject){
+	public static function IsDuplicated($entityObject){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$entityName = get_class($entityObject);		
@@ -53,23 +53,20 @@ class Funciones{
 	
 	public static function GetOne($idParametro,$entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = self::GetObjEntidad ($entityName);
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject($entityName);
-		
+		$objEntidad= $consulta->fetchObject();
+
 		return $objEntidad;						
 	}	 
 	 
 	public static function UpdateOne($objEntidad){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 	
-		//Obtengo el nombre de la clase
+		//Obtengo el nombre de la clase y sus atributos
 		$entityName = get_class($objEntidad);
-	
-		//Obtengo los atributos de la clase para armar la query	    	
 		$arrAtributos = get_class_vars($entityName);
 
 		//Armo la query SQL dinamicamente
@@ -92,10 +89,8 @@ class Funciones{
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 					 
-		//Obtengo el nombre de la clase
+		//Obtengo el nombre de la clase y sus atributos
 		$entityName = get_class($objEntidad);
-
-		//Obtengo los atributos de la clase para armar la query	    	
 		$arrAtributos = get_class_vars($entityName);
 
 		//Armo la query SQL dinamicamente

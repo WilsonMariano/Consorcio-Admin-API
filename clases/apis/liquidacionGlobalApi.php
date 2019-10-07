@@ -26,17 +26,5 @@ class LiquidacionGlobalApi{
         else
             return $response->withJson("El período ingresado ya se encuentra registrado.", 400);				
     }
-    
-    public static function GetOneFromView($request, $response, $args){
-        $apiParams = $request->getQueryParams();
-		$id = json_decode($args['id']);
-
-        $objEntidad = LiquidacionesGlobales::GetOneFromView($id);
-        
-        if($objEntidad)
-            return $response->withJson($objEntidad, 200); 
-        else
-            return $response->withJson(false, 400);  
-    }
-	 
+    	 
 }//class

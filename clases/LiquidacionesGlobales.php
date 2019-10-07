@@ -43,18 +43,6 @@ class LiquidacionesGlobales{
 		$consulta->bindValue(':codEstado'           ,$objEntidad->codEstado            ,\PDO::PARAM_STR);
 	}
 
-	public static function GetOneFromView($id){	
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new LiquidacionesGlobales();
-		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwLiquidacionesGlobales where id =:id");
-		$consulta->bindValue(':id', $id , PDO::PARAM_INT);
-		$consulta->execute();
-		$objEntidad= $consulta->fetchObject();
-		
-		return $objEntidad;						
-	}
-
 	public static function CheckByPeriod($mes, $anio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new LiquidacionesGlobales();

@@ -63,7 +63,6 @@
 	});
 
 	$app->group('/liquidacion-gbl', function () {
-		$this->get('/getOneFromView/{id}', \LiquidacionGlobalApi::class . ':GetOneFromView');          
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
 	});
 
