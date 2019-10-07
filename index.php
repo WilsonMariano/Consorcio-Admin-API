@@ -69,7 +69,8 @@
 	});
 
 	$app->group('/diccionario', function () {
-		$this->get('/getValue[/]', \GastoLiquidacionApi::class . ':Insert');          
+		$this->get('/getValue[/]', \DiccionarioApi::class . ':GetValue');          
+		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
 	});
 	
 	$app->group('/gastos-liq', function () {
