@@ -3,8 +3,7 @@
 foreach (glob("clases/*.php") as $filename)
     require_once $filename;
 
-class Funciones
-{
+class Funciones{
 
 	public static function GetObjEntidad($entityName, $apiParamsBody = null){
 		return new $entityName($apiParamsBody);

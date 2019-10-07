@@ -63,12 +63,12 @@
 		$this->post('/insert[/]' , \ConceptoGastoApi::class . ':Insert');      
 	});
 
-	$app->group('/liquidaciongbl', function () {
+	$app->group('/liquidacion-gbl', function () {
 		$this->get('/getOneFromView/{id}', \LiquidacionGlobalApi::class . ':GetOneFromView');          
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
 	});
 
-	$app->group('/gastosLiq', function () {
+	$app->group('/gastos-liq', function () {
 		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');          
 	});
 
