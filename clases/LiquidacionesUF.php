@@ -17,13 +17,13 @@ class LiquidacionesUF
 
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData['id'];
+			$this->id = $arrData['id'] ?? null;
 			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
 			$this->idCtaCte = $arrData['idCtaCte'];
 			$this->coeficiente = $arrData['coeficiente'];
-			$this->interes = $arrData['interes'];
+			$this->interes = $arrData['interes'] ?? null;
 			$this->monto = $arrData['monto'];
-			$this->fechaRecalculo = $arrData['fechaRecalculo'];
+			$this->fechaRecalculo = $arrData['fechaRecalculo'] ?? null;
 			$this->saldo = $arrData['saldo'];
 		}
 	}

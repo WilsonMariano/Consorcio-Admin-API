@@ -12,10 +12,10 @@ class RelacionesGastos{
 
 	//Constructor customizado
 	public function __construct($arrData){
-		$this->id = $arrData["id"];
+		$this->id = $arrData["id"] ?? null;
 		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"];
-		$this->entidad = $arrData["entidad"];
-		$this->numero = $arrData["numero"];
+		$this->entidad = $arrData["entidad"] ?? null;
+		$this->numero = $arrData["numero"] ?? null;
 	}
 
 	//Configurar parámetros para las consultas

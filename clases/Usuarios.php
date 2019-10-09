@@ -9,6 +9,15 @@ class Usuarios{
 	public $email;
 	public $password;
 
+
+	public function __construct($arrData = null){
+		if($arrData != null){
+			$this->id = $arrData['id'] ?? null;
+			$this->email = $arrData['email'];
+			$this->password = $arrData['password'];
+		}
+	}
+
 	//	Configurar parámetros para las consultas
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 

@@ -13,9 +13,9 @@ class Manzanas{
 
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData['id'];
+			$this->id = $arrData['id'] ?? null;
 			$this->mtsCuadrados = $arrData['mtsCuadrados'];
-			$this->tipoVivienda = $arrData['tipoVivienda'];
+			$this->tipoVivienda = $arrData['tipoVivienda'] ?? null;
 			$this->nombreConsorcio = $arrData['nombreConsorcio'];
 		}
 	}

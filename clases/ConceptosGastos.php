@@ -13,7 +13,7 @@ class ConceptosGastos
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"];
+			$this->id = $arrData["id"] ?? null;
 			$this->codigo = $arrData["codigo"];
 			$this->conceptoGasto = $arrData["conceptoGasto"];
 		}

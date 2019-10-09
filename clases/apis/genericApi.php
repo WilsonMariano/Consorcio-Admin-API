@@ -96,4 +96,21 @@ class GenericApi{
 			return $response->withJson(false, 400);  	
 	}
 
+	public static function IsDuplicated($request, $response, $args){
+		$apiParams = $request->getQueryParams();
+		$id = json_decode($args['id']);
+
+		$obj = Funciones::GetObjEntidad($apiParams['t']);
+
+		if($obj){
+			$obj->id = $id;
+			if(Funciones::IsDuplicated($obj))
+				return $response->withJson(true, 200); 
+			else
+				return $response->withJson(false, 500);  			
+		}else{
+			return $response->withJson(false, 400);  	
+		}
+	}
+
 }//class

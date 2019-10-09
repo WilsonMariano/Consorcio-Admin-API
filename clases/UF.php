@@ -16,11 +16,11 @@ class UF{
 
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData['id'];
+			$this->id = $arrData['id'] ?? null;
 			$this->idManzana = $arrData['idManzana'];
 			$this->idAdherente = $arrData['idAdherente'];
-			$this->nroEdificio = $arrData['nroEdificio'];
-			$this->departamento = $arrData['departamento'];
+			$this->nroEdificio = $arrData['nroEdificio'] ?? null;
+			$this->departamento = $arrData['departamento'] ?? null;
 			$this->codSitLegal = $arrData['codSitLegal'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->codAlquila = $arrData['codAlquila'];
@@ -38,7 +38,7 @@ class UF{
 		$consulta->bindValue(':nroEdificio'  ,$objEntidad->nroEdificio   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':departamento' ,$objEntidad->departamento  ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codSitLegal'  ,$objEntidad->codSitLegal   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':coeficiente'  ,$objEntidad->coeficiente   ,\PDO::PARAM_INT);
+		$consulta->bindValue(':coeficiente'  ,$objEntidad->coeficiente   ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codAlquila'   ,$objEntidad->codAlquila    ,\PDO::PARAM_STR);
 	}
 

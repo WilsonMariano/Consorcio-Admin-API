@@ -14,11 +14,11 @@ class Recibos
 
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData['id'];
-			$this->idCtaCte = $arrData['idCtaCte'];
+			$this->id = $arrData['id'] ?? null;
+			$this->idCtaCte = $arrData['idCtaCte'] ?? null;
 			$this->nroRecibo = $arrData['nroRecibo'];
-			$this->codMedioPago = $arrData['codMedioPago'];
-			$this->monto = $arrData['monto'];
+			$this->codMedioPago = $arrData['codMedioPago'] ?? null;
+			$this->monto = $arrData['monto'] ?? null;
 		}
 	}
 

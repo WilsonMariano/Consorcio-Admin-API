@@ -16,10 +16,10 @@ class CtasCtes
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"];
+			$this->id = $arrData["id"] ?? null;
 			$this->idUF = $arrData["idUF"];
 			$this->fecha = $arrData["fecha"];
-			$this->descripcion = $arrData["descripcion"];
+			$this->descripcion = $arrData["descripcion"] ?? null;
 			$this->monto = $arrData["monto"];
 			$this->saldo = $arrData["saldo"];
 		}

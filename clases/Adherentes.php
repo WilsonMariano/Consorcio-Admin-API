@@ -16,11 +16,11 @@ class Adherentes
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"];
+			$this->id = $arrData["id"] ?? null;
 			$this->nombre = $arrData["nombre"];
 			$this->apellido = $arrData["apellido"];
 			$this->nroDocumento = $arrData["nroDocumento"];
-			$this->telefono = $arrData["telefono"];
+			$this->telefono = $arrData["telefono"] ?? null;
 			$this->email = $arrData["email"];
 		}
     }

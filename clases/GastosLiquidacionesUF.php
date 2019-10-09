@@ -13,7 +13,7 @@ class GastosLiquidacionesUF{
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData['id'];
+			$this->id = $arrData['id'] ?? null;
 			$this->idLiquidacionUF = $arrData['idLiquidacionUF'];
 			$this->idGastosLiquidaciones = $arrData['idGastosLiquidaciones'];
 			$this->monto = $arrData['monto'];
