@@ -104,7 +104,7 @@ class GenericApi{
 
 		if($obj){
 			$obj->id = $id;
-			if(Funciones::IsDuplicated($obj))
+			if(!Funciones::IsDuplicated($obj))
 				return $response->withJson(true, 200); 
 			else
 				return $response->withJson(false, 500);  			
