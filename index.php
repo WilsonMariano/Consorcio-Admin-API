@@ -55,6 +55,7 @@
 	});
 
 	$app->group('/uf', function () {
+		$this->get('/validateBuilding[/]',  \UFApi::class . ':ValidateBuilding');      
 		$this->post('/insert[/]',  \UFApi::class . ':Insert');      
 	});
 	

@@ -42,4 +42,17 @@ class UF{
 		$consulta->bindValue(':codAlquila'   ,$objEntidad->codAlquila    ,\PDO::PARAM_STR);
 	}
 
+	// Función para validar si el edificio enviado ya existe en la BD
+	public static function ValidateBuilding ($nroEdificio){
+    	$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new UF();
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroEdificio =:nroEdificio");
+		$consulta->bindValue(':nroEdificio', $nroEdificio , PDO::PARAM_INT);
+		$consulta->execute();
+		$objEntidad= $consulta->fetchObject("UF");
+		
+		return $objEntidad;						
+	}
+
 }//class

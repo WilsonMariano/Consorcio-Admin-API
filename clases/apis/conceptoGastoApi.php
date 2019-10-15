@@ -27,7 +27,7 @@ class ConceptoGastoApi{
         if($objEntidad)
             return $response->withJson($objEntidad, 200); 
         else
-            return $response->withJson(false, 400);  
+            return $response->withJson("No se encontraron datos con el código ingresado.", 400);  
     }
 
 }//class

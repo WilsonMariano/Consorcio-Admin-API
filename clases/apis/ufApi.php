@@ -19,5 +19,16 @@ class UFApi{
         else 
             return $response->withJson("El nro de unidad funcional ingresado no se encuentra disponible.", 400);
     }
+    
+	public static function ValidateBuilding ($request, $response, $args){
+        $apiParams = $request->getQueryParams();
+
+        $objEntidad = UF::ValidateBuilding($apiParams["edificio"]);
+        
+        if($objEntidad)
+            return $response->withJson(true, 200); 
+        else
+            return $response->withJson("El nro de edificio ingresado no existe.", 200);  
+    }
 
 }//class
