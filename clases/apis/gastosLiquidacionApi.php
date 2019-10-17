@@ -17,14 +17,17 @@ class GastoLiquidacionApi{
                   
             for ($i = 0; $i < sizeof($arrGastos); $i++) {
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
-                if(Funciones::InsertOne($gasto))
+                if(Funciones::InsertOne($gasto)){
+                    $currentIdGastosLiquidaciones = $objetoAccesoDato->RetornarUltimoIdInsertado();
                     for ($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++) {
                         $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);
+                        $relacion->idGastosLiquidaciones = $currentIdGastosLiquidaciones;
                         if(!Funciones::InsertOne($relacion))                       
                             throw new Exception("No se pudieron guardar las relaciones de los gastos correctamente.");
                     }
-                else
+                }else{
                     throw new Exception("No se pudo guardar los gastos correctamente.");
+                }
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);

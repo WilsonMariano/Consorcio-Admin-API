@@ -13,7 +13,7 @@ class RelacionesGastos{
 	//Constructor customizado
 	public function __construct($arrData){
 		$this->id = $arrData["id"] ?? null;
-		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"];
+		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"] ?? null;
 		$this->entidad = $arrData["entidad"] ?? null;
 		$this->numero = $arrData["numero"] ?? null;
 	}
