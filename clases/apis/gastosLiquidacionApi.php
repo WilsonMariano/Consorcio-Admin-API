@@ -39,16 +39,17 @@ class GastoLiquidacionApi{
     public static function Delete($request, $response, $args){
         //Proceso los datos recibidos por body
         $arrIdGastos = $request->getParsedBody();
-        
+
         try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
                   
             for($i = 0; $i < sizeof($arrIdGastos); $i++){
                 if(Funciones::DeleteOne($arrIdGastos[$i],"GastosLiquidaciones")){
-                    //Elimino todas las relaciones del gasto
-                    if(!RelacionesGastos::DeleteAll($arrIdGastos[$i]))                       
-                        throw new Exception("No se pudieron eliminar las relaciones de los gastos correctamente.");
+                    //Elimino todas las relaciones del gasto (si existen)
+                    if(RelacionesGastos::Exists($arrIdGastos[$i]))    
+                        if(!RelacionesGastos::DeleteAll($arrIdGastos[$i]))                          
+                            throw new Exception("No se pudieron eliminar las relaciones de los gastos correctamente.");
                 }else{
                     throw new Exception("No se pudieron eliminar los gastos correctamente.");
                 }
