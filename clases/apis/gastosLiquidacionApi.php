@@ -8,8 +8,7 @@ class GastoLiquidacionApi{
 
     public static function Insert($request, $response, $args){
         //Proceso los datos recibidos por body
-        $apiParams = $request->getParsedBody();
-        $arrGastos = $apiParams["GastosLiquidaciones"];
+        $arrGastos = $request->getParsedBody();
 
         try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -18,10 +17,10 @@ class GastoLiquidacionApi{
             for ($i = 0; $i < sizeof($arrGastos); $i++) {
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
                 if(Funciones::InsertOne($gasto)){
-                    $currentIdGastosLiquidaciones = $objetoAccesoDato->RetornarUltimoIdInsertado();
+                    $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
                     for ($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++) {
                         $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);
-                        $relacion->idGastosLiquidaciones = $currentIdGastosLiquidaciones;
+                        $relacion->idGastosLiquidaciones = $gasto->id;
                         if(!Funciones::InsertOne($relacion))                       
                             throw new Exception("No se pudieron guardar las relaciones de los gastos correctamente.");
                     }
@@ -36,5 +35,30 @@ class GastoLiquidacionApi{
             return $response->withJson($e->getMessage(), 500);
 		}
     }
-	 
+
+    public static function Delete($request, $response, $args){
+        //Proceso los datos recibidos por body
+        $arrIdGastos = $request->getParsedBody();
+        
+        try {  
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objetoAccesoDato->beginTransaction();
+                  
+            for($i = 0; $i < sizeof($arrIdGastos); $i++){
+                if(Funciones::DeleteOne($arrIdGastos[$i],"GastosLiquidaciones")){
+                    //Elimino todas las relaciones del gasto
+                    if(!RelacionesGastos::DeleteAll($arrIdGastos[$i]))                       
+                        throw new Exception("No se pudieron eliminar las relaciones de los gastos correctamente.");
+                }else{
+                    throw new Exception("No se pudieron eliminar los gastos correctamente.");
+                }
+            }
+            $objetoAccesoDato->commit();
+            return $response->withJson(true, 200);
+		} catch (Exception $e){
+			$objetoAccesoDato->rollBack();
+            return $response->withJson($e->getMessage(), 500);
+		}
+    }
+
 }//class

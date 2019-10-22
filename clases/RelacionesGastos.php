@@ -28,4 +28,14 @@ class RelacionesGastos{
 		$consulta->bindValue(':numero'	              ,$objEntidad->numero                ,\PDO::PARAM_INT);
 	}
 
+	//Elimino todas las relaciones pertenicientes a un mismo GastoLiquidacion
+	public function DeleteAll($idGastosLiquidaciones){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("delete from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");	
+        $consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
+		$consulta->execute();
+		
+		return $consulta->rowCount() > 0 ? true : false;
+	}
+
 }//class

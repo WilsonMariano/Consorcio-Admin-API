@@ -74,7 +74,8 @@
 	});
 	
 	$app->group('/gastos-liq', function () {
-		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');          
+		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
+		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
 	});
 
 	$app->run();
