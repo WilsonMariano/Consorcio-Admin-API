@@ -7,7 +7,7 @@ class LiquidacionGlobalApi{
 
     private static function IsValid($liquidacionGbl){
         // Valido que el periodo ingresado no haya sido ingresado previamente. (Para evitar periodos duplicados)
-        return !LiquidacionesGlobales::CheckByPeriod($liquidacionGbl->mes, $liquidacionGbl->anio);
+        return !LiquidacionesGlobales::GetByPeriod($liquidacionGbl->mes, $liquidacionGbl->anio);
     }
 
     public static function Insert($request, $response, $args){
@@ -17,6 +17,7 @@ class LiquidacionGlobalApi{
         //Obtengo instancia de LiquidacionGlobal
         $liquidacionGbl = new LiquidacionesGlobales($apiParams);
         $liquidacionGbl->tasaInteres = Diccionario::GetValue("TASA_INTERES");
+        $liquidacionGbl->fechaEmision = date("Y-m-d");
 
         if(self::IsValid($liquidacionGbl))
             if(Funciones::InsertOne($liquidacionGbl))

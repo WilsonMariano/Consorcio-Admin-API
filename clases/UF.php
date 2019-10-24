@@ -9,7 +9,7 @@ class UF{
 	public $idManzana;
 	public $idAdherente;
 	public $nroEdificio;
-	public $departamento;
+	public $codDepartamento;
 	public $codSitLegal;
 	public $coeficiente;
 	public $codAlquila;
@@ -20,7 +20,7 @@ class UF{
 			$this->idManzana = $arrData['idManzana'];
 			$this->idAdherente = $arrData['idAdherente'];
 			$this->nroEdificio = $arrData['nroEdificio'] ?? null;
-			$this->departamento = $arrData['departamento'] ?? null;
+			$this->codDepartamento = $arrData['codDepartamento'] ?? null;
 			$this->codSitLegal = $arrData['codSitLegal'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->codAlquila = $arrData['codAlquila'];
@@ -33,13 +33,13 @@ class UF{
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idManzana'    ,$objEntidad->idManzana     ,\PDO::PARAM_INT);
-		$consulta->bindValue(':idAdherente'  ,$objEntidad->idAdherente   ,\PDO::PARAM_INT);
-		$consulta->bindValue(':nroEdificio'  ,$objEntidad->nroEdificio   ,\PDO::PARAM_INT);
-		$consulta->bindValue(':departamento' ,$objEntidad->departamento  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':codSitLegal'  ,$objEntidad->codSitLegal   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':coeficiente'  ,$objEntidad->coeficiente   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':codAlquila'   ,$objEntidad->codAlquila    ,\PDO::PARAM_STR);
+		$consulta->bindValue(':idManzana'    	,$objEntidad->idManzana       ,\PDO::PARAM_INT);
+		$consulta->bindValue(':idAdherente'  	,$objEntidad->idAdherente     ,\PDO::PARAM_INT);
+		$consulta->bindValue(':nroEdificio'  	,$objEntidad->nroEdificio     ,\PDO::PARAM_INT);
+		$consulta->bindValue(':codDepartamento' ,$objEntidad->codDepartamento ,\PDO::PARAM_STR);
+		$consulta->bindValue(':codSitLegal'  	,$objEntidad->codSitLegal     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':coeficiente'  	,$objEntidad->coeficiente     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':codAlquila'   	,$objEntidad->codAlquila      ,\PDO::PARAM_STR);
 	}
 
 	// Función para validar si el edificio enviado ya existe en la BD

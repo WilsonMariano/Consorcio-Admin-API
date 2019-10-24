@@ -43,7 +43,7 @@ class LiquidacionesGlobales{
 		$consulta->bindValue(':codEstado'           ,$objEntidad->codEstado            ,\PDO::PARAM_STR);
 	}
 
-	public static function CheckByPeriod($mes, $anio){
+	public static function GetByPeriod($mes, $anio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new LiquidacionesGlobales();
 		
