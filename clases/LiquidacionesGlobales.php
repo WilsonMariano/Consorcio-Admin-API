@@ -21,7 +21,7 @@ class LiquidacionesGlobales{
 			$this->id = $arrData["id"] ?? null;
 			$this->mes = $arrData["mes"];
 			$this->anio = $arrData["anio"];
-			$this->primerVencimiento = $arrData["primerVencimiento"];
+			$this->primerVencimiento = $arrData["primerVencimiento"] ?? null;
 			$this->segundoVencimiento = $arrData["segundoVencimiento"] ?? null;
 			$this->fechaEmision = $arrData["fechaEmision"] ?? null;
 			$this->tasaInteres = $arrData["tasaInteres"] ?? null;
