@@ -73,7 +73,7 @@
 		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
 	});
 	
-	$app->group('/gastos-liq', function () {
+	$app->group('/gastosLiquidaciones', function () {
 		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
 		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
 	});
