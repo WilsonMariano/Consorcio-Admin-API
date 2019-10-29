@@ -34,4 +34,17 @@ class GastosLiquidaciones
 		$consulta->bindValue(':detalle'	 			 ,$objEntidad->detalle     			,\PDO::PARAM_STR);
 	}
 
+	public static function GetByLiquidacionGlobal($idLiquidacionGlobal){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new LiquidacionesGlobales();
+		
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from GastosLiquidaciones where idLiquidacionGlobal = :idLiquidacionGlobal");
+		$consulta->bindValue(':idLiquidacionGlobal', $idLiquidacionGlobal , PDO::PARAM_INT);
+		$consulta->execute();
+			
+		$arrObjEntidad= $consulta->fetchAll("GastosLiquidaciones");	
+		
+		return $arrObjEntidad;					
+	}
+
 }//class

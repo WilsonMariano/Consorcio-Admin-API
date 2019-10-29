@@ -68,5 +68,5 @@ class GastoLiquidacionApi{
             return $response->withJson($e->getMessage(), 500);
 		}
     }
-
+    
 }//class

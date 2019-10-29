@@ -38,4 +38,17 @@ class RelacionesGastos{
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
+	public static function GetByIdGastoLiquidacion($idGastosLiquidaciones){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$objEntidad = new LiquidacionesGlobales();
+		
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");
+		$consulta->bindValue(':idGastosLiquidaciones', $idGastosLiquidaciones , PDO::PARAM_INT);
+		$consulta->execute();
+			
+		$arrObjEntidad= $consulta->fetchAll("RelacionesGastos");	
+		
+		return $arrObjEntidad;	
+	}
+
 }//class
