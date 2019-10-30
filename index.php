@@ -78,4 +78,8 @@
 		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
 	});
 
+	$app->group('/liquidacion-uf', function () {
+		$this->post('/process[/]', \LiquidacionUfApi::class . ':ProcessExpenses');  
+	});
+
 	$app->run();

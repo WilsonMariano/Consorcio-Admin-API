@@ -40,13 +40,12 @@ class RelacionesGastos{
 
 	public static function GetByIdGastoLiquidacion($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new LiquidacionesGlobales();
 		
 		$consulta = $objetoAccesoDato->RetornarConsulta("select * from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");
 		$consulta->bindValue(':idGastosLiquidaciones', $idGastosLiquidaciones , PDO::PARAM_INT);
 		$consulta->execute();
 			
-		$arrObjEntidad= $consulta->fetchAll("RelacionesGastos");	
+		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;	
 	}
