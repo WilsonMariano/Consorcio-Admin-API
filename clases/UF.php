@@ -55,4 +55,15 @@ class UF{
 		return $objEntidad;						
 	}
 
+	public static function GetByManzana($idManzana){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where idManzana =:idManzana");
+		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
+		$consulta->execute();
+		$arrObjEntidad= $consulta->fetchAll("UF");	
+		
+		return $arrObjEntidad;					
+	}
+
 }//class

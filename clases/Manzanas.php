@@ -50,7 +50,7 @@ class Manzanas{
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 			foreach ($arrManzanas as $id) {
 				$valor =  (intval($result->$id) * 100) / intval($totalMts);
-				$result->$id =  number_format($valor, 2, ',', ' ');
+				$result->$id =  number_format($valor, 2, '.', '');
 			}
 			return $result;
 		}else{

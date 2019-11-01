@@ -40,7 +40,7 @@ class GastosLiquidaciones
 		$consulta = $objetoAccesoDato->RetornarConsulta("select * from GastosLiquidaciones where idLiquidacionGlobal = :idLiquidacionGlobal");
 		$consulta->bindValue(':idLiquidacionGlobal', $idLiquidacionGlobal , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad= $consulta->fetchAll("GastosLiquidaciones");	
 
 		return $arrObjEntidad;					
 	}
