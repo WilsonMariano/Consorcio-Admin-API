@@ -1,17 +1,42 @@
-<?php   
+    <?php   
 
+include_once __DIR__ . '/../_FuncionesEntidades.php';
+include_once __DIR__ . '/../NumHelper.php';
 include_once __DIR__ . '/../LiquidacionesUF.php';
-include_once __DIR__ . '/../Diccionario.php';
 include_once __DIR__ . '/../Manzanas.php';
 include_once __DIR__ . '/../UF.php';
 
 class LiquidacionUfApi{
  
+    private static $arrIdLiquidacionUF;
+
+    private static function GetIdLiquidacionUF($uf){
+        //Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí los idLiqUF.
+        //Además aseguramos que se genere una única LiqUF por cada UF.
+        if(!is_null(Self::$arrIdLiquidacionUF)){
+            foreach (Self::$arrIdLiquidacionUF as $idUF => $idLiqUF){
+                if($idUF == $uf['id']){
+                    return $idLiqUF;
+                }
+            }
+        }
+        $newId = Self::NewLiquidacionUF();
+        Self::$arrIdLiquidacionUF[$uf['id']] = $newId;
+        return $newId;
+    }
+
+    private static function NewLiquidacionUF(){
+        // TODO: generar nueva liq uf, considerando el insert a ctas ctes
+        return "99";
+    }
+
     public static function ProcessExpenses($request, $response, $args){
         // Proceso el request y obtengo todos los gastos de la liquidacion global.        
         $idLiqGlobal = $request->getParsedBody();
+
+        // Obtengo todos los gastos la liquidación global
         $arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal($idLiqGlobal[0]);
-    
+
         for($i = 0; $i < sizeof($arrGastosLiq); $i++){
             // Por cada gasto obtengo las relacionesGastos
             $arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);
@@ -29,35 +54,41 @@ class LiquidacionUfApi{
                         // echo "todo: uf";
                         break;
                 }
-            }else{
-                //El gasto está relacionado con varias manzanas. Aplicar calculo de coeficiente.
-                $arrManzanas = array();
-                foreach ($arrRelacionesGastos as $relacionGasto) {
-                    array_push($arrManzanas, $relacionGasto['numero']);
-                }    
+            }
+            else //El gasto está relacionado con varias manzanas. Aplicar calculo de coeficiente.
+            {
+                //Extraigo solo el idManzana de las relaciones de cada gasto.
+                $arrManzanas = array_map(function($var) { return $var['numero']; }, $arrRelacionesGastos);
+                
+                //Con los idManzana calculo los coeficientes de cada manzana. 
                 $arrCoefManzanas = Manzanas::GetCoeficientes($arrManzanas);
                 
-                //Calculo la porción de gasto aplicable a cada manzana.
+                //Proceso las manzanas, para generar los gastos de cada UF.
                 foreach ($arrCoefManzanas as $idManzana => $coefManzana){
-                    $montoAux = number_format($arrGastosLiq[$i]["monto"], 2, ".", "");
-                    $montoManzana = ($coefManzana * $montoAux)/100;
-                
-                    //Obtengo todas las UF de la manzana e imputo el gasto a c/u.
-                    $arrUF = UF::GetByManzana($idManzana);              
+                    //Calculo la porción de gasto aplicable a cada manzana.
+                    $montoGastoManzana = (NumHelper::Multiply($arrGastosLiq[$i]["monto"], $coefManzana)) / 100;
+
+                    //Imputo el gasto a todas las UF de la manzana.
+                    $arrUF = UF::GetByManzana($idManzana);  
+                    
                     foreach ($arrUF as $uf){
-                        //TODO: verificar formato del montoUF calculado
-                        $montoUF = $montoManzana * $uf->coeficiente;
+                        $montoGastoUF = NumHelper::Multiply($montoGastoManzana, $uf['coeficiente']);
+                       
                         $gasto = new GastosLiquidacionesUF();
-                        //TODO: INSERTAR LIQUF y obtener el ID
-                        $gasto->idLiquidacionUF = "99";
+                        $gasto->idLiquidacionUF = Self::GetIdLiquidacionUF($uf);
                         $gasto->idGastosLiquidaciones = $arrGastosLiq[$i]["id"];
-                        $gasto->monto = $montoUF;
-                        // Funciones::InsertOne($gasto);
-                    }
+                        $gasto->monto = $montoGastoUF;
+                        Funciones::InsertOne($gasto);
+                    }                    
                 }
             }
         }
+
+        // TODO: Una vez liquidados los gastosUF, actualizar LiquidacionesUF campo monto y saldo.
+
+
     }
     
+  
   	 
 }//class

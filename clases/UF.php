@@ -50,7 +50,7 @@ class UF{
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroEdificio =:nroEdificio");
 		$consulta->bindValue(':nroEdificio', $nroEdificio , PDO::PARAM_INT);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("UF");
+		$objEntidad= $consulta->fetchObject(PDO::FETCH_ASSOC);
 		
 		return $objEntidad;						
 	}
@@ -61,7 +61,7 @@ class UF{
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where idManzana =:idManzana");
 		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetchAll("UF");	
+		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;					
 	}
