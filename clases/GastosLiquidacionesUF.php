@@ -25,9 +25,9 @@ class GastosLiquidacionesUF{
 		if($includePK == true)
 			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idLiquidacionUF' , $objEntidad->idLiquidacionUF , \PDO::PARAM_INT);
-		$consulta->bindValue(':idLiquidacionUF'	, $objEntidad->idLiquidacionUF , \PDO::PARAM_INT);
-		$consulta->bindValue(':monto'		    , $objEntidad->monto           , \PDO::PARAM_STR);
+		$consulta->bindValue(':idLiquidacionUF'        , $objEntidad->idLiquidacionUF       , \PDO::PARAM_INT);
+		$consulta->bindValue(':idGastosLiquidaciones'  , $objEntidad->idGastosLiquidaciones , \PDO::PARAM_INT);
+		$consulta->bindValue(':monto'		           , $objEntidad->monto                 , \PDO::PARAM_STR);
 	}
 
 }//class

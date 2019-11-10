@@ -21,7 +21,7 @@ class LiquidacionesGlobales{
 			$this->id = $arrData["id"] ?? null;
 			$this->mes = $arrData["mes"];
 			$this->anio = $arrData["anio"];
-			$this->primerVencimiento = $arrData["primerVencimiento"];
+			$this->primerVencimiento = $arrData["primerVencimiento"] ?? null;
 			$this->segundoVencimiento = $arrData["segundoVencimiento"] ?? null;
 			$this->fechaEmision = $arrData["fechaEmision"] ?? null;
 			$this->tasaInteres = $arrData["tasaInteres"] ?? null;
@@ -43,7 +43,7 @@ class LiquidacionesGlobales{
 		$consulta->bindValue(':codEstado'           ,$objEntidad->codEstado            ,\PDO::PARAM_STR);
 	}
 
-	public static function CheckByPeriod($mes, $anio){
+	public static function GetByPeriod($mes, $anio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new LiquidacionesGlobales();
 		

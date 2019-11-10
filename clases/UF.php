@@ -9,7 +9,7 @@ class UF{
 	public $idManzana;
 	public $idAdherente;
 	public $nroEdificio;
-	public $departamento;
+	public $codDepartamento;
 	public $codSitLegal;
 	public $coeficiente;
 	public $codAlquila;
@@ -20,7 +20,7 @@ class UF{
 			$this->idManzana = $arrData['idManzana'];
 			$this->idAdherente = $arrData['idAdherente'];
 			$this->nroEdificio = $arrData['nroEdificio'] ?? null;
-			$this->departamento = $arrData['departamento'] ?? null;
+			$this->codDepartamento = $arrData['codDepartamento'] ?? null;
 			$this->codSitLegal = $arrData['codSitLegal'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->codAlquila = $arrData['codAlquila'];
@@ -33,13 +33,13 @@ class UF{
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idManzana'    ,$objEntidad->idManzana     ,\PDO::PARAM_INT);
-		$consulta->bindValue(':idAdherente'  ,$objEntidad->idAdherente   ,\PDO::PARAM_INT);
-		$consulta->bindValue(':nroEdificio'  ,$objEntidad->nroEdificio   ,\PDO::PARAM_INT);
-		$consulta->bindValue(':departamento' ,$objEntidad->departamento  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':codSitLegal'  ,$objEntidad->codSitLegal   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':coeficiente'  ,$objEntidad->coeficiente   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':codAlquila'   ,$objEntidad->codAlquila    ,\PDO::PARAM_STR);
+		$consulta->bindValue(':idManzana'    	,$objEntidad->idManzana       ,\PDO::PARAM_INT);
+		$consulta->bindValue(':idAdherente'  	,$objEntidad->idAdherente     ,\PDO::PARAM_INT);
+		$consulta->bindValue(':nroEdificio'  	,$objEntidad->nroEdificio     ,\PDO::PARAM_INT);
+		$consulta->bindValue(':codDepartamento' ,$objEntidad->codDepartamento ,\PDO::PARAM_STR);
+		$consulta->bindValue(':codSitLegal'  	,$objEntidad->codSitLegal     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':coeficiente'  	,$objEntidad->coeficiente     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':codAlquila'   	,$objEntidad->codAlquila      ,\PDO::PARAM_STR);
 	}
 
 	// Función para validar si el edificio enviado ya existe en la BD
@@ -50,9 +50,20 @@ class UF{
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroEdificio =:nroEdificio");
 		$consulta->bindValue(':nroEdificio', $nroEdificio , PDO::PARAM_INT);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("UF");
+		$objEntidad= $consulta->fetchObject(PDO::FETCH_ASSOC);
 		
 		return $objEntidad;						
+	}
+
+	public static function GetByManzana($idManzana){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where idManzana =:idManzana");
+		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
+		$consulta->execute();
+		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		
+		return $arrObjEntidad;					
 	}
 
 }//class

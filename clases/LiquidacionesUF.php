@@ -4,7 +4,6 @@ require_once "AccesoDatos.php";
 
 class LiquidacionesUF
 {
-
 	//	Atributos
 	public $id;
 	public $idLiquidacionGlobal;
@@ -15,6 +14,7 @@ class LiquidacionesUF
 	public $fechaRecalculo;
 	public $saldo;
 
+	// Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;

@@ -2,6 +2,7 @@
 
 require_once "AccesoDatos.php";
 require_once "_FuncionesEntidades.php";
+require_once "NumHelper.php";
 
 class Manzanas{
 
@@ -38,19 +39,19 @@ class Manzanas{
 			$totalMts = 0;
 			$result = new \stdClass();
 			// Burbujeo para armar el result(preliminar) y tambien calcular el total de mts cuadrados entre todas las manzanas recibidas por param
-			foreach ($arrManzanas as $id) {
+			foreach ($arrManzanas as $idManzana) {
 				foreach ($manzanas as $manzana) {
-					if($id == $manzana['id']) {
-						$result->$id = intval($manzana['mtsCuadrados']);
+					if($idManzana == $manzana['id']) {
+						$result->$idManzana = intval($manzana['mtsCuadrados']);
 						$totalMts += intval($manzana['mtsCuadrados']);
 						break;
 					}
 				}	
 			}
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
-			foreach ($arrManzanas as $id) {
-				$valor =  (intval($result->$id) * 100) / intval($totalMts);
-				$result->$id =  number_format($valor, 2, ',', ' ');
+			foreach ($arrManzanas as $idManzana) {
+				$valor =  (intval($result->$idManzana) * 100) / intval($totalMts);
+				$result->$idManzana =  NumHelper::Format($valor);
 			}
 			return $result;
 		}else{
