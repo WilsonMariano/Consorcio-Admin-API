@@ -19,7 +19,7 @@ class LiquidacionGlobalApi{
         // Si el mes es diciembre, calcular como enero. Sino, usar mes siguiente
         $mes = $liquidacionGbl->mes == 12 ? 1 : ($liquidacionGbl->mes + 1);
         $anio = $liquidacionGbl->anio;
-        $CantDiasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio); 
+        $CantDiasMes = days_in_month($mes, $anio); 
 
         for($i=$CantDiasMes; $i>0; $i--){
             $nroDia =  jddayofweek (gregoriantojd($mes, $i, $anio), 0);
