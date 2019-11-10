@@ -66,13 +66,13 @@ class LiquidacionUfApi{
                 //Proceso las manzanas, para generar los gastos de cada UF.
                 foreach ($arrCoefManzanas as $idManzana => $coefManzana){
                     //Calculo la porción de gasto aplicable a cada manzana.
-                    $montoGastoManzana = (NumHelper::Multiply($arrGastosLiq[$i]["monto"], $coefManzana)) / 100;
+                    $montoGastoManzana = (NumHelper::Format($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
 
                     //Imputo el gasto a todas las UF de la manzana.
                     $arrUF = UF::GetByManzana($idManzana);  
                     
                     foreach ($arrUF as $uf){
-                        $montoGastoUF = NumHelper::Multiply($montoGastoManzana, $uf['coeficiente']);
+                        $montoGastoUF = NumHelper::Format($montoGastoManzana) * $uf['coeficiente'];
                        
                         $gasto = new GastosLiquidacionesUF();
                         $gasto->idLiquidacionUF = Self::GetIdLiquidacionUF($uf);

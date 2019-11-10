@@ -42,16 +42,16 @@ class Manzanas{
 			foreach ($arrManzanas as $idManzana) {
 				foreach ($manzanas as $manzana) {
 					if($idManzana == $manzana['id']) {
-						$result->$idManzana = intval($manzana['mtsCuadrados']);
-						$totalMts += intval($manzana['mtsCuadrados']);
+						$result->$idManzana = NumHelper::Format($manzana['mtsCuadrados']);
+						$totalMts += NumHelper::Format($manzana['mtsCuadrados']);
 						break;
 					}
 				}	
 			}
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 			foreach ($arrManzanas as $idManzana) {
-				$valor =  (intval($result->$idManzana) * 100) / intval($totalMts);
-				$result->$idManzana =  NumHelper::Format($valor);
+				$valor =  (NumHelper::Format($result->$idManzana) * 100) / NumHelper::Format($totalMts);
+				$result->$idManzana =  NumHelper::Format($valor, 3);
 			}
 			return $result;
 		}else{
