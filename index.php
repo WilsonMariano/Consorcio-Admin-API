@@ -4,7 +4,8 @@
     use \Psr\Http\Message\ResponseInterface as Response;
 
     require_once 'vendor/autoload.php';
-    require_once 'clases/AccesoDatos.php';
+	require_once 'clases/AccesoDatos.php';
+	require_once 'clases/PdfGenerator.php';
 	
 	//Incluir todas las apis creadas
 	foreach (glob("clases/apis/*.php") as $filename){
@@ -85,6 +86,11 @@
 	$app->get('/phpinfo', function (Request $request, Response $response, array $args) {
 		$response->getBody()->write(phpinfo());
 		return $response;
+	});
+
+	$app->get('/pdf', function (Request $request, Response $response, array $args) {
+
+		PdfGenerator::generateRecibo($response);
 	});
 
 	$app->run();
