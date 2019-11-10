@@ -82,4 +82,9 @@
 		$this->post('/process[/]', \LiquidacionUfApi::class . ':ProcessExpenses');  
 	});
 
+	$app->get('/phpinfo', function (Request $request, Response $response, array $args) {
+		$response->getBody()->write(phpinfo());
+		return $response;
+	});
+
 	$app->run();
