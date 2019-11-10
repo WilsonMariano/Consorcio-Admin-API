@@ -51,6 +51,10 @@
 	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
 	// *********************************************************************************
 
+	$app->group('/usuarios', function () {
+		$this->post('/login[/]', \UsuarioApi::class . ':Login');      
+	});
+
 	$app->group('/adherentes', function () {
 		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
 	});

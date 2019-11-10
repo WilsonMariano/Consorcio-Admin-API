@@ -28,4 +28,16 @@ class Usuarios{
 		$consulta->bindValue(':password' ,$objEntidad->password ,\PDO::PARAM_STR);
 	}
 
+
+	public static function Login($usuario) {
+        $objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from usuarios where email =:email AND password = :password");
+		$consulta->bindValue(':email', $usuario->email, PDO::PARAM_STR);
+		$consulta->bindValue(':password', $usuario->password, PDO::PARAM_STR);
+		$consulta->execute();
+
+		$usuarioBuscado = $consulta->fetchObject('usuarios');
+		return $usuarioBuscado;
+	}
+
 }//class

@@ -17,15 +17,10 @@ class AutentificadorJWT
             'aud' => self::Aud(),
             'data' => 
 				    [
-				    	"id" => $usuario->idUsuario,
-				    	"nombre" => $usuario->nombre,
-				    	"apellido" => $usuario->apellido,
-				    	"dni" => $usuario->dni,
-				    	"usuario" => $usuario->usuario,
-                        "domicilio" => $usuario->domicilio,
-                        "tipo" => $usuario->tipoUsuario,
+				    	"id" => $usuario->id,
+				    	"email" => $usuario->email
                     ],
-            'app'=> "FINAL-LABO-4"
+            'app'=> "CONSORCIO-ADMIN"
         );
      
         return JWT::encode($payload, self::$claveSecreta);
