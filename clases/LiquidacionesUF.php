@@ -22,9 +22,9 @@ class LiquidacionesUF
 			$this->idCtaCte = $arrData['idCtaCte'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->interes = $arrData['interes'] ?? null;
-			$this->monto = $arrData['monto'];
+			$this->monto = $arrData['monto'] ?? null;
 			$this->fechaRecalculo = $arrData['fechaRecalculo'] ?? null;
-			$this->saldo = $arrData['saldo'];
+			$this->saldo = $arrData['saldo'] ?? null;
 		}
 	}
 
@@ -41,6 +41,17 @@ class LiquidacionesUF
 		$consulta->bindValue(':monto'                  ,$objEntidad->monto 			      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':fechaRecalculo'         ,$objEntidad->fechaRecalculo       ,\PDO::PARAM_STR);
 		$consulta->bindValue(':saldo'                  ,$objEntidad->saldo       		  ,\PDO::PARAM_STR);
+	}
+
+	public function Insert($objEntidad){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, coeficiente, interes, monto, fechaRecalculo, saldo) 
+			values (:idLiquidacionGlobal, :idCtaCte, :coeficiente, :interes, :monto, :fechaRecalculo, :saldo)");
+		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();		
 	}
 
 }//class

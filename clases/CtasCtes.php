@@ -37,4 +37,15 @@ class CtasCtes
 		$consulta->bindValue(':saldo'       ,$objEntidad->saldo        ,\PDO::PARAM_STR);
 	}
 
+	public function Insert($objEntidad){
+ 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("insert into CtasCtes (idUF, fecha, descripcion, monto, saldo) 
+			values (:idUF, :fecha, :descripcion, :monto, :saldo)");
+		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();			
+	}
+
 }//class
