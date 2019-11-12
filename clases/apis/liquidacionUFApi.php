@@ -10,6 +10,7 @@ class LiquidacionUfApi{
  
     private static $arrIdLiquidacionUF;
     private static $idLiqGlobal;
+    private static $arrMontoTotalLiqUF;
 
     private static function GetIdLiquidacionUF($uf){
         //Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí los idLiqUF.
@@ -34,9 +35,7 @@ class LiquidacionUfApi{
         return LiquidacionesUF::Insert($liquidacionUF);
     }
 
-    private static function InsertGastoUF($uf, $montoGastoManzana, $idGastoLiquidacion){
-        $montoGastoUF = NumHelper::Format($montoGastoManzana) * $uf['coeficiente'];
-    
+    private static function InsertGastoUF($uf, $montoGastoUF, $idGastoLiquidacion){
         $gastoUF = new GastosLiquidacionesUF();
         $gastoUF->idLiquidacionUF = self::GetIdLiquidacionUF($uf);
         $gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
@@ -44,7 +43,7 @@ class LiquidacionUfApi{
         return Funciones::InsertOne($gastoUF);
     }
 
-    // TODO: Una vez liquidados los gastosUF, actualizar LiquidacionesUF campo monto y saldo.
+    // TODO: Una vez liquidados los gastosUF, actualizar LiquidacionesUF campo monto, saldo e idCtaCte.
     private static function GetIdCtaCte($uf, $monto){
         // Obtengo el periodo liquidado
         $liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
@@ -58,8 +57,8 @@ class LiquidacionUfApi{
         return CtasCtes::Insert($ctaCte);
     }
 
-    //TODO: Calcular el monto total de la expensa para actualizar la liquidacionuf
-    private static function CalculateLiqUFAmount(){
+    //TODO: Actualizar liquidacionUF
+    private static function UpdateLiquidacionUF(){
         return true;
     }
 
@@ -100,11 +99,16 @@ class LiquidacionUfApi{
                     //Imputo el gasto a todas las UF de la manzana.
                     $arrUF = UF::GetByManzana($idManzana);                  
                     foreach ($arrUF as $uf){
-                        self::InsertGastoUF($uf, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
-                    }                    
+                        $montoGastoUF = NumHelper::Format($montoGastoManzana) * $uf['coeficiente'];
+                        // echo $montoGastoUF . "\xA";
+                        //Acumulo el monto del gasto para al finalizar actualizar la liquidacionUF.
+                        self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
+                        self::InsertGastoUF($uf, $montoGastoUF, $arrGastosLiq[$i]["id"]);
+                    }
                 }
             }
         }
+
     }
       	 
 }//class
