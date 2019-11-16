@@ -2,7 +2,7 @@
 
 require_once "AccesoDatos.php";
 require_once "_FuncionesEntidades.php";
-require_once "NumHelper.php";
+require_once "Helper.php";
 
 class Manzanas{
 
@@ -21,7 +21,9 @@ class Manzanas{
 		}
 	}
 
-	//	Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -31,6 +33,10 @@ class Manzanas{
 		$consulta->bindValue(':nombreConsorcio'	,$objEntidad->nombreConsorcio ,\PDO::PARAM_STR);
 	}
 
+	/**
+	 * Devuelve un array con la estructura [idManzana] = [coeficiente].
+	 * Recibe por parámetro un array con los idManzana para los cuales calculará el coeficiente.
+	 */
 	public static function GetCoeficientes($arrManzanas){
 		//Traigo todas las manzanas
 		$manzanas = Funciones::GetAll("Manzanas");
@@ -42,16 +48,16 @@ class Manzanas{
 			foreach ($arrManzanas as $idManzana) {
 				foreach ($manzanas as $manzana) {
 					if($idManzana == $manzana['id']) {
-						$result->$idManzana = NumHelper::Format($manzana['mtsCuadrados']);
-						$totalMts += NumHelper::Format($manzana['mtsCuadrados']);
+						$result->$idManzana = Helper::NumFormat($manzana['mtsCuadrados']);
+						$totalMts += Helper::NumFormat($manzana['mtsCuadrados']);
 						break;
 					}
 				}	
 			}
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 			foreach ($arrManzanas as $idManzana) {
-				$valor =  (NumHelper::Format($result->$idManzana) * 100) / NumHelper::Format($totalMts);
-				$result->$idManzana =  NumHelper::Format($valor, 0);
+				$valor =  (Helper::NumFormat($result->$idManzana) * 100) / Helper::NumFormat($totalMts);
+				$result->$idManzana =  Helper::NumFormat($valor, 0);
 			}
 			return $result;
 		}else{

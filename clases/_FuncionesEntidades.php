@@ -57,7 +57,7 @@ class Funciones{
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject();
+		$objEntidad= $consulta->fetchObject($entityName);
 
 		return $objEntidad;						
 	}	 

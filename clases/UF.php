@@ -27,7 +27,9 @@ class UF{
 		}
 	}
 
-	//	Configurar parámetros para las consultas
+	/**
+	* Bindeo los parametros para la consulta SQL.
+	*/
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
@@ -42,7 +44,10 @@ class UF{
 		$consulta->bindValue(':codAlquila'   	,$objEntidad->codAlquila      ,\PDO::PARAM_STR);
 	}
 
-	// Función para validar si el edificio enviado ya existe en la BD
+	/**
+	 * Devuelve un edificio si existe en la BD.
+	 * Recibe por parámetro el número del mismo.
+	 */
 	public static function ValidateBuilding ($nroEdificio){
     	$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new UF();
@@ -55,6 +60,10 @@ class UF{
 		return $objEntidad;						
 	}
 
+	/**
+	 * Devuelve un array de objetos UF, buscando por el número de manzana a la cual pertenecen.
+	 * Recibe por parámetro un idManzana (de la tabla Manzanas)
+	 */
 	public static function GetByManzana($idManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		

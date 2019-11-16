@@ -21,12 +21,12 @@ class GastoLiquidacionApi{
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
                   
-            for ($i = 0; $i < sizeof($arrGastos); $i++) {
+            for($i = 0; $i < sizeof($arrGastos); $i++){
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
                 if(self::IsValid($gasto))
                     if(Funciones::InsertOne($gasto)){
                         $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
-                        for ($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++) {
+                        for($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++){
                             $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);
                             $relacion->idGastosLiquidaciones = $gasto->id;
                             if(!Funciones::InsertOne($relacion))                       
@@ -38,7 +38,7 @@ class GastoLiquidacionApi{
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
-		} catch (Exception $e){
+		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
             return $response->withJson($e->getMessage(), 500);
 		}
@@ -48,7 +48,7 @@ class GastoLiquidacionApi{
         //Proceso los datos recibidos por body
         $arrIdGastos = $request->getParsedBody();
 
-        try {  
+        try{  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
                   
@@ -57,13 +57,13 @@ class GastoLiquidacionApi{
                     //Elimino todas las relaciones del gasto
                         if(!RelacionesGastos::DeleteAll($arrIdGastos[$i]))                          
                             throw new Exception("No se pudieron eliminar las relaciones de los gastos correctamente.");
-                }else{
+                } else {
                     throw new Exception("No se pudieron eliminar los gastos correctamente.");
                 }
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
-		} catch (Exception $e){
+		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
             return $response->withJson($e->getMessage(), 500);
 		}

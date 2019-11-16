@@ -18,7 +18,9 @@ class RelacionesGastos{
 		$this->numero = $arrData["numero"] ?? null;
 	}
 
-	//Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -28,7 +30,10 @@ class RelacionesGastos{
 		$consulta->bindValue(':numero'	              ,$objEntidad->numero                ,\PDO::PARAM_INT);
 	}
 
-	//Elimino todas las relaciones pertenicientes a un mismo GastoLiquidacion
+	/**
+	 * Elimino todas las relaciones pertenicientes a un mismo GastoLiquidacion.
+	 * Recibe por parámetro un idGastoLiquidacion.
+	 */
 	public static function DeleteAll($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("delete from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");	
@@ -38,6 +43,10 @@ class RelacionesGastos{
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
+	/**
+	 * Devuelve un array de objetos RelacionesGastos relacionados a un GastoLiquidacion. 
+	 * Recibe por parámetro un idGastosLiquidacion.
+	 */
 	public static function GetByIdGastoLiquidacion($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		

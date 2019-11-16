@@ -15,7 +15,7 @@ class LiquidacionesGlobales{
 	public $tasaInteres;
 	public $codEstado;
 
-	//Constructor customizado
+	// Constructor customizado
 	function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData["id"] ?? null;
@@ -29,7 +29,9 @@ class LiquidacionesGlobales{
 		}
     }
 
-	//Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta, $objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -43,6 +45,10 @@ class LiquidacionesGlobales{
 		$consulta->bindValue(':codEstado'           ,$objEntidad->codEstado            ,\PDO::PARAM_STR);
 	}
 
+	/**
+	 * (Bool)Valida si ya existe (o no) una LiquidacionGlobal, para un determinado período.
+	 * Recibe por parámetros el mes y el año.
+	 */
 	public static function GetByPeriod($mes, $anio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new LiquidacionesGlobales();

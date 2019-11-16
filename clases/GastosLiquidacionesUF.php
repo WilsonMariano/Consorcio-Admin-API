@@ -20,7 +20,9 @@ class GastosLiquidacionesUF{
 		}
 	}
 
-	//Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta, $objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
