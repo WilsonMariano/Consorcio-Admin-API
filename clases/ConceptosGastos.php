@@ -19,7 +19,9 @@ class ConceptosGastos
 		}
 	}
 
-	//Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
@@ -28,6 +30,10 @@ class ConceptosGastos
 		$consulta->bindValue(':conceptoGasto'  ,$objEntidad->conceptoGasto  ,\PDO::PARAM_STR);
 	}
 
+	/**
+	 * (Bool) Valida si ya existe un ConceptoGasto, consultando por campo código.
+	 * Recibe por parámetro el objeto ConceptoGasto a validar.
+	 */
  	public static function  IsDuplicated($entityObject){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from ConceptosGastos where codigo =:codigo");
@@ -37,6 +43,10 @@ class ConceptosGastos
 		return $consulta->rowCount() > 0 ? true : false;
 	 }
 
+	/**
+	 * Devuelve un objeto ConceptoGasto , buscando por el campo código.
+	 * Recibe por parámetro el código a buscar.
+	 */
 	public static function GetOne($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new ConceptosGastos();

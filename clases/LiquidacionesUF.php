@@ -4,7 +4,7 @@ require_once "AccesoDatos.php";
 
 class LiquidacionesUF
 {
-	//	Atributos
+	// Atributos
 	public $id;
 	public $idLiquidacionGlobal;
 	public $idCtaCte;
@@ -22,13 +22,15 @@ class LiquidacionesUF
 			$this->idCtaCte = $arrData['idCtaCte'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->interes = $arrData['interes'] ?? null;
-			$this->monto = $arrData['monto'];
+			$this->monto = $arrData['monto'] ?? null;
 			$this->fechaRecalculo = $arrData['fechaRecalculo'] ?? null;
-			$this->saldo = $arrData['saldo'];
+			$this->saldo = $arrData['saldo'] ?? null;
 		}
 	}
 
-	//	Configurar parámetros para las consultas
+	/**
+	 * Bindeo los parametros para la consulta SQL.
+	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
@@ -41,6 +43,21 @@ class LiquidacionesUF
 		$consulta->bindValue(':monto'                  ,$objEntidad->monto 			      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':fechaRecalculo'         ,$objEntidad->fechaRecalculo       ,\PDO::PARAM_STR);
 		$consulta->bindValue(':saldo'                  ,$objEntidad->saldo       		  ,\PDO::PARAM_STR);
+	}
+
+	/**
+	 * Inserta una LiquidacionUF, devolviendo el id asignado en la BD.
+	 * Recibe por parámetro el objeto LiquidacionUF a persistir.
+	 */
+	public static function Insert($objEntidad){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, coeficiente, interes, monto, fechaRecalculo, saldo) 
+			values (:idLiquidacionGlobal, :idCtaCte, :coeficiente, :interes, :monto, :fechaRecalculo, :saldo)");
+		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
+		$consulta->execute();
+
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();		
 	}
 
 }//class
