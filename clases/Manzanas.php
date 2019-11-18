@@ -34,10 +34,10 @@ class Manzanas{
 	}
 
 	/**
-	 * Devuelve un array con la estructura [idManzana] = [coeficiente].
+	 * Calcula el porcentaje de gasto que le corresponde a cada una de las manzanas recibidas. Devuelve un array con la estructura [idManzana] = [coeficiente].
 	 * Recibe por parámetro un array con los idManzana para los cuales calculará el coeficiente.
 	 */
-	public static function GetCoeficientes($arrManzanas){
+	public static function GetPorcentajes($arrManzanas){
 		//Traigo todas las manzanas
 		$manzanas = Funciones::GetAll("Manzanas");
 		
