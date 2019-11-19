@@ -79,13 +79,24 @@ class UF{
 	 * Devuelve un array de objetos UF, buscando por el número de edificio al cual pertenecen.
 	 * Recibe por parámetro un número de edificio que se preasume válido.
 	 */
-	public static function GetByEdificio($idManzana){
+	public static function GetByEdificio($nroEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroEdificio =:nroEdificio");
 		$consulta->bindValue(':nroEdificio', $nroEdificio , PDO::PARAM_INT);
 		$consulta->execute();
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		
+		return $arrObjEntidad;					
+	}
+
+	public static function FetchOne($idUF){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where id =:id");
+		$consulta->bindValue(':id', $idUF , PDO::PARAM_INT);
+		$consulta->execute();
+		$arrObjEntidad= $consulta->fetch(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;					
 	}

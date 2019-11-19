@@ -14,8 +14,7 @@ include_once __DIR__ . '/../enums/RentalContractEnum.php';
 class LiquidacionUfApi{
  
     // Variables de clase
-    private static $arrIdLiquidacionUF;
-    private static $arrMontoTotalLiqUF;
+    private static $arrLiquidacionUF = array();
     private static $idLiqGlobal;
     
 
@@ -44,57 +43,59 @@ class LiquidacionUfApi{
     }
 
     /**
-	 * Obtiene un idLiquidacionUF, ya sea del array de clase arrIdLiquidacionUF o generando uno nuevo 
+	 * Obtiene un idLiquidacionUF, ya sea del array de clase arrLiquidacionUF o generando uno nuevo 
      * (si no existe, crea la liquidacionUF y guarda el id nuevo en el array).
      */
     private static function GetIdLiquidacionUF($uf){
-        // Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí los idLiqUF.
+        // Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí las liquidacionesUF.
         // Además aseguramos que se genere una única LiqUF por cada UF.
-        if(!is_null(self::$arrIdLiquidacionUF)){
-            foreach (self::$arrIdLiquidacionUF as $idUF => $idLiqUF){
-                if($idUF == $uf['id']){
-                    return $idLiqUF;
+        if(!is_null(self::$arrLiquidacionUF)){
+            foreach (self::$arrLiquidacionUF as $liquidacionUF){
+                if($liquidacionUF->idUF == $uf['id']){
+                    return $liquidacionUF->id;
                 }
             }
         }
-        $newId = self::NewLiquidacionUF($uf);
-        self::$arrIdLiquidacionUF[$uf['id']] = $newId;
-        return $newId;
+        $newLiquidacionUF = self::NewLiquidacionUF($uf);
+        // Guardo la liquidaciónUF en el array de clase.
+        array_push(self::$arrLiquidacionUF, $newLiquidacionUF);
+        return $newLiquidacionUF->id;
     }
 
     /**
-	 * Obtiene un nuevo IdLiquidacionUF, a partir de la generación de una nueva liquidacionUF en la BD.
+	 * Genera una nueva liquidacionUF en la BD. Devuelve el objeto generado.
      * Recibe por parámetro una instancia de la clase UF.
 	 */
     private static function NewLiquidacionUF($uf){
         $liquidacionUF = new LiquidacionesUF();
         $liquidacionUF->idLiquidacionGlobal = self::$idLiqGlobal;
+        $liquidacionUF->idUF = $uf['id'];
         $liquidacionUF->coeficiente = $uf['coeficiente'];
 
         $newId = LiquidacionesUF::Insert($liquidacionUF);
-        if($newId < 1)
-            throw new Exception("No se pudo obtener un id de liquidación nuevo para una de las unidades funcionales.");
-        else
-            return $newId;
+        if($newId < 1){
+            throw new Exception("No se pudo generar una liquidación nueva para una de las unidades funcionales.");
+        }else{
+            $liquidacionUF->id = $newId;
+            return $liquidacionUF;
+        }
     }
-
-
 
     /**
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
-     * Recibe por parámetros un objeto UF y el monto a reflejar en el movimiento.
+     * Recibe por parámetro un objeto liquidacionUF.
 	 */
-    private static function SetCtaCteAndGetId($idUf, $montoTotalLiqUF){
+    private static function SetCtaCteAndGetId($liquidacionUF){
         // Obtengo el periodo a liquidar de la liquidacion global.
         $liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
         $ctaCte = new CtasCtes();
-        $ctaCte->idUF = $idUf;
+        $ctaCte->idUF = $liquidacionUF->idUF;
         $ctaCte->fecha = date("Y-m-d");
         $ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
-        $ctaCte->monto = $montoTotalLiqUF;
-        $saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($idUf) ?? 0);
-        $ctaCte->saldo = $saldoActual + $montoTotalLiqUF;
+        $ctaCte->monto = $liquidacionUF->monto;
+        $saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->idUF) ?? 0);
+        $ctaCte->saldo = $saldoActual + $liquidacionUF->monto;
         
         $newId =  CtasCtes::Insert($ctaCte);
         if($newId < 1)
@@ -108,19 +109,26 @@ class LiquidacionUfApi{
      * Utiliza los array de clase que contienen las liquidacionesUF y sus montos.
 	 */
     private static function UpdateLiquidacionesUF(){
-        foreach (self::$arrIdLiquidacionUF as $idUf1 => $idLiquidacionUF){
-            foreach(self::$arrMontoTotalLiqUF as $idUf2 => $montoTotalLiqUF){
-                if($idUf1 == $idUf2){
-                    $liquidacionUF = Funciones::GetOne($idLiquidacionUF,"LiquidacionesUF");
-    
-                    //todo: chequear contrato y actualizar monto si aplica.
+        foreach(self::$arrLiquidacionUF as $liquidacionUF){
+            //todo: chequear contrato y actualizar monto y saldo si aplica.
+            $liquidacionUF->saldo = $liquidacionUF->monto;
+            $liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
+            
+            if(!Funciones::UpdateOne($liquidacionUF))
+                throw new Exception("No se pudo actualizar el monto en una de las liquidaciones por unidad funcional.");
+        }
 
-                    $liquidacionUF->monto = $montoTotalLiqUF;
-                    $liquidacionUF->saldo = $montoTotalLiqUF;
-                    $liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($idUf1, $montoTotalLiqUF);
-                    if(!Funciones::UpdateOne($liquidacionUF))
-                        throw new Exception("No se pudo actualizar el monto en una de las liquidaciones por unidad funcional.");
-                }
+    }
+
+    /**
+     * Guarda el gasto en la bd y acumula el monto del gasto en la liquidacionuf correspondiente.
+     */
+    private static function SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idLiquidacionGlobal){
+        self::InsertGastoUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+        foreach (self::$arrLiquidacionUF as $liquidacionuf){
+            if($liquidacionuf->idUF == $uf['id']){
+                $liquidacionuf->monto =+ $montoGastoUF;
+                break;
             }
         }
     }
@@ -130,9 +138,8 @@ class LiquidacionUfApi{
      * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
     private static function ApplyExpenseToUF($idUf, $montoGasto, $idLiquidacionGlobal){
-        $uf = Funciones::GetOne($idUf,"UF");
-        self::$arrMontoTotalLiqUF[$idUf] =+ Helper::NumFormat($montoGasto);
-        self::InsertGastoUF($uf, Helper::NumFormat($montoGasto), $idLiquidacionGlobal);
+        $uf = UF::FetchOne($idUf);
+        self::SaveGastoAndAccumulateAmount($uf, Helper::NumFormat($montoGasto), $idLiquidacionGlobal);
     }
 
     /**
@@ -145,8 +152,7 @@ class LiquidacionUfApi{
 
         $arrUF = UF::GetByEdificio($nroEdificio);                  
         foreach ($arrUF as $uf)
-            self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
-            self::ApplyExpenseToUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+            self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idLiquidacionGlobal);
     }
 
     /**
@@ -156,9 +162,8 @@ class LiquidacionUfApi{
     private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idLiquidacionGlobal){
         $arrUF = UF::GetByManzana($idManzana);                  
         foreach ($arrUF as $uf){
-            $montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];
-            self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
-            self::InsertGastoUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+            $montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];         
+            self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idLiquidacionGlobal);
         }
     }
 
