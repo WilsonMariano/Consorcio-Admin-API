@@ -60,21 +60,5 @@ class LiquidacionesGlobales{
 			
 		return $consulta->rowCount() > 0 ? true : false;						
 	}
-
-	/**
-	 * Modifica el estado de una liquidación global.
-	 * Recibe por parámetro un idLiquidacionGlobal y el código de estado a setear; este último debe provenir de un enumerado. 
-	 */
-	public static function ChangeState($idLiquidacionGlobal, $newState){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new LiquidacionesGlobales();
-		
-		$consulta = $objetoAccesoDato->RetornarConsulta("update LiquidacionesGlobales set codEstado = :codEstado where id = :id");
-		$consulta->bindValue(':id', $idLiquidacionGlobal, \PDO::PARAM_INT);
-		$consulta->bindValue(':codEstado', $newState, \PDO::PARAM_STR);
-		$consulta->execute();
-
-		return $consulta->rowCount() > 0 ? true : false;						
-	}
     
 }//class

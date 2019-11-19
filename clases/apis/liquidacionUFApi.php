@@ -8,14 +8,40 @@ include_once __DIR__ . '/../Diccionario.php';
 include_once __DIR__ . '/../UF.php';
 include_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
 include_once __DIR__ . '/../enums/EntityTypeEnum.php';
+include_once __DIR__ . '/../enums/RentalContractEnum.php';
 
 
 class LiquidacionUfApi{
  
     // Variables de clase
     private static $arrIdLiquidacionUF;
-    private static $idLiqGlobal;
     private static $arrMontoTotalLiqUF;
+    private static $idLiqGlobal;
+    
+
+    /**
+     * Cierra la liquidación global procesada en el request. Modifica el campo codEstado y setea la fecha de emisión.
+     */
+    private static function CloseLiquidacionGlobal(){
+        $liquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
+        $liquidacionGlobal->fechaEmision = date("Y-m-d");
+        $liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
+        Funciones::UpdateOne($liquidacionGlobal);
+    }
+
+    /**
+	 * Guarda un gastoliquidacionUF en la BD.
+     * Recibe instancia de la clase UF, el monto del gastoUF para dicha UF y el id de la liquidacion global.
+	 */
+    private static function InsertGastoUF($uf, $montoGastoUF, $idGastoLiquidacion){
+        $gastoUF = new GastosLiquidacionesUF();
+        $gastoUF->idLiquidacionUF = self::GetIdLiquidacionUF($uf);
+        $gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
+        $gastoUF->monto = $montoGastoUF;
+        if(!Funciones::InsertOne($gastoUF)){
+            throw new Exception("No se pudo guardar un gasto en la liquidación de la unidad funcional.");
+        }
+    }
 
     /**
 	 * Obtiene un idLiquidacionUF, ya sea del array de clase arrIdLiquidacionUF o generando uno nuevo 
@@ -52,26 +78,14 @@ class LiquidacionUfApi{
             return $newId;
     }
 
-    /**
-	 * Guarda un gastoliquidacionUF en la BD.
-     * Recibe instancia de la clase UF, el monto del gastoUF para dicha UF y el id de la liquidacion global.
-	 */
-    private static function InsertGastoUF($uf, $montoGastoUF, $idGastoLiquidacion){
-        $gastoUF = new GastosLiquidacionesUF();
-        $gastoUF->idLiquidacionUF = self::GetIdLiquidacionUF($uf);
-        $gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
-        $gastoUF->monto = $montoGastoUF;
-        if(!Funciones::InsertOne($gastoUF)){
-            throw new Exception("No se pudo guardar un gasto en la liquidación de la unidad funcional.");
-        }
-    }
+
 
     /**
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
      * Recibe por parámetros un objeto UF y el monto a reflejar en el movimiento.
 	 */
     private static function SetCtaCteAndGetId($idUf, $montoTotalLiqUF){
-        // Obtengo el periodo a liquidar
+        // Obtengo el periodo a liquidar de la liquidacion global.
         $liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
         $ctaCte = new CtasCtes();
@@ -98,6 +112,9 @@ class LiquidacionUfApi{
             foreach(self::$arrMontoTotalLiqUF as $idUf2 => $montoTotalLiqUF){
                 if($idUf1 == $idUf2){
                     $liquidacionUF = Funciones::GetOne($idLiquidacionUF,"LiquidacionesUF");
+    
+                    //todo: chequear contrato y actualizar monto si aplica.
+
                     $liquidacionUF->monto = $montoTotalLiqUF;
                     $liquidacionUF->saldo = $montoTotalLiqUF;
                     $liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($idUf1, $montoTotalLiqUF);
@@ -110,23 +127,26 @@ class LiquidacionUfApi{
 
     /**
 	 * Aplica un gasto a una unidad funcional.
-     * Recibe por parámetro una instancia de UF, el monto del gasto y el id de la liquidacion global.
+     * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
-    private static function ApplyExpenseToUF($uf, $montoGasto, $idLiquidacionGlobal){
-        $montoGastoUF = Helper::NumFormat($montoGasto) * $uf['coeficiente'];
-        // Acumulo el monto del gasto para luego actualizar la liquidacionUF.
-        self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
-        self::InsertGastoUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+    private static function ApplyExpenseToUF($idUf, $montoGasto, $idLiquidacionGlobal){
+        $uf = Funciones::GetOne($idUf,"UF");
+        self::$arrMontoTotalLiqUF[$idUf] =+ Helper::NumFormat($montoGasto);
+        self::InsertGastoUF($uf, Helper::NumFormat($montoGasto), $idLiquidacionGlobal);
     }
 
     /**
 	 * Aplica un gasto a todas las unidades funcionales de un edificio.
      * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-    private static function ApplyExpenseToEdificio($edificio, $montoGastoEdificio, $idLiquidacionGlobal){
-        $arrUF = UF::GetByEdificio($edificio);                  
+    private static function ApplyExpenseToEdificio($nroEdificio, $montoGastoEdificio, $idLiquidacionGlobal){
+        $cantUF = Diccionario::GetValue("CANT_UF_EDIFICIO");
+        $montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
+
+        $arrUF = UF::GetByEdificio($nroEdificio);                  
         foreach ($arrUF as $uf)
-            self::ApplyExpenseToUF($uf, $montoGastoEdificio, $idLiquidacionGlobal);
+            self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
+            self::ApplyExpenseToUF($uf, $montoGastoUF, $idLiquidacionGlobal);
     }
 
     /**
@@ -135,8 +155,11 @@ class LiquidacionUfApi{
 	 */
     private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idLiquidacionGlobal){
         $arrUF = UF::GetByManzana($idManzana);                  
-        foreach ($arrUF as $uf)
-            self::ApplyExpenseToUF($uf, $montoGastoManzana, $idLiquidacionGlobal);
+        foreach ($arrUF as $uf){
+            $montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];
+            self::$arrMontoTotalLiqUF[$uf['id']] =+ $montoGastoUF;
+            self::InsertGastoUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+        }
     }
 
     /**
@@ -152,8 +175,7 @@ class LiquidacionUfApi{
 
             $arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
             for($i = 0; $i < sizeof($arrGastosLiq); $i++){
-                $arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);
-           
+                $arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);   
                 if(sizeof($arrRelacionesGastos)==1){
                     // Si hay solo una relacion , aplico calculo según tipo entidad.
                     switch ($arrRelacionesGastos[0]["entidad"]) {
@@ -161,23 +183,20 @@ class LiquidacionUfApi{
                             self::ApplyExpenseToManzana($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], self::$idLiqGlobal);
                             break;
                         case EntityTypeEnum::Edificio :
-                            $cantUF = Diccionario::GetValue("CANT_UF_EDIFICIO");
-                            self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"] / $cantUF, self::$idLiqGlobal);
+                            self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], self::$idLiqGlobal);
                             break;
                         case EntityTypeEnum::UnidadFuncional :
-                            $uf = Funciones::GetOne($arrRelacionesGastos[0]["numero"],"UF");
-                            self::ApplyExpenseToUF($uf, $arrGastosLiq[$i]["monto"], self::$idLiqGlobal);
+                            self::ApplyExpenseToUF($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], self::$idLiqGlobal);
                             break;
                     }
                 }
-                else // Else: el gasto está relacionado con varias manzanas. Aplicar calculo de coeficiente.
+                else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Calcular porcentaje de c/ manzana.
                 {
                     // Extraigo solo el idManzana de las relaciones de cada gasto.
                     $arrManzanas = array_map(function($var) { return $var['numero']; }, $arrRelacionesGastos);
                     
-                    $arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);                    
-                    
                     // Proceso el gasto por cada manzana relacionada.
+                    $arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);                    
                     foreach ($arrCoefManzanas as $idManzana => $coefManzana){
                         // Calculo la porción de gasto aplicable a cada manzana.
                         $montoGastoManzana = (Helper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
@@ -186,7 +205,8 @@ class LiquidacionUfApi{
                 }
             }
             self::UpdateLiquidacionesUF();
-            LiquidacionesGlobales::ChangeState(self::$idLiqGlobal, LiqGlobalStatesEnum::Cerrada);
+            self::CloseLiquidacionGlobal();
+        
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
             
