@@ -21,8 +21,8 @@ class Funciones{
 	}
 
 	public static function GetAll($entityName){
-    	$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-	    $consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		$consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
 		$consulta->execute();		
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
@@ -48,7 +48,7 @@ class Funciones{
 		$result->total_rows = $output->total_rows;
 		$result->data = $arrResult;
 		
- 		return $result;					
+		return $result;					
 	}
 	
 	public static function GetOne($idParametro,$entityName){	
@@ -111,14 +111,15 @@ class Funciones{
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}
-   
+	
 	public static function DeleteOne($idParametro,$entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . $entityName ." WHERE id=:id");	
-        $consulta->bindValue(':id',$idParametro, PDO::PARAM_INT);		
+		$consulta->bindValue(':id',$idParametro, PDO::PARAM_INT);		
 		$consulta->execute();
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 }//Class
+
