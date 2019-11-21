@@ -17,7 +17,6 @@ class LiquidacionUfApi{
 	private static $arrLiquidacionUF = array();
 	private static $idLiqGlobal;
 	
-
 	/**
 	 * Cierra la liquidación global procesada en el request. Modifica el campo codEstado y setea la fecha de emisión.
 	 */
@@ -64,7 +63,6 @@ class LiquidacionUfApi{
 
 	/**
 	 * Genera una nueva liquidacionUF en la BD. Devuelve el objeto generado.
-	 * Recibe por parámetro una instancia de la clase UF.
 	 */
 	private static function NewLiquidacionUF($uf){
 		$liquidacionUF = new LiquidacionesUF();
@@ -87,7 +85,6 @@ class LiquidacionUfApi{
 	 */
 	private static function UpdateLiquidacionesUF(){
 		foreach(self::$arrLiquidacionUF as $liquidacionUF){
-			//todo: chequear contrato y actualizar monto y saldo si aplica.
 			$liquidacionUF->saldo = $liquidacionUF->monto;
 			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
 			
@@ -98,7 +95,6 @@ class LiquidacionUfApi{
 
 	/**
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
-	 * Recibe por parámetro un objeto liquidacionUF.
 	 */
 	private static function SetCtaCteAndGetId($liquidacionUF){
 		// Obtengo el periodo a liquidar de la liquidacion global.
@@ -156,14 +152,30 @@ class LiquidacionUfApi{
 	/**
 	 * Guarda el gasto en la bd y acumula el monto del gasto en la liquidacionuf correspondiente.
 	 */
-	private static function SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idLiquidacionGlobal){
-		self::InsertGastoUF($uf, $montoGastoUF, $idLiquidacionGlobal);
+	private static function SaveGastoAndAccumulateAmount($uf, $montoGasto, $idLiquidacionGlobal){
+		$monto = Helper::NumFormat($montoGasto);
+		self::InsertGastoUF($uf, $monto, $idLiquidacionGlobal);
 		foreach (self::$arrLiquidacionUF as $liquidacionuf){
 			if($liquidacionuf->idUF == $uf['id']){
-				$liquidacionuf->monto += $montoGastoUF;
+				$liquidacionuf->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Verifica la situación del contrato de la UF y aplica recargos cuando corresponda.
+	 */
+	private static function CheckContractTax($uf, $montoGasto){
+		if($uf->codAlquila == RentalContractEnum::InquilinoSinContrato)
+		{
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
+			$montoGasto += ($montoGasto * $tax) / 100;
+		}elseif($uf->codAlquila == RentalContractEnum::InquilinoConContrato){
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinConContrato));
+			$montoGasto += ($montoGasto * $tax) / 100;
+		}		
+		return $montoGasto;
 	}
 
 	/**
@@ -176,6 +188,8 @@ class LiquidacionUfApi{
 			$objetoAccesoDato->beginTransaction();
 					   
 			self::$idLiqGlobal = $request->getParsedBody()[0];
+			If(!LiquidacionesGlobales::IsOpen(self::$idLiqGlobal))
+				throw new Exception("La liquidación ya se encuentra cerrada.");
 
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
 			for($i = 0; $i < sizeof($arrGastosLiq); $i++){

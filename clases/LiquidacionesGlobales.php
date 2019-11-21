@@ -1,6 +1,7 @@
 <?php
 
 require_once "AccesoDatos.php";
+require_once "LiqGlobalStatesEnum.php";
 require_once "_FuncionesEntidades.php";
 
 class LiquidacionesGlobales{
@@ -60,5 +61,13 @@ class LiquidacionesGlobales{
 			
 		return $consulta->rowCount() > 0 ? true : false;						
 	}
-    
+	
+	/**	
+	 * Verifica si una liquidación global está en estado "abierta".
+	 */
+	private static function IsOpen($idLiqGlobal){
+		$liquidacionGlobal = Funciones::GetOne($idLiqGlobal, "LiquidacionesGlobales");
+		return $liquidacionGlobal->codEstado == LiqGlobalStatesEnum::Abierta;
+	}
+
 }//class
