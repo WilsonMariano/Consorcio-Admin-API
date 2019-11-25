@@ -167,15 +167,13 @@ class LiquidacionUfApi{
 	 * Verifica la situación del contrato de la UF y aplica recargos cuando corresponda.
 	 */
 	private static function CheckContractTax($uf, $montoGasto){
-		if($uf->codAlquila == RentalContractEnum::InquilinoSinContrato)
-		{
+		$tax = 0;
+		if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
 			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
-			$montoGasto += ($montoGasto * $tax) / 100;
-		}elseif($uf->codAlquila == RentalContractEnum::InquilinoConContrato){
-			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinConContrato));
-			$montoGasto += ($montoGasto * $tax) / 100;
-		}		
-		return $montoGasto;
+		elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
+
+		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
 
 	/**

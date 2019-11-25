@@ -2,6 +2,7 @@
 
 include_once __DIR__ . '/../LiquidacionesGlobales.php';
 include_once __DIR__ . '/../Diccionario.php';
+include_once __DIR__ . '/../Feriados.php';
 
 class LiquidacionGlobalApi{
     
@@ -10,9 +11,9 @@ class LiquidacionGlobalApi{
         return !LiquidacionesGlobales::GetByPeriod($liquidacionGbl->mes, $liquidacionGbl->anio);
     }
 
-    private static function IsHoliday($dia){
-        //TODO :  validar feriados
-        return false;
+    private static function IsHoliday($fecha){
+        $fecha = DateTime::createFromFormat("Y-m-d", $fecha);
+        return Feriados::IsInamovible($fecha) || Feriados::IsOptativo($fecha);
     }
 
     private static function GetExpirationDates($liquidacionGbl){

@@ -6,13 +6,14 @@ include_once __DIR__ . '/../RelacionesGastos.php';
 
 class GastoLiquidacionApi{
 
-    /** todo: Agregar validaciones */
+    /**
+     * Valida que la liquidacion global exista en la bd.
+     */
     private static function IsValid($gasto){
-
-        if(Funciones::GetOne($gasto->idLiquidacionGlobal, "LiquidacionesGlobales")) 
-            return true;
-        else
+        if(!Funciones::GetOne($gasto->idLiquidacionGlobal, "LiquidacionesGlobales")) 
             throw new Exception("La liquidación global ingresada no existe.");
+
+        return true;
     }
 
     public static function Insert($request, $response, $args){
@@ -20,7 +21,6 @@ class GastoLiquidacionApi{
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
             $objetoAccesoDato->beginTransaction();
             
-            // Proceso los datos recibidos por body
             $arrGastos = $request->getParsedBody();
                   
             for($i = 0; $i < sizeof($arrGastos); $i++){
@@ -31,7 +31,7 @@ class GastoLiquidacionApi{
                         for($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++){
                             $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);
                             $relacion->idGastosLiquidaciones = $gasto->id;
-                            if(!Funciones::InsertOne($relacion))                       
+                            if(!RelacionesGastos::IsValid($relacion) || !Funciones::InsertOne($relacion))                       
                                 throw new Exception("No se pudieron guardar las relaciones de los gastos correctamente.");
                         }
                     }else{

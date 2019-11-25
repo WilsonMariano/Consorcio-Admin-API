@@ -11,7 +11,7 @@ class UFApi{
         $objUF = new UF($apiParams);
    
         //Valido que el id no esté duplicado antes de insertar
-        if(!Funciones::IsDuplicated($objUF))
+        if(!UF::IsDuplicated($objUF->nroUF))
             if(Funciones::InsertOne($objUF, true))
                 return $response->withJson(true, 200);
             else
@@ -23,7 +23,7 @@ class UFApi{
 	public static function ValidateBuilding ($request, $response, $args){
         $apiParams = $request->getQueryParams();
 
-        $objEntidad = UF::ValidateBuilding($apiParams["edificio"]);
+        $objEntidad = UF::GetByEdificio($apiParams["edificio"]);
         
         if($objEntidad)
             return $response->withJson(true, 200); 
