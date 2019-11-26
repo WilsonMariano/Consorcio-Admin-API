@@ -106,7 +106,7 @@ class LiquidacionUfApi{
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
 		$ctaCte->monto = $liquidacionUF->monto;
 		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->idUF) ?? 0);
-		$ctaCte->saldo = $saldoActual + $liquidacionUF->monto;
+		$ctaCte->saldo = $saldoActual - $liquidacionUF->monto;
 		
 		$newId =  CtasCtes::Insert($ctaCte);
 		if($newId < 1)
