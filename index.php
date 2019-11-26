@@ -51,12 +51,36 @@
 	// ********************  FUNCIONES AGRUPADAS POR ENTIDAD ***************************
 	// *********************************************************************************
 
-	$app->group('/usuarios', function () {
-		$this->post('/login[/]', \UsuarioApi::class . ':Login');      
-	});
-
 	$app->group('/adherentes', function () {
 		$this->post('/insert[/]', \AdherenteApi::class . ':Insert');      
+	});
+
+	$app->group('/concepto-gasto', function () {
+		$this->get('/one[/]'     , \ConceptoGastoApi::class . ':GetOne'); 
+		$this->post('/insert[/]' , \ConceptoGastoApi::class . ':Insert');      
+	});
+
+	$app->group('/ctas-ctes', function () {
+		$this->post('/payment[/]' , \CtasCtesApi::class . ':ProcessPayment');      
+		$this->post('/creditNote[/]' , \CtasCtesApi::class . ':CreditNote');      
+	});
+
+	$app->group('/diccionario', function () {
+		$this->get('/getValue[/]', \DiccionarioApi::class . ':GetValue');          
+		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
+	});
+
+	$app->group('/gastosLiquidaciones', function () {
+		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
+		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
+	});
+
+	$app->group('/liquidacion-gbl', function () {
+		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
+	});
+
+	$app->group('/liquidacion-uf', function () {
+		$this->post('/process[/]', \LiquidacionUfApi::class . ':ProcessExpenses');  
 	});
 
 	$app->group('/uf', function () {
@@ -64,27 +88,13 @@
 		$this->post('/insert[/]',  \UFApi::class . ':Insert');      
 	});
 	
-	$app->group('/concepto-gasto', function () {
-		$this->get('/one[/]'     , \ConceptoGastoApi::class . ':GetOne'); 
-		$this->post('/insert[/]' , \ConceptoGastoApi::class . ':Insert');      
+	$app->group('/usuarios', function () {
+		$this->post('/login[/]', \UsuarioApi::class . ':Login');      
 	});
 
-	$app->group('/liquidacion-gbl', function () {
-		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
-	});
+	$app->get('/pdf', function (Request $request, Response $response, array $args) {
 
-	$app->group('/diccionario', function () {
-		$this->get('/getValue[/]', \DiccionarioApi::class . ':GetValue');          
-		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
-	});
-	
-	$app->group('/gastosLiquidaciones', function () {
-		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
-		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
-	});
-
-	$app->group('/liquidacion-uf', function () {
-		$this->post('/process[/]', \LiquidacionUfApi::class . ':ProcessExpenses');  
+		PdfGenerator::generateRecibo($response);
 	});
 
 	$app->get('/phpinfo', function (Request $request, Response $response, array $args) {
@@ -92,9 +102,5 @@
 		return $response;
 	});
 
-	$app->get('/pdf', function (Request $request, Response $response, array $args) {
-
-		PdfGenerator::generateRecibo($response);
-	});
 
 	$app->run();

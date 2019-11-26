@@ -17,6 +17,18 @@ class LiquidacionUfApi{
 	private static $arrLiquidacionUF = array();
 	private static $idLiqGlobal;
 	
+	
+	/**	
+	 * Verifica si una liquidación global está en estado "abierta".
+	 */
+	private static function IsOpen($idLiqGlobal){
+		$liquidacionGlobal = Funciones::GetOne($idLiqGlobal, "LiquidacionesGlobales");
+		if($liquidacionGlobal)
+			return $liquidacionGlobal->codEstado == LiqGlobalStatesEnum::Abierta;
+		else 
+			throw new Exception("No se pudo encontrar la liquidacion informada. Reintente.");
+	}	
+
 	/**
 	 * Cierra la liquidación global procesada en el request. Modifica el campo codEstado y setea la fecha de emisión.
 	 */
@@ -104,7 +116,7 @@ class LiquidacionUfApi{
 		$ctaCte->idUF = $liquidacionUF->idUF;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
-		$ctaCte->monto = $liquidacionUF->monto;
+		$ctaCte->monto = $liquidacionUF->monto * -1;
 		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->idUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacionUF->monto;
 		
@@ -186,7 +198,7 @@ class LiquidacionUfApi{
 			$objetoAccesoDato->beginTransaction();
 					   
 			self::$idLiqGlobal = $request->getParsedBody()[0];
-			If(!LiquidacionesGlobales::IsOpen(self::$idLiqGlobal))
+			If(!self::IsOpen(self::$idLiqGlobal))
 				throw new Exception("La liquidación ya se encuentra cerrada.");
 
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);

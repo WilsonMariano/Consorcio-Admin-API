@@ -61,13 +61,5 @@ class LiquidacionesGlobales{
 			
 		return $consulta->rowCount() > 0 ? true : false;						
 	}
-	
-	/**	
-	 * Verifica si una liquidación global está en estado "abierta".
-	 */
-	public static function IsOpen($idLiqGlobal){
-		$liquidacionGlobal = Funciones::GetOne($idLiqGlobal, "LiquidacionesGlobales");
-		return $liquidacionGlobal->codEstado == LiqGlobalStatesEnum::Abierta;
-	}
 
 }//class

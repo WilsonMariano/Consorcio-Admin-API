@@ -60,11 +60,11 @@ class CtasCtes
 	public static function GetLastSaldo($idUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select  saldo from CtasCtes where idUF = :idUF order by id desc limit 1");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from CtasCtes where idUF = :idUF order by id desc limit 1");
 		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
-		return $consulta->fetch();
+		return $consulta->fetch()[0];
 	}
 
 }//class
