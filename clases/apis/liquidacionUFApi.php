@@ -97,7 +97,8 @@ class LiquidacionUfApi{
 	 */
 	private static function UpdateLiquidacionesUF(){
 		foreach(self::$arrLiquidacionUF as $liquidacionUF){
-			$liquidacionUF->saldo = $liquidacionUF->monto;
+			$liquidacionUF->saldo = $liquidacionUF->monto * -1;
+			$liquidacionUF->interes = 0;
 			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
 			
 			if(!Funciones::UpdateOne($liquidacionUF))
