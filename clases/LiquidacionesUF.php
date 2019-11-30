@@ -8,6 +8,7 @@ class LiquidacionesUF
 	public $id;
 	public $idLiquidacionGlobal;
 	public $idCtaCte;
+	public $idUF;
 	public $coeficiente;
 	public $interes;
 	public $monto;
@@ -20,6 +21,7 @@ class LiquidacionesUF
 			$this->id = $arrData['id'] ?? null;
 			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
 			$this->idCtaCte = $arrData['idCtaCte'];
+			$this->idUF = $arrData['idUF'];
 			$this->coeficiente = $arrData['coeficiente'];
 			$this->interes = $arrData['interes'] ?? null;
 			$this->monto = $arrData['monto'] ?? null;
@@ -38,6 +40,7 @@ class LiquidacionesUF
 		
 		$consulta->bindValue(':idLiquidacionGlobal'    ,$objEntidad->idLiquidacionGlobal  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idCtaCte'               ,$objEntidad->idCtaCte             ,\PDO::PARAM_INT);
+		$consulta->bindValue(':idUF'                   ,$objEntidad->idUF                 ,\PDO::PARAM_INT);
 		$consulta->bindValue(':coeficiente'            ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
 		$consulta->bindValue(':interes'          	   ,$objEntidad->interes       	      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'                  ,$objEntidad->monto 			      ,\PDO::PARAM_STR);
@@ -52,8 +55,8 @@ class LiquidacionesUF
 	public static function Insert($objEntidad){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, coeficiente, interes, monto, fechaRecalculo, saldo) 
-			values (:idLiquidacionGlobal, :idCtaCte, :coeficiente, :interes, :monto, :fechaRecalculo, :saldo)");
+		$consulta = $objetoAccesoDato->RetornarConsulta("insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, idUF, coeficiente, interes, monto, fechaRecalculo, saldo) 
+			values (:idLiquidacionGlobal, :idCtaCte, :idUF, :coeficiente, :interes, :monto, :fechaRecalculo, :saldo)");
 		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
 		$consulta->execute();
 

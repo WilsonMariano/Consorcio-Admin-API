@@ -1,6 +1,7 @@
 <?php
 
 require_once "AccesoDatos.php";
+require_once "enums/EntityTypeEnum.php";
 
 class RelacionesGastos{
 
@@ -37,7 +38,7 @@ class RelacionesGastos{
 	public static function DeleteAll($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("delete from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");	
-        $consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
+		$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
 		$consulta->execute();
 		
 		return $consulta->rowCount() > 0 ? true : false;
@@ -57,6 +58,23 @@ class RelacionesGastos{
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;	
+	}
+
+	/**
+	 * Valida que la entidad relacionada (edificio, manzana o uf segun corresponda) existan en la bd.
+	 */
+	public static function IsValid($relacion){
+		switch($relacion['entidad']){
+			case EntityTypeEnum::Manzana :
+				return Funciones::GetOne($relacion['numero'], "Manzanas");
+				break;
+			case EntityTypeEnum::Edificio :
+				return UF::GetByEdificio($relacion['numero']);
+				break;
+			case EntityTypeEnum::UnidadFuncional :
+				return UF::GetByNumero($relacion['numero']);	
+				break;
+		}
 	}
 
 }//class

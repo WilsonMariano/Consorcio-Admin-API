@@ -1,6 +1,7 @@
 <?php
 
 require_once "AccesoDatos.php";
+require_once "enums\LiqGlobalStatesEnum.php";
 require_once "_FuncionesEntidades.php";
 
 class LiquidacionesGlobales{
@@ -60,5 +61,5 @@ class LiquidacionesGlobales{
 			
 		return $consulta->rowCount() > 0 ? true : false;						
 	}
-    
+
 }//class
