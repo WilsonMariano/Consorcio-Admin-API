@@ -48,6 +48,7 @@ class LiquidacionUfApi{
 		$gastoUF->idLiquidacionUF = self::GetIdLiquidacionUF($uf);
 		$gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
 		$gastoUF->monto = $montoGastoUF;
+
 		if(!Funciones::InsertOne($gastoUF)){
 			throw new Exception("No se pudo guardar un gasto en la liquidación de la unidad funcional.");
 		}

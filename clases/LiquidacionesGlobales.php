@@ -1,7 +1,7 @@
 <?php
 
 require_once "AccesoDatos.php";
-require_once "enums\LiqGlobalStatesEnum.php";
+require_once __DIR__ . "/enums/LiqGlobalStatesEnum.php";
 require_once "_FuncionesEntidades.php";
 
 class LiquidacionesGlobales{
