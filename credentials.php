@@ -1,7 +1,7 @@
 <?php
 
-$environment = "prod";
-//$environment = "dev";
+// $environment = "prod";
+$environment = "dev";
 
 if($environment == "prod"){
 

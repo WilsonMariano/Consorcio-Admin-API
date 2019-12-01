@@ -10,10 +10,11 @@ class LiquidacionesUF
 	public $idCtaCte;
 	public $idUF;
 	public $coeficiente;
-	public $interes;
+	public $interesAcumulado;
+	public $saldoInteres;
 	public $monto;
+	public $saldoMonto;
 	public $fechaRecalculo;
-	public $saldo;
 
 	// Constructor customizado
 	public function __construct($arrData = null){
@@ -23,10 +24,14 @@ class LiquidacionesUF
 			$this->idCtaCte = $arrData['idCtaCte'];
 			$this->idUF = $arrData['idUF'];
 			$this->coeficiente = $arrData['coeficiente'];
-			$this->interes = $arrData['interes'] ?? null;
+			$this->interesAcumulado = $arrData['interesAcumulado'] ?? 0;
+			$this->saldoInteres = $arrData['saldoInteres'] ?? 0;
 			$this->monto = $arrData['monto'] ?? null;
+			$this->saldoMonto = $arrData['saldoMonto'] ?? null;
 			$this->fechaRecalculo = $arrData['fechaRecalculo'] ?? null;
-			$this->saldo = $arrData['saldo'] ?? null;
+		} else {
+			$this->interesAcumulado = 0;
+			$this->saldoInteres = 0;
 		}
 	}
 
@@ -42,10 +47,11 @@ class LiquidacionesUF
 		$consulta->bindValue(':idCtaCte'               ,$objEntidad->idCtaCte             ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idUF'                   ,$objEntidad->idUF                 ,\PDO::PARAM_INT);
 		$consulta->bindValue(':coeficiente'            ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
-		$consulta->bindValue(':interes'          	   ,$objEntidad->interes       	      ,\PDO::PARAM_STR);
+		$consulta->bindValue(':interesAcumulado'   	   ,$objEntidad->interesAcumulado     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':saldoInteres'           ,$objEntidad->saldoInteres         ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'                  ,$objEntidad->monto 			      ,\PDO::PARAM_STR);
+		$consulta->bindValue(':saldoMonto'             ,$objEntidad->saldoMonto       	  ,\PDO::PARAM_STR);
 		$consulta->bindValue(':fechaRecalculo'         ,$objEntidad->fechaRecalculo       ,\PDO::PARAM_STR);
-		$consulta->bindValue(':saldo'                  ,$objEntidad->saldo       		  ,\PDO::PARAM_STR);
 	}
 
 	/**
@@ -55,8 +61,9 @@ class LiquidacionesUF
 	public static function Insert($objEntidad){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, idUF, coeficiente, interes, monto, fechaRecalculo, saldo) 
-			values (:idLiquidacionGlobal, :idCtaCte, :idUF, :coeficiente, :interes, :monto, :fechaRecalculo, :saldo)");
+		$consulta = $objetoAccesoDato->RetornarConsulta(
+			"insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, idUF, coeficiente, interesAcumulado, saldoInteres, monto, saldoMonto, fechaRecalculo) 
+			values (:idLiquidacionGlobal, :idCtaCte, :idUF, :coeficiente, :interesAcumulado, :saldoInteres, :monto, :saldoMonto, :fechaRecalculo)");
 		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
 		$consulta->execute();
 
