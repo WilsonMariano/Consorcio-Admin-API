@@ -34,8 +34,8 @@ class Manzanas{
 	}
 
 	/**
-	 * Calcula el porcentaje de gasto que le corresponde a cada una de las manzanas recibidas. Devuelve un array con la estructura [idManzana] = [coeficiente].
-	 * Recibe por parámetro un array con los idManzana para los cuales calculará el coeficiente.
+	 * Calcula el porcentaje de gasto que le corresponde a cada una de las manzanas recibidas. Devuelve un array con la estructura [nroManzana] = [coeficiente].
+	 * Recibe por parámetro un array con los nroManzana para los cuales calculará el coeficiente.
 	 */
 	public static function GetPorcentajes($arrManzanas){
 		//Traigo todas las manzanas
@@ -45,19 +45,19 @@ class Manzanas{
 			$totalMts = 0;
 			$result = new \stdClass();
 			// Burbujeo para armar el result(preliminar) y tambien calcular el total de mts cuadrados entre todas las manzanas recibidas por param
-			foreach ($arrManzanas as $idManzana) {
+			foreach ($arrManzanas as $nroManzana) {
 				foreach ($manzanas as $manzana) {
-					if($idManzana == $manzana['id']) {
-						$result->$idManzana = Helper::NumFormat($manzana['mtsCuadrados']);
+					if($nroManzana == $manzana['id']) {
+						$result->$nroManzana = Helper::NumFormat($manzana['mtsCuadrados']);
 						$totalMts += Helper::NumFormat($manzana['mtsCuadrados']);
 						break;
 					}
 				}	
 			}
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
-			foreach ($arrManzanas as $idManzana) {
-				$valor =  (Helper::NumFormat($result->$idManzana) * 100) / Helper::NumFormat($totalMts);
-				$result->$idManzana =  Helper::NumFormat($valor, 0);
+			foreach ($arrManzanas as $nroManzana) {
+				$valor =  (Helper::NumFormat($result->$nroManzana) * 100) / Helper::NumFormat($totalMts);
+				$result->$nroManzana =  Helper::NumFormat($valor, 0);
 			}
 			return $result;
 		}else{

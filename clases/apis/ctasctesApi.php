@@ -18,11 +18,11 @@ class CtasCtesApi{
         $uf = UF::GetByNumero($apiParams['nroUF']);
         if($uf){
             $ctaCte = new CtasCtes();
-            $ctaCte->idUF = $uf['id'];
+            $ctaCte->nroUF = $uf['nroUF'];
             $ctaCte->fecha = date("Y-m-d");
             $ctaCte->descripcion = "NOTA DE CREDITO";
             $ctaCte->monto = $apiParams['monto'];
-            $saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($uf['id']) ?? 0);
+            $saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($uf['nroUF']) ?? 0);
             $ctaCte->saldo = $saldoActual + Helper::NumFormat($apiParams['monto']);
 
             $newId =  CtasCtes::Insert($ctaCte);

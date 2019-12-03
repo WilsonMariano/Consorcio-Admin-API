@@ -48,7 +48,7 @@ class LiquidacionUfApi{
 		// Además aseguramos que se genere una única LiqUF por cada UF.
 		if(!is_null(self::$arrLiquidacionUF)){
 			foreach (self::$arrLiquidacionUF as $liquidacionUF){
-				if($liquidacionUF->idUF == $uf['id']){
+				if($liquidacionUF->nroUF == $uf['nroUF']){
 					return $liquidacionUF->id;
 				}
 			}
@@ -65,7 +65,7 @@ class LiquidacionUfApi{
 	private static function NewLiquidacionUF($uf){
 		$liquidacionUF = new LiquidacionesUF();
 		$liquidacionUF->idLiquidacionGlobal = self::$idLiqGlobal;
-		$liquidacionUF->idUF = $uf['id'];
+		$liquidacionUF->nroUF = $uf['nroUF'];
 		$liquidacionUF->coeficiente = $uf['coeficiente'];
 
 		$newId = LiquidacionesUF::Insert($liquidacionUF);
@@ -99,11 +99,11 @@ class LiquidacionUfApi{
 		$liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
 		$ctaCte = new CtasCtes();
-		$ctaCte->idUF = $liquidacionUF->idUF;
+		$ctaCte->nroUF = $liquidacionUF->nroUF;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
 		$ctaCte->monto = $liquidacionUF->monto * -1;
-		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->idUF) ?? 0);
+		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->nroUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacionUF->monto;
 		
 		$newId =  CtasCtes::Insert($ctaCte);
@@ -117,8 +117,8 @@ class LiquidacionUfApi{
 	 * Aplica un gasto a una unidad funcional.
 	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
-	private static function ApplyExpenseToUF($idUf, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::FetchOne($idUf);
+	private static function ApplyExpenseToUF($nroUF, $montoGasto, $idGastoLiquidacion){
+		$uf = UF::FetchOne($nroUF);
 		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
@@ -139,8 +139,8 @@ class LiquidacionUfApi{
 	 * Aplica un gasto a todas las unidades funcionales de una manzana.
 	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idGastoLiquidacion){
-		$arrUF = UF::GetByManzana($idManzana);				  
+	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
+		$arrUF = UF::GetByManzana($nroManzana);				  
 		foreach ($arrUF as $uf){
 			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
@@ -154,7 +154,7 @@ class LiquidacionUfApi{
 		$monto = Helper::NumFormat($montoGasto);
 		self::InsertGastoUF($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidacionUF as $liquidacionuf){
-			if($liquidacionuf->idUF == $uf['id']){
+			if($liquidacionuf->nroUF == $uf['nroUF']){
 				$liquidacionuf->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
@@ -221,15 +221,15 @@ class LiquidacionUfApi{
 				}
 				else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Calcular porcentaje de c/ manzana.
 				{
-					// Extraigo solo el idManzana de las relaciones de cada gasto.
+					// Extraigo solo el nroManzana de las relaciones de cada gasto.
 					$arrManzanas = array_map(function($var) { return $var['numero']; }, $arrRelacionesGastos);
 					
 					// Proceso el gasto por cada manzana relacionada.
 					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);					
-					foreach ($arrCoefManzanas as $idManzana => $coefManzana){
+					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
 						$montoGastoManzana = (Helper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
-						self::ApplyExpenseToManzana($idManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
+						self::ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
 					}
 				}
 			}

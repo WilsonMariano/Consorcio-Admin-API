@@ -6,7 +6,7 @@ class CtasCtes
 {
 	//Atributos
 	public $id;
-	public $idUF;
+	public $nroUF;
 	public $fecha;
 	public $descripcion;
 	public $monto;
@@ -16,7 +16,7 @@ class CtasCtes
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData["id"] ?? null;
-			$this->idUF = $arrData["idUF"];
+			$this->nroUF = $arrData["nroUF"];
 			$this->fecha = $arrData["fecha"];
 			$this->descripcion = $arrData["descripcion"] ?? null;
 			$this->monto = $arrData["monto"];
@@ -31,7 +31,7 @@ class CtasCtes
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idUF'        ,$objEntidad->idUF         ,\PDO::PARAM_INT);
+		$consulta->bindValue(':nroUF'        ,$objEntidad->nroUF         ,\PDO::PARAM_INT);
 		$consulta->bindValue(':fecha'       ,$objEntidad->fecha        ,\PDO::PARAM_STR);
 		$consulta->bindValue(':descripcion' ,$objEntidad->descripcion  ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'       ,$objEntidad->monto        ,\PDO::PARAM_STR);
@@ -45,8 +45,8 @@ class CtasCtes
 	public static function Insert($objEntidad){
  		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("insert into CtasCtes (idUF, fecha, descripcion, monto, saldo) 
-			values (:idUF, :fecha, :descripcion, :monto, :saldo)");
+		$consulta = $objetoAccesoDato->RetornarConsulta("insert into CtasCtes (nroUF, fecha, descripcion, monto, saldo) 
+			values (:nroUF, :fecha, :descripcion, :monto, :saldo)");
 		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
 		$consulta->execute();
 
@@ -57,11 +57,11 @@ class CtasCtes
 	 * Devuelve el ultimo saldo calculado para una CtaCte.
 	 * Recibe por parámetro el id de la unidad funcional
 	 */
-	public static function GetLastSaldo($idUF){
+	public static function GetLastSaldo($nroUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from CtasCtes where idUF = :idUF order by id desc limit 1");
-		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
+		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from CtasCtes where nroUF = :nroUF order by id desc limit 1");
+		$consulta->bindValue(':nroUF' , $nroUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
 		return $consulta->fetch()[0];
