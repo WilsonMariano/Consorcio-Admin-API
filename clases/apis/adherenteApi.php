@@ -11,7 +11,7 @@ class AdherenteApi{
         $objAdherente = new Adherentes($apiParams);
 
         //Valido que el id no esté duplicado antes de insertar
-        if(!Funciones::IsDuplicated($objAdherente))
+        if(!Funciones::IsDuplicated($objAdherente, "nroAdherente"))
             if(Funciones::InsertOne($objAdherente, true))
                 return $response->withJson(true, 200);
             else
