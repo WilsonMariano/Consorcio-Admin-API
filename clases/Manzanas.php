@@ -69,4 +69,15 @@ class Manzanas{
 		}
 	}
 
+	public static function GetByNumero($nroManzana){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Manzanas where nroManzana= :nroManzana");
+		$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
+		$consulta->execute();
+		$objEntidad= $consulta->fetchObject("Manzanas");
+
+		return $objEntidad;		
+	}
+
 }//class

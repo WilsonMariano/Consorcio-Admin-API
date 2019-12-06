@@ -10,7 +10,7 @@ class CtasCtesApi{
     }
 
     /**
-     * Genera un movimiento a favor del cliente, como si se hubiera generado una nota de crédito.
+     * Genera un movimiento a favor del cliente, simulando una nota de crédito.
      */
 	public static function CreditNote($request, $response, $args){
         $apiParams = $request->getParsedBody();

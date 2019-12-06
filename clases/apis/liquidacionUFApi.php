@@ -118,7 +118,7 @@ class LiquidacionUfApi{
 	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
 	private static function ApplyExpenseToUF($nroUF, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::FetchOne($nroUF);
+		$uf = UF::GetByNumero($nroUF);
 		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
@@ -127,7 +127,7 @@ class LiquidacionUfApi{
 	 * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
 	private static function ApplyExpenseToEdificio($nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
-		$cantUF = Diccionario::GetValue("CANT_UF_EDIFICIO");
+		$cantUF = Edificios::GetOne($nroEdificio)->cantUF;
 		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
 
 		$arrUF = UF::GetByEdificio($nroEdificio);				  
@@ -209,20 +209,20 @@ class LiquidacionUfApi{
 					// Si hay solo una relacion , aplico calculo según tipo entidad.
 					switch ($arrRelacionesGastos[0]["entidad"]) {
 						case EntityTypeEnum::Manzana :
-							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::Edificio :
-							self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::UnidadFuncional :
-							self::ApplyExpenseToUF($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToUF($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 					}
 				}
 				else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Calcular porcentaje de c/ manzana.
 				{
 					// Extraigo solo el nroManzana de las relaciones de cada gasto.
-					$arrManzanas = array_map(function($var) { return $var['numero']; }, $arrRelacionesGastos);
+					$arrManzanas = array_map(function($var) { return $var['nroEntidad']; }, $arrRelacionesGastos);
 					
 					// Proceso el gasto por cada manzana relacionada.
 					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);					

@@ -91,17 +91,6 @@ class UF{
 		return $arrObjEntidad;					
 	}
 
-	public static function FetchOne($nroUF){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroUF =:nroUF");
-		$consulta->bindValue(':nroUF', $nroUF , PDO::PARAM_INT);
-		$consulta->execute();
-		$arrObjEntidad= $consulta->fetch(PDO::FETCH_ASSOC);	
-		
-		return $arrObjEntidad;					
-	}
-
 	public static function IsDuplicated($nroUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
