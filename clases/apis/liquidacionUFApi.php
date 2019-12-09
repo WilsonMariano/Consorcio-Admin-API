@@ -48,7 +48,7 @@ class LiquidacionUfApi{
 		// Además aseguramos que se genere una única LiqUF por cada UF.
 		if(!is_null(self::$arrLiquidacionUF)){
 			foreach (self::$arrLiquidacionUF as $liquidacionUF){
-				if($liquidacionUF->nroUF == $uf['nroUF']){
+				if($liquidacionUF->nroManzana == $uf['nroManzana'] && $liquidacionUF->nroUF == $uf['nroUF']){
 					return $liquidacionUF->id;
 				}
 			}
@@ -65,6 +65,7 @@ class LiquidacionUfApi{
 	private static function NewLiquidacionUF($uf){
 		$liquidacionUF = new LiquidacionesUF();
 		$liquidacionUF->idLiquidacionGlobal = self::$idLiqGlobal;
+		$liquidacionUF->nroManzana = $uf['nroManzana'];
 		$liquidacionUF->nroUF = $uf['nroUF'];
 		$liquidacionUF->coeficiente = $uf['coeficiente'];
 
@@ -114,28 +115,6 @@ class LiquidacionUfApi{
 	}
 
 	/**
-	 * Aplica un gasto a una unidad funcional.
-	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
-	 */
-	private static function ApplyExpenseToUF($nroUF, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::GetByNumero($nroUF);
-		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
-	}
-
-	/**
-	 * Aplica un gasto a todas las unidades funcionales de un edificio.
-	 * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
-	 */
-	private static function ApplyExpenseToEdificio($nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
-		$cantUF = Edificios::GetOne($nroEdificio)->cantUF;
-		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
-
-		$arrUF = UF::GetByEdificio($nroEdificio);				  
-		foreach ($arrUF as $uf)
-			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
-	}
-
-	/**
 	 * Aplica un gasto a todas las unidades funcionales de una manzana.
 	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
@@ -145,6 +124,28 @@ class LiquidacionUfApi{
 			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 		}
+	}
+
+	/**
+	 * Aplica un gasto a todas las unidades funcionales de un edificio.
+	 * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
+	 */
+	private static function ApplyExpenseToEdificio($nroManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
+		$cantUF = Edificios::GetOne($nroManzana, $nroEdificio)->cantUF;
+		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
+
+		$arrUF = UF::GetByEdificio($nroManzana, $nroEdificio);				  
+		foreach ($arrUF as $uf)
+			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
+	}
+
+	/**
+	 * Aplica un gasto a una unidad funcional.
+	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
+	 */
+	private static function ApplyExpenseToUF($nroManzana, $nroUF, $montoGasto, $idGastoLiquidacion){
+		$uf = UF::GetByNumero($nroManzana, $nroUF);
+		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
 	/**
@@ -181,10 +182,10 @@ class LiquidacionUfApi{
 	 */
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
-		// if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
-		// 	$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
-		// elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
-		// 	$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
+		if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
+		elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
@@ -212,10 +213,12 @@ class LiquidacionUfApi{
 							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::Edificio :
-							self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToEdificio(
+								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::UnidadFuncional :
-							self::ApplyExpenseToUF($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToUF(
+								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 					}
 				}

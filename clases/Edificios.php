@@ -32,10 +32,11 @@ class Edificios{
 		$consulta->bindValue(':cantUF'     , $objEntidad->cantUF     , \PDO::PARAM_INT);
 	}
 
-	public static function GetOne($nroEdificio){
+	public static function GetOne($nroManzana, $nroEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Edificios where nroEdificio = :nroEdificio");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Edificios where nroManzana = :nroManzana and nroEdificio = :nroEdificio");
+		$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
 		$consulta->bindValue(':nroEdificio' , $nroEdificio, \PDO::PARAM_INT);	
 		$consulta->execute();
 		$objEntidad= $consulta->fetchObject('Edificios');

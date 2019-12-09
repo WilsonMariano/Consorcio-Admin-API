@@ -66,10 +66,12 @@ class UF{
 	 * Devuelve un array de objetos UF, buscando por el número de edificio al cual pertenecen.
 	 * Recibe por parámetro un número de edificio que se preasume válido.
 	 */
-	public static function GetByEdificio($nroEdificio){
+	public static function GetByEdificio($nroManzana, $nroEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroEdificio =:nroEdificio");
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"select * from UF where nroManzana = :nroManzana and nroEdificio =:nroEdificio");
+		$consulta->bindValue(':nroManzana', $nroManzana , PDO::PARAM_INT);
 		$consulta->bindValue(':nroEdificio', $nroEdificio , PDO::PARAM_INT);
 		$consulta->execute();
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
@@ -80,10 +82,12 @@ class UF{
 	/**
 	 * Devuelve un objeto UF buscando por el campo nroUF
 	 */
-	public static function GetByNumero($nroUF){
+	public static function GetByNumero($nroManzana, $nroUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroUF =:nroUF");
+		$consulta =$objetoAccesoDato->RetornarConsulta(
+			"select * from UF where nroManzana = :nroManzana and nroUF =:nroUF");
+		$consulta->bindValue(':nroManzana', $nroManzana , PDO::PARAM_INT);
 		$consulta->bindValue(':nroUF', $nroUF , PDO::PARAM_INT);
 		$consulta->execute();
 		$arrObjEntidad= $consulta->fetch(PDO::FETCH_ASSOC);	
