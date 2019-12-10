@@ -61,7 +61,7 @@ class Manzanas{
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 			foreach ($arrManzanas as $nroManzana) {
 				$valor =  (Helper::NumFormat($result->$nroManzana) * 100) / Helper::NumFormat($totalMts);
-				$result->$nroManzana =  Helper::NumFormat($valor, 0);
+				$result->$nroManzana =  Helper::NumFormat($valor);
 			}
 			return $result;
 		}else{

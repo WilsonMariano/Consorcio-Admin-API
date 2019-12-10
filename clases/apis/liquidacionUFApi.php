@@ -83,6 +83,7 @@ class LiquidacionUfApi{
 	 * Utiliza los array de clase que contienen las liquidacionesUF y sus montos.
 	 */
 	private static function UpdateLiquidacionesUF(){
+
 		foreach(self::$arrLiquidacionUF as $liquidacionUF){
 			$liquidacionUF->saldoMonto = $liquidacionUF->monto * -1;
 			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
@@ -119,7 +120,8 @@ class LiquidacionUfApi{
 	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
 	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
-		$arrUF = UF::GetByManzana($nroManzana);				  
+		$arrUF = UF::GetByManzana($nroManzana);			
+	
 		foreach ($arrUF as $uf){
 			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
@@ -155,7 +157,7 @@ class LiquidacionUfApi{
 		$monto = Helper::NumFormat($montoGasto);
 		self::InsertGastoUF($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidacionUF as $liquidacionuf){
-			if($liquidacionuf->nroUF == $uf['nroUF']){
+			if($liquidacionuf->nroManzana == $uf['nroManzana'] && $liquidacionuf->nroUF == $uf['nroUF']){
 				$liquidacionuf->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
@@ -228,7 +230,8 @@ class LiquidacionUfApi{
 					$arrManzanas = array_map(function($var) { return $var['nroEntidad']; }, $arrRelacionesGastos);
 					
 					// Proceso el gasto por cada manzana relacionada.
-					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);					
+					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);	
+					
 					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
 						$montoGastoManzana = (Helper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
