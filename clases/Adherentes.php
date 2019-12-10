@@ -7,6 +7,7 @@ class Adherentes
 
 	//Atributos
 	public $id;
+	public $nroAdherente;
 	public $nombre;
 	public $apellido;
 	public $nroDocumento;
@@ -17,6 +18,7 @@ class Adherentes
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData["id"] ?? null;
+			$this->nroAdherente = $arrData["nroAdherente"];
 			$this->nombre = $arrData["nombre"];
 			$this->apellido = $arrData["apellido"];
 			$this->nroDocumento = $arrData["nroDocumento"];
@@ -33,6 +35,7 @@ class Adherentes
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
+		$consulta->bindValue(':nroAdherente' ,$objEntidad->nroAdherente  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':nombre'       ,$objEntidad->nombre        ,\PDO::PARAM_STR);
 		$consulta->bindValue(':apellido'     ,$objEntidad->apellido      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':nroDocumento' ,$objEntidad->nroDocumento  ,\PDO::PARAM_INT);

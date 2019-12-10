@@ -9,14 +9,16 @@ class RelacionesGastos{
 	public $id;
 	public $idGastosLiquidaciones;
 	public $entidad;
-	public $numero;
+	public $nroManzana;
+	public $nroEntidad;
 
 	//Constructor customizado
 	public function __construct($arrData){
 		$this->id = $arrData["id"] ?? null;
 		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"] ?? null;
 		$this->entidad = $arrData["entidad"] ?? null;
-		$this->numero = $arrData["numero"] ?? null;
+		$this->nroManzana = $arrData["nroManzana"] ?? null;
+		$this->nroEntidad = $arrData["nroEntidad"] ?? null;
 	}
 
 	/**
@@ -28,7 +30,8 @@ class RelacionesGastos{
 		
 		$consulta->bindValue(':idGastosLiquidaciones' ,$objEntidad->idGastosLiquidaciones ,\PDO::PARAM_INT);
 		$consulta->bindValue(':entidad'   	          ,$objEntidad->entidad	              ,\PDO::PARAM_STR);
-		$consulta->bindValue(':numero'	              ,$objEntidad->numero                ,\PDO::PARAM_INT);
+		$consulta->bindValue(':nroManzana'	          ,$objEntidad->nroManzana                ,\PDO::PARAM_INT);
+		$consulta->bindValue(':nroEntidad'	          ,$objEntidad->nroEntidad                ,\PDO::PARAM_INT);
 	}
 
 	/**
@@ -64,15 +67,15 @@ class RelacionesGastos{
 	 * Valida que la entidad relacionada (edificio, manzana o uf segun corresponda) existan en la bd.
 	 */
 	public static function IsValid($relacion){
-		switch($relacion['entidad']){
+		switch($relacion->entidad){
 			case EntityTypeEnum::Manzana :
-				return Funciones::GetOne($relacion['numero'], "Manzanas");
+				return Manzanas::GetByNumero($relacion->nroEntidad);
 				break;
 			case EntityTypeEnum::Edificio :
-				return UF::GetByEdificio($relacion['numero']);
+				return UF::GetByEdificio($relacion->nroEntidad);
 				break;
 			case EntityTypeEnum::UnidadFuncional :
-				return UF::GetByNumero($relacion['numero']);	
+				return UF::GetByNumero($relacion->nroEntidad);	
 				break;
 		}
 	}

@@ -9,12 +9,12 @@ class Funciones{
 		return new $entityName($apiParamsBody);
 	}
 
-	public static function IsDuplicated($entityObject){
+	public static function IsDuplicated($entityObject, $column = "id"){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$entityName = get_class($entityObject);		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
-		$consulta->bindValue(':id', $entityObject->id, PDO::PARAM_INT);
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where " . $column . "=:" . $column);
+		$consulta->bindValue(':' . $column, $entityObject->$column, PDO::PARAM_INT);
 		$consulta->execute();
 		
 		return $consulta->rowCount() > 0 ? true : false;

@@ -48,7 +48,7 @@ class LiquidacionUfApi{
 		// Además aseguramos que se genere una única LiqUF por cada UF.
 		if(!is_null(self::$arrLiquidacionUF)){
 			foreach (self::$arrLiquidacionUF as $liquidacionUF){
-				if($liquidacionUF->idUF == $uf['id']){
+				if($liquidacionUF->nroManzana == $uf['nroManzana'] && $liquidacionUF->nroUF == $uf['nroUF']){
 					return $liquidacionUF->id;
 				}
 			}
@@ -65,7 +65,8 @@ class LiquidacionUfApi{
 	private static function NewLiquidacionUF($uf){
 		$liquidacionUF = new LiquidacionesUF();
 		$liquidacionUF->idLiquidacionGlobal = self::$idLiqGlobal;
-		$liquidacionUF->idUF = $uf['id'];
+		$liquidacionUF->nroManzana = $uf['nroManzana'];
+		$liquidacionUF->nroUF = $uf['nroUF'];
 		$liquidacionUF->coeficiente = $uf['coeficiente'];
 
 		$newId = LiquidacionesUF::Insert($liquidacionUF);
@@ -82,6 +83,7 @@ class LiquidacionUfApi{
 	 * Utiliza los array de clase que contienen las liquidacionesUF y sus montos.
 	 */
 	private static function UpdateLiquidacionesUF(){
+
 		foreach(self::$arrLiquidacionUF as $liquidacionUF){
 			$liquidacionUF->saldoMonto = $liquidacionUF->monto * -1;
 			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
@@ -99,11 +101,11 @@ class LiquidacionUfApi{
 		$liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
 		$ctaCte = new CtasCtes();
-		$ctaCte->idUF = $liquidacionUF->idUF;
+		$ctaCte->nroUF = $liquidacionUF->nroUF;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
 		$ctaCte->monto = $liquidacionUF->monto * -1;
-		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->idUF) ?? 0);
+		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->nroUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacionUF->monto;
 		
 		$newId =  CtasCtes::Insert($ctaCte);
@@ -114,37 +116,38 @@ class LiquidacionUfApi{
 	}
 
 	/**
-	 * Aplica un gasto a una unidad funcional.
-	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
+	 * Aplica un gasto a todas las unidades funcionales de una manzana.
+	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToUF($idUf, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::FetchOne($idUf);
-		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
+	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
+		$arrUF = UF::GetByManzana($nroManzana);			
+	
+		foreach ($arrUF as $uf){
+			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
+			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
+		}
 	}
 
 	/**
 	 * Aplica un gasto a todas las unidades funcionales de un edificio.
 	 * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToEdificio($nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
-		$cantUF = Diccionario::GetValue("CANT_UF_EDIFICIO");
+	private static function ApplyExpenseToEdificio($nroManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
+		$cantUF = Edificios::GetOne($nroManzana, $nroEdificio)->cantUF;
 		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
 
-		$arrUF = UF::GetByEdificio($nroEdificio);				  
+		$arrUF = UF::GetByEdificio($nroManzana, $nroEdificio);				  
 		foreach ($arrUF as $uf)
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 	}
 
 	/**
-	 * Aplica un gasto a todas las unidades funcionales de una manzana.
-	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
+	 * Aplica un gasto a una unidad funcional.
+	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
-	private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idGastoLiquidacion){
-		$arrUF = UF::GetByManzana($idManzana);				  
-		foreach ($arrUF as $uf){
-			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
-			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
-		}
+	private static function ApplyExpenseToUF($nroManzana, $nroUF, $montoGasto, $idGastoLiquidacion){
+		$uf = UF::GetByNumero($nroManzana, $nroUF);
+		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
 	/**
@@ -154,7 +157,7 @@ class LiquidacionUfApi{
 		$monto = Helper::NumFormat($montoGasto);
 		self::InsertGastoUF($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidacionUF as $liquidacionuf){
-			if($liquidacionuf->idUF == $uf['id']){
+			if($liquidacionuf->nroManzana == $uf['nroManzana'] && $liquidacionuf->nroUF == $uf['nroUF']){
 				$liquidacionuf->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
@@ -181,10 +184,10 @@ class LiquidacionUfApi{
 	 */
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
-		// if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
-		// 	$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
-		// elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
-		// 	$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
+		if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
+		elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
@@ -209,27 +212,30 @@ class LiquidacionUfApi{
 					// Si hay solo una relacion , aplico calculo según tipo entidad.
 					switch ($arrRelacionesGastos[0]["entidad"]) {
 						case EntityTypeEnum::Manzana :
-							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::Edificio :
-							self::ApplyExpenseToEdificio($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToEdificio(
+								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::UnidadFuncional :
-							self::ApplyExpenseToUF($arrRelacionesGastos[0]["numero"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToUF(
+								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 					}
 				}
 				else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Calcular porcentaje de c/ manzana.
 				{
-					// Extraigo solo el idManzana de las relaciones de cada gasto.
-					$arrManzanas = array_map(function($var) { return $var['numero']; }, $arrRelacionesGastos);
+					// Extraigo solo el nroManzana de las relaciones de cada gasto.
+					$arrManzanas = array_map(function($var) { return $var['nroEntidad']; }, $arrRelacionesGastos);
 					
 					// Proceso el gasto por cada manzana relacionada.
-					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);					
-					foreach ($arrCoefManzanas as $idManzana => $coefManzana){
+					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);	
+					
+					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
 						$montoGastoManzana = (Helper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
-						self::ApplyExpenseToManzana($idManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
+						self::ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
 					}
 				}
 			}
