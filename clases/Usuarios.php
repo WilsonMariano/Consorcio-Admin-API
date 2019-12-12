@@ -8,6 +8,8 @@ class Usuarios{
 	public $id;
 	public $email;
 	public $password;
+	public $nombre;
+	public $apellido;
 
 
 	public function __construct($arrData = null){
@@ -15,6 +17,8 @@ class Usuarios{
 			$this->id = $arrData['id'] ?? null;
 			$this->email = $arrData['email'];
 			$this->password = $arrData['password'];
+			$this->nombre = $arrData['nombre'];
+			$this->apellido = $arrData['apellido'];
 		}
 	}
 
@@ -26,6 +30,8 @@ class Usuarios{
 		
 		$consulta->bindValue(':email'	 ,$objEntidad->email    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':password' ,$objEntidad->password ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nombre' ,$objEntidad->nombre ,\PDO::PARAM_STR);
+		$consulta->bindValue(':apellido' ,$objEntidad->apellido ,\PDO::PARAM_STR);
 	}
 
 
