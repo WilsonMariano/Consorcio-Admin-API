@@ -83,6 +83,7 @@ class LiquidacionUfApi{
 	 * Utiliza los array de clase que contienen las liquidacionesUF y sus montos.
 	 */
 	private static function UpdateLiquidacionesUF(){
+
 		foreach(self::$arrLiquidacionUF as $liquidacionUF){
 			$liquidacionUF->saldoMonto = $liquidacionUF->monto * -1;
 			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);

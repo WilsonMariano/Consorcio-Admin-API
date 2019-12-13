@@ -12,12 +12,7 @@ class Manzanas{
 	public $mtsCuadrados;
 	public $tipoVivienda;
 	public $nombreConsorcio;
-	public $secuencialRecibo;
-	public $fondoReserva;
-	public $fondoReservaAcum;
-	public $fondoPrevision;
-	public $fondoPrevisionAcum;
-	
+
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
@@ -25,11 +20,6 @@ class Manzanas{
 			$this->mtsCuadrados = $arrData['mtsCuadrados'];
 			$this->tipoVivienda = $arrData['tipoVivienda'] ?? null;
 			$this->nombreConsorcio = $arrData['nombreConsorcio'];
-			$this->nombreConsorcio = $arrData['secuencialRecibo'] ?? 0;
-			$this->nombreConsorcio = $arrData['fondoReserva'] ?? 0;
-			$this->nombreConsorcio = $arrData['fondoReservaAcum'] ?? 0;
-			$this->nombreConsorcio = $arrData['fondoPrevision'] ?? 0;
-			$this->nombreConsorcio = $arrData['fondoPrevisionAcum'] ?? 0;
 		}
 	}
 
@@ -40,15 +30,10 @@ class Manzanas{
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':nroManzana'   	    ,$objEntidad->nroManzana         , \PDO::PARAM_INT);
-		$consulta->bindValue(':mtsCuadrados'   	    ,$objEntidad->mtsCuadrados       , \PDO::PARAM_STR);
-		$consulta->bindValue(':tipoVivienda'   	    ,$objEntidad->tipoVivienda	     , \PDO::PARAM_STR);
-		$consulta->bindValue(':nombreConsorcio'	    ,$objEntidad->nombreConsorcio    , \PDO::PARAM_STR);
-		$consulta->bindValue(':secuencialRecibo'	,$objEntidad->secuencialRecibo   , \PDO::PARAM_INT);
-		$consulta->bindValue(':fondoReserva'	    ,$objEntidad->fondoReserva       , \PDO::PARAM_STR);
-		$consulta->bindValue(':fondoReservaAcum'	,$objEntidad->fondoReservaAcum   , \PDO::PARAM_STR);
-		$consulta->bindValue(':fondoPrevision'	    ,$objEntidad->fondoPrevision     , \PDO::PARAM_STR);
-		$consulta->bindValue(':fondoPrevisionAcum'	,$objEntidad->fondoPrevisionAcum , \PDO::PARAM_STR);
+		$consulta->bindValue(':nroManzana'   	,$objEntidad->nroManzana    ,\PDO::PARAM_INT);
+		$consulta->bindValue(':mtsCuadrados'   	,$objEntidad->mtsCuadrados    ,\PDO::PARAM_STR);
+		$consulta->bindValue(':tipoVivienda'   	,$objEntidad->tipoVivienda	  ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nombreConsorcio'	,$objEntidad->nombreConsorcio ,\PDO::PARAM_STR);
 	}
 
 	/**
