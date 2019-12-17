@@ -9,7 +9,7 @@ class RelacionesGastos{
 	public $id;
 	public $idGastosLiquidaciones;
 	public $entidad;
-	public $nroManzana;
+	public $idManzana;
 	public $nroEntidad;
 
 	//Constructor customizado
@@ -17,7 +17,7 @@ class RelacionesGastos{
 		$this->id = $arrData["id"] ?? null;
 		$this->idGastosLiquidaciones = $arrData["idGastosLiquidaciones"] ?? null;
 		$this->entidad = $arrData["entidad"] ?? null;
-		$this->nroManzana = $arrData["nroManzana"] ?? null;
+		$this->idManzana = $arrData["idManzana"] ?? null;
 		$this->nroEntidad = $arrData["nroEntidad"] ?? null;
 	}
 
@@ -30,7 +30,7 @@ class RelacionesGastos{
 		
 		$consulta->bindValue(':idGastosLiquidaciones' ,$objEntidad->idGastosLiquidaciones ,\PDO::PARAM_INT);
 		$consulta->bindValue(':entidad'   	          ,$objEntidad->entidad	              ,\PDO::PARAM_STR);
-		$consulta->bindValue(':nroManzana'	          ,$objEntidad->nroManzana                ,\PDO::PARAM_INT);
+		$consulta->bindValue(':idManzana'	          ,$objEntidad->idManzana                ,\PDO::PARAM_INT);
 		$consulta->bindValue(':nroEntidad'	          ,$objEntidad->nroEntidad                ,\PDO::PARAM_INT);
 	}
 

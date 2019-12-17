@@ -12,6 +12,8 @@ class Manzanas{
 	public $mtsCuadrados;
 	public $tipoVivienda;
 	public $nombreConsorcio;
+	public $montoFondoReserva;
+	public $montoFondoPrevision;
 
 	public function __construct($arrData = null){
 		if($arrData != null){
@@ -20,6 +22,8 @@ class Manzanas{
 			$this->mtsCuadrados = $arrData['mtsCuadrados'];
 			$this->tipoVivienda = $arrData['tipoVivienda'] ?? null;
 			$this->nombreConsorcio = $arrData['nombreConsorcio'];
+			$this->montoFondoReserva = $arrData['montoFondoReserva'];
+			$this->montoFondoPrevision = $arrData['montoFondoPrevision'];
 		}
 	}
 
@@ -30,10 +34,12 @@ class Manzanas{
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':nroManzana'   	,$objEntidad->nroManzana    ,\PDO::PARAM_INT);
-		$consulta->bindValue(':mtsCuadrados'   	,$objEntidad->mtsCuadrados    ,\PDO::PARAM_STR);
-		$consulta->bindValue(':tipoVivienda'   	,$objEntidad->tipoVivienda	  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':nombreConsorcio'	,$objEntidad->nombreConsorcio ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nroManzana'   	    ,$objEntidad->nroManzana          ,\PDO::PARAM_INT);
+		$consulta->bindValue(':mtsCuadrados'   	    ,$objEntidad->mtsCuadrados        ,\PDO::PARAM_STR);
+		$consulta->bindValue(':tipoVivienda'   	    ,$objEntidad->tipoVivienda	      ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nombreConsorcio'	    ,$objEntidad->nombreConsorcio     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':montoFondoReserva'	,$objEntidad->montoFondoReserva   ,\PDO::PARAM_STR);
+		$consulta->bindValue(':montoFondoPrevision'	,$objEntidad->montoFondoPrevision ,\PDO::PARAM_STR);
 	}
 
 	/**

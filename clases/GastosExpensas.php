@@ -2,11 +2,11 @@
 
 require_once "AccesoDatos.php";
 
-class GastosLiquidacionesUF{
+class GastosExpensas{
 
 	//Atributos
 	public $id;
-	public $idLiquidacionUF;
+	public $idExpensa;
 	public $idGastosLiquidaciones;
 	public $monto;
 	
@@ -14,7 +14,7 @@ class GastosLiquidacionesUF{
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
-			$this->idLiquidacionUF = $arrData['idLiquidacionUF'];
+			$this->idExpensa = $arrData['idExpensa'];
 			$this->idGastosLiquidaciones = $arrData['idGastosLiquidaciones'];
 			$this->monto = $arrData['monto'];
 		}
@@ -27,7 +27,7 @@ class GastosLiquidacionesUF{
 		if($includePK == true)
 			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idLiquidacionUF'        , $objEntidad->idLiquidacionUF       , \PDO::PARAM_INT);
+		$consulta->bindValue(':idExpensa'              , $objEntidad->idExpensa       , \PDO::PARAM_INT);
 		$consulta->bindValue(':idGastosLiquidaciones'  , $objEntidad->idGastosLiquidaciones , \PDO::PARAM_INT);
 		$consulta->bindValue(':monto'		           , $objEntidad->monto                 , \PDO::PARAM_STR);
 	}

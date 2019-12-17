@@ -6,17 +6,19 @@ class NotasDebito{
 
 	//Atributos
 	public $id;
-	public $idLiquidacionUF;
+	public $idLiquidacion;
 	public $fechaVencimiento;
 	public $fechaEmision;
+	public $observaciones;
 	
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
-			$this->idLiquidacionUF = $arrData['idLiquidacionUF'];
+			$this->idLiquidacion = $arrData['idLiquidacion'];
 			$this->fechaVencimiento = $arrData['fechaVencimiento'];
 			$this->fechaEmision = $arrData['fechaEmision'];
+			$this->observaciones = $arrData['observaciones'];
 		}
 	}
 
@@ -27,9 +29,10 @@ class NotasDebito{
 		if($includePK == true)
 			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idLiquidacionUF'  ,$objEntidad->idLiquidacionUF  ,\PDO::PARAM_INT);
+		$consulta->bindValue(':idLiquidacion'  ,$objEntidad->idLiquidacion  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':fechaVencimiento' ,$objEntidad->fechaVencimiento ,\PDO::PARAM_STR);
 		$consulta->bindValue(':fechaEmision'     ,$objEntidad->fechaEmision     ,\PDO::PARAM_STR);
+		$consulta->bindValue(':observaciones'     ,$objEntidad->observaciones     ,\PDO::PARAM_STR);
 	}
 
 }//class

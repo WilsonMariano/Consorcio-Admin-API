@@ -2,15 +2,11 @@
 
 require_once "AccesoDatos.php";
 
-class LiquidacionesUF
+class Liquidaciones
 {
 	// Atributos
 	public $id;
-	public $idLiquidacionGlobal;
-	public $idCtaCte;
-	public $nroManzana;
-	public $nroUF;
-	public $coeficiente;
+	public $idUF;
 	public $interesAcumulado;
 	public $saldoInteres;
 	public $monto;
@@ -21,11 +17,7 @@ class LiquidacionesUF
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
-			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
-			$this->idCtaCte = $arrData['idCtaCte'];
-			$this->nroManzana = $arrData['nroManzana'];
-			$this->nroUF = $arrData['nroUF'];
-			$this->coeficiente = $arrData['coeficiente'];
+			$this->idUF = $arrData['idUF'];
 			$this->interesAcumulado = $arrData['interesAcumulado'] ?? 0;
 			$this->saldoInteres = $arrData['saldoInteres'] ?? 0;
 			$this->monto = $arrData['monto'] ?? null;
@@ -45,11 +37,7 @@ class LiquidacionesUF
 		if($includePK == true)
 			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
 		
-		$consulta->bindValue(':idLiquidacionGlobal'    ,$objEntidad->idLiquidacionGlobal  ,\PDO::PARAM_INT);
-		$consulta->bindValue(':idCtaCte'               ,$objEntidad->idCtaCte             ,\PDO::PARAM_INT);
-		$consulta->bindValue(':nroManzana'             ,$objEntidad->nroManzana           ,\PDO::PARAM_INT);
-		$consulta->bindValue(':nroUF'                  ,$objEntidad->nroUF                ,\PDO::PARAM_INT);
-		$consulta->bindValue(':coeficiente'            ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
+		$consulta->bindValue(':idUF'                   ,$objEntidad->idUF  ,\PDO::PARAM_INT);
 		$consulta->bindValue(':interesAcumulado'   	   ,$objEntidad->interesAcumulado     ,\PDO::PARAM_STR);
 		$consulta->bindValue(':saldoInteres'           ,$objEntidad->saldoInteres         ,\PDO::PARAM_STR);
 		$consulta->bindValue(':monto'                  ,$objEntidad->monto 			      ,\PDO::PARAM_STR);
@@ -65,8 +53,8 @@ class LiquidacionesUF
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
 		$consulta = $objetoAccesoDato->RetornarConsulta(
-			"insert into LiquidacionesUF (idLiquidacionGlobal, idCtaCte, nroManzana, nroUF, coeficiente, interesAcumulado, saldoInteres, monto, saldoMonto, fechaRecalculo) 
-			values (:idLiquidacionGlobal, :idCtaCte, :nroManzana, :nroUF, :coeficiente, :interesAcumulado, :saldoInteres, :monto, :saldoMonto, :fechaRecalculo)");
+			"insert into Liquidaciones (idUF, interesAcumulado, saldoInteres, monto, saldoMonto, fechaRecalculo) 
+			values (:idUF, :interesAcumulado, :saldoInteres, :monto, :saldoMonto, :fechaRecalculo)");
 		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
 		$consulta->execute();
 
