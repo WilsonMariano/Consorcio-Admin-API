@@ -18,7 +18,9 @@ class AutentificadorJWT
             'data' => 
 				    [
 				    	"id" => $usuario->id,
-				    	"email" => $usuario->email
+				    	"email" => $usuario->email,
+				    	"nombre" => $usuario->nombre,
+				    	"apellido" => $usuario->apellido
                     ],
             'app'=> "CONSORCIO-ADMIN"
         );
