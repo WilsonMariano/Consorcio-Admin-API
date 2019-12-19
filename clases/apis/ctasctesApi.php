@@ -15,10 +15,11 @@ class CtasCtesApi{
 	public static function CreditNote($request, $response, $args){
         $apiParams = $request->getParsedBody();
 
-        $uf = UF::GetByNumero($apiParams['nroUF']);
+        $uf = UF::GetByNumero($apiParams['idManzana'], $apiParams['nroUF']);
+
         if($uf){
             $ctaCte = new CtasCtes();
-            $ctaCte->nroUF = $uf['nroUF'];
+            $ctaCte->idUF = $uf['id'];
             $ctaCte->fecha = date("Y-m-d");
             $ctaCte->descripcion = "NOTA DE CREDITO";
             $ctaCte->monto = $apiParams['monto'];

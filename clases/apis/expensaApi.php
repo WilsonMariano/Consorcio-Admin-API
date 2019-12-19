@@ -2,7 +2,7 @@
 
 include_once __DIR__ . '/../_FuncionesEntidades.php';
 include_once __DIR__ . '/../Helper.php';
-include_once __DIR__ . '/../LiquidacionesUF.php';
+include_once __DIR__ . '/../Expensas.php';
 include_once __DIR__ . '/../Manzanas.php';
 include_once __DIR__ . '/../Diccionario.php';
 include_once __DIR__ . '/../UF.php';
@@ -11,10 +11,10 @@ include_once __DIR__ . '/../enums/EntityTypeEnum.php';
 include_once __DIR__ . '/../enums/RentalContractEnum.php';
 
 
-class LiquidacionUfApi{
+class ExpensaApi{
  
 	// Variables de clase
-	private static $arrLiquidacionUF = array();
+	private static $arrExpensa = array();
 	private static $idLiqGlobal;
 	
 	
@@ -40,41 +40,41 @@ class LiquidacionUfApi{
 	}
 
 	/**
-	 * Obtiene un idLiquidacionUF, ya sea del array de clase arrLiquidacionUF o generando uno nuevo 
-	 * (si no existe, crea la liquidacionUF y guarda el id nuevo en el array).
+	 * Obtiene un idExpensa, ya sea del array de clase arrExpensa o generando uno nuevo 
+	 * (si no existe, crea la expensa y guarda el id nuevo en el array).
 	 */
-	private static function GetIdLiquidacionUF($uf){
+	private static function GetIdExpensa($uf){
 		// Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí las liquidacionesUF.
 		// Además aseguramos que se genere una única LiqUF por cada UF.
-		if(!is_null(self::$arrLiquidacionUF)){
-			foreach (self::$arrLiquidacionUF as $liquidacionUF){
-				if($liquidacionUF->nroManzana == $uf['nroManzana'] && $liquidacionUF->nroUF == $uf['nroUF']){
-					return $liquidacionUF->id;
+		if(!is_null(self::$arrExpensa)){
+			foreach (self::$arrExpensa as $expensa){
+				if($expensa->nroManzana == $uf['nroManzana'] && $expensa->nroUF == $uf['nroUF']){
+					return $expensa->id;
 				}
 			}
 		}
-		$newLiquidacionUF = self::NewLiquidacionUF($uf);
+		$newExpensa = self::NewExpensa($uf);
 		// Guardo la liquidaciónUF en el array de clase.
-		array_push(self::$arrLiquidacionUF, $newLiquidacionUF);
-		return $newLiquidacionUF->id;
+		array_push(self::$arrExpensa, $newExpensa);
+		return $newExpensa->id;
 	}
 
 	/**
-	 * Genera una nueva liquidacionUF en la BD. Devuelve el objeto generado.
+	 * Genera una nueva expensa en la BD. Devuelve el objeto generado.
 	 */
-	private static function NewLiquidacionUF($uf){
-		$liquidacionUF = new LiquidacionesUF();
-		$liquidacionUF->idLiquidacionGlobal = self::$idLiqGlobal;
-		$liquidacionUF->nroManzana = $uf['nroManzana'];
-		$liquidacionUF->nroUF = $uf['nroUF'];
-		$liquidacionUF->coeficiente = $uf['coeficiente'];
+	private static function NewExpensa($uf){
+		$expensa = new Expensas();
+		$expensa->idLiquidacionGlobal = self::$idLiqGlobal;
+		$expensa->nroManzana = $uf['nroManzana'];
+		$expensa->nroUF = $uf['nroUF'];
+		$expensa->coeficiente = $uf['coeficiente'];
 
-		$newId = LiquidacionesUF::Insert($liquidacionUF);
+		$newId = Expensas::Insert($expensa);
 		if($newId < 1){
 			throw new Exception("No se pudo generar una liquidación nueva para una de las unidades funcionales.");
 		}else{
-			$liquidacionUF->id = $newId;
-			return $liquidacionUF;
+			$expensa->id = $newId;
+			return $expensa;
 		}
 	}
 
@@ -84,11 +84,11 @@ class LiquidacionUfApi{
 	 */
 	private static function UpdateLiquidacionesUF(){
 
-		foreach(self::$arrLiquidacionUF as $liquidacionUF){
-			$liquidacionUF->saldoMonto = $liquidacionUF->monto * -1;
-			$liquidacionUF->idCtaCte = self::SetCtaCteAndGetId($liquidacionUF);
+		foreach(self::$arrExpensa as $expensa){
+			$expensa->saldoMonto = $expensa->monto * -1;
+			$expensa->idCtaCte = self::SetCtaCteAndGetId($expensa);
 			
-			if(!Funciones::UpdateOne($liquidacionUF))
+			if(!Funciones::UpdateOne($expensa))
 				throw new Exception("No se pudo actualizar el monto en una de las liquidaciones por unidad funcional.");
 		}
 	}
@@ -96,17 +96,17 @@ class LiquidacionUfApi{
 	/**
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
 	 */
-	private static function SetCtaCteAndGetId($liquidacionUF){
+	private static function SetCtaCteAndGetId($expensa){
 		// Obtengo el periodo a liquidar de la liquidacion global.
 		$liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
 		$ctaCte = new CtasCtes();
-		$ctaCte->nroUF = $liquidacionUF->nroUF;
+		$ctaCte->nroUF = $expensa->nroUF;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
-		$ctaCte->monto = $liquidacionUF->monto * -1;
-		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacionUF->nroUF) ?? 0);
-		$ctaCte->saldo = $saldoActual - $liquidacionUF->monto;
+		$ctaCte->monto = $expensa->monto * -1;
+		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($expensa->nroUF) ?? 0);
+		$ctaCte->saldo = $saldoActual - $expensa->monto;
 		
 		$newId =  CtasCtes::Insert($ctaCte);
 		if($newId < 1)
@@ -151,26 +151,26 @@ class LiquidacionUfApi{
 	}
 
 	/**
-	 * Guarda el gasto en la bd y acumula el monto del gasto en la liquidacionuf correspondiente.
+	 * Guarda el gasto en la bd y acumula el monto del gasto en la expensa correspondiente.
 	 */
 	private static function SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion){
 		$monto = Helper::NumFormat($montoGasto);
 		self::InsertGastoUF($uf, $monto, $idGastoLiquidacion);
-		foreach (self::$arrLiquidacionUF as $liquidacionuf){
-			if($liquidacionuf->nroManzana == $uf['nroManzana'] && $liquidacionuf->nroUF == $uf['nroUF']){
-				$liquidacionuf->monto += self::CheckContractTax($uf, $monto);
+		foreach (self::$arrExpensa as $expensa){
+			if($expensa->nroManzana == $uf['nroManzana'] && $expensa->nroUF == $uf['nroUF']){
+				$expensa->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
 		}
 	}
 
 	/**
-	 * Guarda un gastoliquidacionUF en la BD.
+	 * Guarda un gastoExpensa en la BD.
 	 * Recibe instancia de la clase UF, el monto del gastoUF para dicha UF y el id de la liquidacion global.
 	 */
 	private static function InsertGastoUF($uf, $montoGastoUF, $idGastoLiquidacion){
-		$gastoUF = new GastosLiquidacionesUF();
-		$gastoUF->idLiquidacionUF = self::GetIdLiquidacionUF($uf);
+		$gastoUF = new GastosExpensas();
+		$gastoUF->idExpensa = self::GetIdExpensa($uf);
 		$gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
 		$gastoUF->monto = $montoGastoUF;
 

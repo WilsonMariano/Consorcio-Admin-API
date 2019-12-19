@@ -64,7 +64,7 @@ class Feriados{
         $mes = $fecha->format("m");
 		$anio = $fecha->format("Y");
 
- 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and tipo = 'FERIADO_OPTATIVO'");
+ 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and anio =:anio and tipo = 'FERIADO_OPTATIVO'");
 		$consulta->bindValue(':dia', $dia , PDO::PARAM_STR);
 		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
 		$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);

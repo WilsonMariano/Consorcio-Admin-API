@@ -70,7 +70,7 @@
 		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
 	});
 
-	$app->group('/gastosLiquidaciones', function () {
+	$app->group('/gastos-liq', function () {
 		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
 		$this->delete('/del[/]', \GastoLiquidacionApi::class . ':Delete');        
 	});
@@ -79,8 +79,8 @@
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
 	});
 
-	$app->group('/liquidacion-uf', function () {
-		$this->post('/process[/]', \LiquidacionUfApi::class . ':ProcessExpenses');  
+	$app->group('/expensa', function () {
+		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
 	});
 
 	$app->group('/uf', function () {
