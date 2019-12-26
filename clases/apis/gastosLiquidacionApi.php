@@ -26,7 +26,7 @@ class GastoLiquidacionApi{
             for($i = 0; $i < sizeof($arrGastos); $i++){
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
                 if(self::IsValid($gasto))
-                    if(Funciones::InsertOne($gasto)){
+                    if(Funciones::InsertOne($gasto) > 0){
                         $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
                         for($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++){
                             $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);

@@ -13,8 +13,8 @@ class ConceptosGastos
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"] ?? null;
-			$this->codigo = $arrData["codigo"];
+			$this->id            = $arrData["id"] ?? null;
+			$this->codigo        = $arrData["codigo"];
 			$this->conceptoGasto = $arrData["conceptoGasto"];
 		}
 	}
@@ -31,23 +31,10 @@ class ConceptosGastos
 	}
 
 	/**
-	 * (Bool) Valida si ya existe un ConceptoGasto, consultando por campo código.
-	 * Recibe por parámetro el objeto ConceptoGasto a validar.
-	 */
- 	public static function  IsDuplicated($entityObject){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from ConceptosGastos where codigo =:codigo");
-		$consulta->bindValue(':codigo', $entityObject->codigo, PDO::PARAM_STR);
-		$consulta->execute();
-		
-		return $consulta->rowCount() > 0 ? true : false;
-	 }
-
-	/**
 	 * Devuelve un objeto ConceptoGasto , buscando por el campo código.
 	 * Recibe por parámetro el código a buscar.
 	 */
-	public static function GetOne($codigo){	
+	public static function GetByCodigo($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$objEntidad = new ConceptosGastos();
 		

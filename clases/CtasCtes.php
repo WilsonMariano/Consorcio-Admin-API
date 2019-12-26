@@ -16,13 +16,13 @@ class CtasCtes
 	//Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id = $arrData["id"] ?? null;
-			$this->idUF = $arrData["idUF"];
+			$this->id            = $arrData["id"] ?? null;
+			$this->idUF          = $arrData["idUF"];
 			$this->idLiquidacion = $arrData["idLiquidacion"];
-			$this->fecha = $arrData["fecha"];
-			$this->descripcion = $arrData["descripcion"] ?? null;
-			$this->monto = $arrData["monto"];
-			$this->saldo = $arrData["saldo"];
+			$this->fecha         = $arrData["fecha"];
+			$this->descripcion   = $arrData["descripcion"] ?? null;
+			$this->monto         = $arrData["monto"];
+			$this->saldo         = $arrData["saldo"];
 		}
     }
 
@@ -42,21 +42,6 @@ class CtasCtes
 	}
 
 	/**
-	 * Guarda un movimiento en CtasCtes y devuelve el id generado por la BD.
-	 * Recibe por parámetro una instancia de la clase CtasCtes.
-	 */
-	public static function Insert($objEntidad){
- 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("insert into CtasCtes (idUF, idLiquidacion, fecha, descripcion, monto, saldo) 
-			values (:idUF, :idLiquidacion, :fecha, :descripcion, :monto, :saldo)");
-		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();			
-	}
-
-	/**
 	 * Devuelve el ultimo saldo calculado para una CtaCte.
 	 * Recibe por parámetro el id de la unidad funcional
 	 */
@@ -69,5 +54,24 @@ class CtasCtes
 
 		return $consulta->fetch()[0];
 	}
+
+    /**
+     * Genera un movimiento a favor del cliente, simulando una nota de crédito.
+     */
+	public static function NewCreditNote($uf, $monto){
+		$ctaCte = new CtasCtes();
+		$ctaCte->idUF = $uf->id;
+		$ctaCte->fecha = date("Y-m-d");
+		$ctaCte->descripcion = "NOTA DE CREDITO";
+		$ctaCte->monto = $monto;
+		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($uf->nroUF) ?? 0);
+		$ctaCte->saldo = $saldoActual + Helper::NumFormat($monto);
+
+		$newId =  Funciones::InsertOne($ctaCte);
+		if($newId < 1)
+			throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
+		else
+			return $newId;
+    }
 
 }//class

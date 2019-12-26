@@ -73,7 +73,7 @@ class GenericApi{
 		$objEntidad = Funciones::GetObjEntidad($apiParamsQS['t'], $apiParamsBody);
 
 		if($objEntidad)
-			if(Funciones::InsertOne($objEntidad))
+			if(Funciones::InsertOne($objEntidad) > 0)
 				return $response->withJson(true, 200); 
 			else
 				return $response->withJson(false, 500);  			

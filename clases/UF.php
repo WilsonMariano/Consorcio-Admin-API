@@ -48,6 +48,16 @@ class UF{
 	}
 
 	/**
+	 * Valida si un objeto UF ya no existe previamente en la BD.
+	 */
+	public static function IsDuplicated ($uf){
+		if (self::GetByManzanaAndNumero($uf->idManzana, $uf->nroUF)){
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Devuelve un array de objetos UF, buscando por el número de manzana a la cual pertenecen.
 	 * Recibe por parámetro un idManzana (de la tabla Manzanas)
 	 */
@@ -66,7 +76,7 @@ class UF{
 	 * Devuelve un array de objetos UF, buscando por el número de edificio al cual pertenecen.
 	 * Recibe por parámetro un número de edificio que se preasume válido.
 	 */
-	public static function GetByEdificio($idManzana, $idEdificio){
+	public static function GetByManzanaAndEdificio($idManzana, $idEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta(
@@ -80,9 +90,9 @@ class UF{
 	}
 
 	/**
-	 * Devuelve un objeto UF buscando por el campo nroUF
+	 * Devuelve un objeto UF buscando por los campos idManzana y nroUF
 	 */
-	public static function GetByNumero($idManzana, $nroUF){
+	public static function GetByManzanaAndNumero($idManzana, $nroUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta(
@@ -93,17 +103,6 @@ class UF{
 		$arrObjEntidad= $consulta->fetch(PDO::FETCH_ASSOC);	
 		
 		return $arrObjEntidad;					
-	}
-
-	//TODO: revisar esta funcion, no deberia incluir el nro de manzana ?
-	public static function IsDuplicated($nroUF){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where nroUF =:nroUF");
-		$consulta->bindValue(':nroUF', $nroUF, PDO::PARAM_INT);
-		$consulta->execute();
-		
-		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 }//class

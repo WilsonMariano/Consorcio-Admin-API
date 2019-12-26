@@ -34,20 +34,4 @@ class Expensas
 		$consulta->bindValue(':coeficiente'   	       ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
 	}
 
-	/**
-	 * Inserta una LiquidacionUF, devolviendo el id asignado en la BD.
-	 * Recibe por parámetro el objeto LiquidacionUF a persistir.
-	 */
-	public static function Insert($objEntidad){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta(
-			"insert into Expensas (idLiquidacion, coeficiente, saldoInteres, monto, saldoMonto, fechaRecalculo) 
-			values (:idLiquidacion, :coeficiente, :saldoInteres, :monto, :saldoMonto, :fechaRecalculo)");
-		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();		
-	}
-
 }//class

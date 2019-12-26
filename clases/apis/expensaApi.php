@@ -136,7 +136,7 @@ class ExpensaApi{
 		$cantUF = Edificios::GetOne($nroManzana, $nroEdificio)->cantUF;
 		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
 
-		$arrUF = UF::GetByEdificio($nroManzana, $nroEdificio);				  
+		$arrUF = UF::GetByManzanaAndEdificio($nroManzana, $nroEdificio);				  
 		foreach ($arrUF as $uf)
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 	}
@@ -146,7 +146,7 @@ class ExpensaApi{
 	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
 	private static function ApplyExpenseToUF($nroManzana, $nroUF, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::GetByNumero($nroManzana, $nroUF);
+		$uf = UF::GetByManzanaAndNumero($nroManzana, $nroUF);
 		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
@@ -174,7 +174,7 @@ class ExpensaApi{
 		$gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
 		$gastoUF->monto = $montoGastoUF;
 
-		if(!Funciones::InsertOne($gastoUF)){
+		if(!Funciones::InsertOne($gastoUF) > 0){
 			throw new Exception("No se pudo guardar un gasto en la liquidación de la unidad funcional.");
 		}
 	}

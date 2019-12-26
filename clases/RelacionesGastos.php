@@ -72,10 +72,10 @@ class RelacionesGastos{
 				return Manzanas::GetByNumero($relacion->nroEntidad);
 				break;
 			case EntityTypeEnum::Edificio :
-				return UF::GetByEdificio($relacion->nroEntidad);
+				return Edificios::GetByManzanaAndNumero($relacion->idManzana, $relacion->nroEntidad);
 				break;
 			case EntityTypeEnum::UnidadFuncional :
-				return UF::GetByNumero($relacion->nroEntidad);	
+				return UF::GetByManzanaAndNumero($relacion->idManzana, $relacion->nroEntidad);	
 				break;
 		}
 	}

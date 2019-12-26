@@ -49,7 +49,7 @@ class LiquidacionGlobalApi{
             $liquidacionGbl->tasaInteres = Diccionario::GetValue("TASA_INTERES");
             $liquidacionGbl->fechaEmision = date("Y-m-d");
             self::GetExpirationDates($liquidacionGbl);
-            if(Funciones::InsertOne($liquidacionGbl))
+            if(Funciones::InsertOne($liquidacionGbl) > 0)
                 return $response->withJson(true, 200); 		
             else
                 return $response->withJson(false, 500);

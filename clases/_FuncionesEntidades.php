@@ -9,6 +9,10 @@ class Funciones{
 		return new $entityName($apiParamsBody);
 	}
 
+	/**
+	 * Valida si un registo ya existe previamente en la BD. Admite un param opcional para validar contra una columna
+	 * en especial, de no recibirlo por default valida contra la columna "id".
+	 */
 	public static function IsDuplicated($entityObject, $column = "id"){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
@@ -109,7 +113,7 @@ class Funciones{
 		$objEntidad->BindQueryParams($consulta, $objEntidad, $includePK);
 		$consulta->execute();
 		
-		return $consulta->rowCount() > 0 ? true : false;
+		return $objetoAccesoDato->RetornarUltimoIdInsertado();	
 	}
 	
 	public static function DeleteOne($idParametro,$entityName){	

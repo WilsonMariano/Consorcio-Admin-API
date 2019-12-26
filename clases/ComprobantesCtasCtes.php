@@ -13,10 +13,10 @@ class ComprobantesCtasCtes
 
 	public function __construct($arrData = null){
 		if($arrData != null){
-			$this->id              = $arrData['id'] ?? null;
-			$this->idCtaCte        = $arrData['idCtaCte'] ?? null;
+			$this->id                   = $arrData['id'] ?? null;
+			$this->idCtaCte             = $arrData['idCtaCte'] ?? null;
 			$this->idDetalleComprobante = $arrData['idDetalleComprobante'] ?? null;
-			$this->nroRecibo       = $arrData['nroRecibo'];
+			$this->nroRecibo            = $arrData['nroRecibo'];
 		}
 	}
 

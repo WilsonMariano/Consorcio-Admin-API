@@ -62,7 +62,6 @@
 
 	$app->group('/ctas-ctes', function () {
 		$this->post('/payment[/]' , \CtasCtesApi::class . ':ProcessPayment');      
-		$this->post('/creditNote[/]' , \CtasCtesApi::class . ':CreditNote');      
 	});
 
 	$app->group('/diccionario', function () {
@@ -83,8 +82,11 @@
 		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
 	});
 
-	$app->group('/uf', function () {
-		$this->get('/validateBuilding[/]',  \UFApi::class . ':ValidateBuilding');      
+	$app->group('/notas-credito-debito', function () {
+		$this->post('/new[/]', \notaCreditoDebitoApi::class . ':New');  
+	});
+
+	$app->group('/uf', function () { 
 		$this->post('/insert[/]',  \UFApi::class . ':Insert');      
 	});
 	

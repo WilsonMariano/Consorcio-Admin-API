@@ -45,20 +45,4 @@ class Liquidaciones
 		$consulta->bindValue(':fechaRecalculo'         ,$objEntidad->fechaRecalculo       ,\PDO::PARAM_STR);
 	}
 
-	/**
-	 * Inserta una LiquidacionUF, devolviendo el id asignado en la BD.
-	 * Recibe por parámetro el objeto LiquidacionUF a persistir.
-	 */
-	public static function Insert($objEntidad){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta(
-			"insert into Liquidaciones (idUF, interesAcumulado, saldoInteres, monto, saldoMonto, fechaRecalculo) 
-			values (:idUF, :interesAcumulado, :saldoInteres, :monto, :saldoMonto, :fechaRecalculo)");
-		$objEntidad->BindQueryParams($consulta, $objEntidad, false);	
-		$consulta->execute();
-
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();		
-	}
-
 }//class
