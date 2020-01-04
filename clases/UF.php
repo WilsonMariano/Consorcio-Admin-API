@@ -61,7 +61,7 @@ class UF{
 	 * Devuelve un array de objetos UF, buscando por el número de manzana a la cual pertenecen.
 	 * Recibe por parámetro un idManzana (de la tabla Manzanas)
 	 */
-	public static function GetByManzana($idManzana){
+	public static function GetByIdManzana($idManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where idManzana =:idManzana");

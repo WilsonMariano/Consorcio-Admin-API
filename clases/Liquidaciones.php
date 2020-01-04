@@ -12,6 +12,8 @@ class Liquidaciones
 	public $monto;
 	public $saldoMonto;
 	public $fechaRecalculo;
+	public $fechaEmision;
+	public $tasaInteres;
 
 	// Constructor customizado
 	public function __construct($arrData = null){
@@ -23,6 +25,8 @@ class Liquidaciones
 			$this->monto = $arrData['monto'] ?? null;
 			$this->saldoMonto = $arrData['saldoMonto'] ?? null;
 			$this->fechaRecalculo = $arrData['fechaRecalculo'] ?? null;
+			$this->fechaEmision = $arrData['fechaEmision'] ?? date("Y-m-d");
+			$this->tasaInteres = $arrData['tasaInteres'] ?? 0;
 		} else {
 			$this->interesAcumulado = 0;
 			$this->saldoInteres = 0;

@@ -118,8 +118,8 @@ class ExpensaApi{
 	 * Aplica un gasto a todas las unidades funcionales de una manzana.
 	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
-		$arrUF = UF::GetByManzana($nroManzana);			
+	private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idGastoLiquidacion){
+		$arrUF = UF::GetByIdManzana($idManzana);			
 	
 		foreach ($arrUF as $uf){
 			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
@@ -131,11 +131,11 @@ class ExpensaApi{
 	 * Aplica un gasto a todas las unidades funcionales de un edificio.
 	 * Recibe por parámetro el número de edificio, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToEdificio($nroManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
-		$cantUF = Edificios::GetOne($nroManzana, $nroEdificio)->cantUF;
+	private static function ApplyExpenseToEdificio($idManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
+		$cantUF = Edificios::GetByManzanaAndNumero($idManzana, $nroEdificio)->cantUF;
 		$montoGastoUF = Helper::NumFormat($montoGastoEdificio) / $cantUF;
 
-		$arrUF = UF::GetByManzanaAndEdificio($nroManzana, $nroEdificio);				  
+		$arrUF = UF::GetByManzanaAndEdificio($idManzana, $nroEdificio);				  
 		foreach ($arrUF as $uf)
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 	}
@@ -144,8 +144,8 @@ class ExpensaApi{
 	 * Aplica un gasto a una unidad funcional.
 	 * Recibe por parámetro un id de UF, el monto del gasto y el id de la liquidacion global.
 	 */
-	private static function ApplyExpenseToUF($nroManzana, $nroUF, $montoGasto, $idGastoLiquidacion){
-		$uf = UF::GetByManzanaAndNumero($nroManzana, $nroUF);
+	private static function ApplyExpenseToUF($idManzana, $nroUF, $montoGasto, $idGastoLiquidacion){
+		$uf = UF::GetByManzanaAndNumero($idManzana, $nroUF);
 		self::SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion);
 	}
 
@@ -205,21 +205,23 @@ class ExpensaApi{
 				throw new Exception("La liquidación ya se encuentra cerrada.");
 
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
+
 			for($i = 0; $i < sizeof($arrGastosLiq); $i++){
 				$arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);   
 				if(sizeof($arrRelacionesGastos)==1){
 					// Si hay solo una relacion , aplico calculo según tipo entidad.
 					switch ($arrRelacionesGastos[0]["entidad"]) {
 						case EntityTypeEnum::Manzana :
-							self::ApplyExpenseToManzana($arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+							self::ApplyExpenseToManzana(
+								$arrRelacionesGastos[0]["idManzana"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::Edificio :
 							self::ApplyExpenseToEdificio(
-								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+								$arrRelacionesGastos[0]["idManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::UnidadFuncional :
 							self::ApplyExpenseToUF(
-								$arrRelacionesGastos[0]["nroManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+								$arrRelacionesGastos[0]["idManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 					}
 				}
@@ -238,11 +240,11 @@ class ExpensaApi{
 					}
 				}
 			}
-			self::UpdateLiquidacionesUF();
-			self::CloseLiquidacionGlobal();
+			// self::UpdateLiquidacionesUF();
+			// self::CloseLiquidacionGlobal();
 		
-			$objetoAccesoDato->commit();
-			return $response->withJson(true, 200);
+			// $objetoAccesoDato->commit();
+			// return $response->withJson(true, 200);
 			
 		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
