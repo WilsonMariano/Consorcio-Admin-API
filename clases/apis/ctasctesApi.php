@@ -9,6 +9,13 @@ class CtasCtesApi{
         $apiParams = $request->getParsedBody();
     }
 
+    public static function GetDeudas ($request, $response, $args){
+        $apiParams = $request->getQueryParams();
 
+        if(CtasCtes::GetDeudas($apiParams['idManzana'], $apiParams['nroUF']))
+            return $response->withJson(true, 200); 		
+        else
+            return $response->withJson(false, 500);
+    }
 
 }//class

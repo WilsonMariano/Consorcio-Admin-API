@@ -72,6 +72,17 @@ class CtasCtes
 			throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
 		else
 			return $newId;
-    }
+	}
+	
+	public static function GetDeudas($idManzana, $nroUF){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idManzana = :idManzana and nroUF = :nroUF");
+		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+		$consulta->bindValue(':nroUF'     , $nroUF, \PDO::PARAM_INT);	
+		$consulta->execute();
+
+		return $consulta->fetchAll();
+	}
 
 }//class

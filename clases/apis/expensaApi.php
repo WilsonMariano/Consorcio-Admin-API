@@ -64,9 +64,8 @@ class ExpensaApi{
 	 */
 	private static function NewExpensa($uf){
 		$expensa = new Expensas();
+		$expensa->idLiquidacion = self::$idLiquidacion;
 		$expensa->idLiquidacionGlobal = self::$idLiqGlobal;
-		$expensa->nroManzana = $uf['nroManzana'];
-		$expensa->nroUF = $uf['nroUF'];
 		$expensa->coeficiente = $uf['coeficiente'];
 
 		$newId = Expensas::Insert($expensa);

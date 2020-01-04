@@ -41,7 +41,7 @@
         $this->put('/put[/]', \GenericApi::class . ':UpdateOne');      
         $this->delete('/del/{id}', \GenericApi::class . ':DeleteOne');
 
-		$this->get('/paged[/]', \GenericApi::class . ':GetPagedWithOptionalFilter');         
+		$this->get('/paged[/]', \GenericApi::class . ':c 	');         
 		$this->get('/one/{id}', \GenericApi::class . ':GetOne');    
 		$this->get('/is-duplicated/{id}', \GenericApi::class . ':IsDuplicated');    
     });
@@ -62,6 +62,7 @@
 
 	$app->group('/ctas-ctes', function () {
 		$this->post('/payment[/]' , \CtasCtesApi::class . ':ProcessPayment');      
+		$this->post('/getDeudas[/]' , \CtasCtesApi::class . ':GetDeudas');      
 	});
 
 	$app->group('/diccionario', function () {
