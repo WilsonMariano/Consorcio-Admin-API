@@ -12,10 +12,12 @@ class CtasCtesApi{
     public static function GetDeudas ($request, $response, $args){
         $apiParams = $request->getQueryParams();
 
-        if(CtasCtes::GetDeudas($apiParams['idManzana'], $apiParams['nroUF']))
-            return $response->withJson(true, 200); 		
+        $listado= CtasCtes::GetDeudas($apiParams['idManzana'], $apiParams['nroUF']);
+		
+		if($listado)
+			return $response->withJson($listado, 200); 		
         else
-            return $response->withJson(false, 500);
+            return $response->withJson(false, 400);
     }
 
 }//class
