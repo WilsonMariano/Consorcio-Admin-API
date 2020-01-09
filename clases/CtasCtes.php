@@ -74,15 +74,14 @@ class CtasCtes
 			return $newId;
 	}
 	
-	public static function GetDeudas($idManzana, $nroUF){
+	public static function GetDeudas($idUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idManzana = :idManzana and nroUF = :nroUF");
-		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
-		$consulta->bindValue(':nroUF'     , $nroUF, \PDO::PARAM_INT);	
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idUF = :idUF");
+		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
-		return $consulta->fetchAll();
+		return $consulta->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 }//class

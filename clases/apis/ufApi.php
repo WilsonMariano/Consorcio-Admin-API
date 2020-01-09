@@ -17,5 +17,17 @@ class UFApi{
         else 
             return $response->withJson("El nro de unidad funcional ingresado no se encuentra disponible.", 400);
     }
+
+    public static function GetByManzanaAndNumero($request, $response) {
+
+        $apiParams = $request->getQueryParams();
+
+        $res = UF::GetByManzanaAndNumero($apiParams['idManzana'], $apiParams['nroUF']);
+
+        if($res != false)
+            return $response->withJson($res, 200);
+        else
+            return $response->withJson("No se encontraron resultados", 400);
+    }
     
 }//class

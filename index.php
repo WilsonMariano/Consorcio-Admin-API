@@ -89,6 +89,7 @@
 
 	$app->group('/uf', function () { 
 		$this->post('/insert[/]',  \UFApi::class . ':Insert');      
+		$this->get('/GetByManzanaAndNumero[/]',  \UFApi::class . ':GetByManzanaAndNumero');      
 	});
 	
 	$app->group('/usuarios', function () {
