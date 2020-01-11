@@ -5,6 +5,7 @@ include_once __DIR__ . '/../Helper.php';
 include_once __DIR__ . '/../Expensas.php';
 include_once __DIR__ . '/../Manzanas.php';
 include_once __DIR__ . '/../Diccionario.php';
+include_once __DIR__ . '/../Liquidaciones.php';
 include_once __DIR__ . '/../UF.php';
 include_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
 include_once __DIR__ . '/../enums/EntityTypeEnum.php';
@@ -14,7 +15,8 @@ include_once __DIR__ . '/../enums/RentalContractEnum.php';
 class ExpensaApi{
  
 	// Variables de clase
-	private static $arrExpensa = array();
+	private static $arrLiquidaciones = array();
+	private static $arrExpensas = array();
 	private static $idLiqGlobal;
 	
 	
@@ -30,32 +32,35 @@ class ExpensaApi{
 	}	
 
 	/**
-	 * Cierra la liquidación global procesada en el request. Modifica el campo codEstado y setea la fecha de emisión.
+	 * Cierra la liquidación global procesada en el request. Actualiza el campo codEstado.
 	 */
 	private static function CloseLiquidacionGlobal(){
 		$liquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
-		$liquidacionGlobal->fechaEmision = date("Y-m-d");
 		$liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
 		Funciones::UpdateOne($liquidacionGlobal);
 	}
 
 	/**
-	 * Obtiene un idExpensa, ya sea del array de clase arrExpensa o generando uno nuevo 
-	 * (si no existe, crea la expensa y guarda el id nuevo en el array).
+	 * Obtiene un idExpensa, ya sea del array de clase arrExpensas o generando un id nuevo 
+	 * (se crea la expensa y guardamos el id nuevo en el array).
 	 */
 	private static function GetIdExpensa($uf){
-		// Se utiliza un array de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí las liquidacionesUF.
-		// Además aseguramos que se genere una única LiqUF por cada UF.
-		if(!is_null(self::$arrExpensa)){
-			foreach (self::$arrExpensa as $expensa){
-				if($expensa->nroManzana == $uf['nroManzana'] && $expensa->nroUF == $uf['nroUF']){
-					return $expensa->id;
+		// Se utilizan arrays de clase para evitar consultar a la bd innecesariamente; iremos guardando aquí las expensas y liqudaciones.
+		// Además aseguramos que se genere una única expensa por cada UF.
+		if(!is_null(self::$arrLiquidaciones)){
+			foreach (self::$arrLiquidaciones as $liquidacion){
+				if($liquidacion->idUF == $uf['id']){
+					foreach (self::$arrExpensas as $expensa){
+						if($expensa->idLiquidacion == $liquidacion->id){
+							return $expensa->id;
+						}
+					}
 				}
 			}
 		}
+		// Sino existe en el array generamos una nueva expensa 
 		$newExpensa = self::NewExpensa($uf);
-		// Guardo la liquidaciónUF en el array de clase.
-		array_push(self::$arrExpensa, $newExpensa);
+		array_push(self::$arrExpensas, $newExpensa);
 		return $newExpensa->id;
 	}
 
@@ -64,16 +69,46 @@ class ExpensaApi{
 	 */
 	private static function NewExpensa($uf){
 		$expensa = new Expensas();
-		$expensa->idLiquidacion = self::$idLiquidacion;
+		$expensa->idLiquidacion = self::GetIdLiquidacion($uf);
 		$expensa->idLiquidacionGlobal = self::$idLiqGlobal;
 		$expensa->coeficiente = $uf['coeficiente'];
 
-		$newId = Expensas::Insert($expensa);
+		$newId = Funciones::InsertOne($expensa);
 		if($newId < 1){
-			throw new Exception("No se pudo generar una liquidación nueva para una de las unidades funcionales.");
+			throw new Exception("No se pudo generar una expensa nueva para una de las unidades funcionales.");
 		}else{
 			$expensa->id = $newId;
 			return $expensa;
+		}
+	}
+
+	private static function GetIdLiquidacion($uf){
+		if(!is_null(self::$arrLiquidaciones)){
+			foreach (self::$arrLiquidaciones as $liquidacion){
+				if($liquidacion->idUF == $uf['id']){
+					return $liquidacion->id;
+				}
+			}
+		}
+		// Sino existe en el array generamos una nueva expensa 
+		$newLiquidacion = self::NewLiquidacion($uf);
+		array_push(self::$arrLiquidaciones, $newLiquidacion);
+		return $newLiquidacion->id;
+
+	}
+
+	private static function NewLiquidacion($uf){
+		$liquidacion = new Liquidaciones();
+		$liquidacion->idUF = $uf['id'];
+		$liquidacion->fechaEmision = date("Y-m-d");
+		$liquidacion->tasaInteres = Diccionario::GetValue("TASA_INTERES");
+
+		$newId = Funciones::InsertOne($liquidacion);
+		if($newId < 1){
+			throw new Exception("No se pudo generar una liquidación nueva para una de las unidades funcionales.");
+		}else{
+			$liquidacion->id = $newId;
+			return $liquidacion;
 		}
 	}
 
@@ -83,11 +118,11 @@ class ExpensaApi{
 	 */
 	private static function UpdateLiquidacionesUF(){
 
-		foreach(self::$arrExpensa as $expensa){
-			$expensa->saldoMonto = $expensa->monto * -1;
-			$expensa->idCtaCte = self::SetCtaCteAndGetId($expensa);
+		foreach(self::$arrLiquidaciones as $liquidacion){
+			$liquidacion->saldoMonto = $liquidacion->monto * -1;
+			self::SetCtaCteAndGetId($liquidacion);
 			
-			if(!Funciones::UpdateOne($expensa))
+			if(!Funciones::UpdateOne($liquidacion))
 				throw new Exception("No se pudo actualizar el monto en una de las liquidaciones por unidad funcional.");
 		}
 	}
@@ -95,19 +130,20 @@ class ExpensaApi{
 	/**
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
 	 */
-	private static function SetCtaCteAndGetId($expensa){
+	private static function SetCtaCteAndGetId($liquidacion){
 		// Obtengo el periodo a liquidar de la liquidacion global.
 		$liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
 		$ctaCte = new CtasCtes();
-		$ctaCte->nroUF = $expensa->nroUF;
+		$ctaCte->idUF = $liquidacion->idUF;
+		$ctaCte->idLiquidacion = $liquidacion->id;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
-		$ctaCte->monto = $expensa->monto * -1;
-		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($expensa->nroUF) ?? 0);
-		$ctaCte->saldo = $saldoActual - $expensa->monto;
+		$ctaCte->monto = $liquidacion->monto * -1;
+		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
+		$ctaCte->saldo = $saldoActual - $liquidacion->monto;
 		
-		$newId =  CtasCtes::Insert($ctaCte);
+		$newId =  Funciones::InsertOne($ctaCte);
 		if($newId < 1)
 			throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
 		else
@@ -154,10 +190,10 @@ class ExpensaApi{
 	 */
 	private static function SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion){
 		$monto = Helper::NumFormat($montoGasto);
-		self::InsertGastoUF($uf, $monto, $idGastoLiquidacion);
-		foreach (self::$arrExpensa as $expensa){
-			if($expensa->nroManzana == $uf['nroManzana'] && $expensa->nroUF == $uf['nroUF']){
-				$expensa->monto += self::CheckContractTax($uf, $monto);
+		self::InsertGastoExpensa($uf, $monto, $idGastoLiquidacion);
+		foreach (self::$arrLiquidaciones as $liquidacion){
+			if($liquidacion->idUF == $uf['id']){
+				$liquidacion->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
 		}
@@ -167,13 +203,13 @@ class ExpensaApi{
 	 * Guarda un gastoExpensa en la BD.
 	 * Recibe instancia de la clase UF, el monto del gastoUF para dicha UF y el id de la liquidacion global.
 	 */
-	private static function InsertGastoUF($uf, $montoGastoUF, $idGastoLiquidacion){
+	private static function InsertGastoExpensa($uf, $montoGastoUF, $idGastoLiquidacion){
 		$gastoUF = new GastosExpensas();
 		$gastoUF->idExpensa = self::GetIdExpensa($uf);
 		$gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
 		$gastoUF->monto = $montoGastoUF;
 
-		if(!Funciones::InsertOne($gastoUF) > 0){
+		if(Funciones::InsertOne($gastoUF) < 1){
 			throw new Exception("No se pudo guardar un gasto en la liquidación de la unidad funcional.");
 		}
 	}
@@ -240,11 +276,11 @@ class ExpensaApi{
 					}
 				}
 			}
-			// self::UpdateLiquidacionesUF();
-			// self::CloseLiquidacionGlobal();
+			self::UpdateLiquidacionesUF();
+			self::CloseLiquidacionGlobal();
 		
-			// $objetoAccesoDato->commit();
-			// return $response->withJson(true, 200);
+			$objetoAccesoDato->commit();
+			return $response->withJson(true, 200);
 			
 		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
