@@ -12,8 +12,6 @@ class LiquidacionesGlobales{
 	public $anio;
 	public $primerVencimiento;
 	public $segundoVencimiento;
-	public $fechaEmision;
-	public $tasaInteres;
 	public $codEstado;
 
 	// Constructor customizado
@@ -24,8 +22,6 @@ class LiquidacionesGlobales{
 			$this->anio = $arrData["anio"];
 			$this->primerVencimiento = $arrData["primerVencimiento"] ?? null;
 			$this->segundoVencimiento = $arrData["segundoVencimiento"] ?? null;
-			$this->fechaEmision = $arrData["fechaEmision"] ?? null;
-			$this->tasaInteres = $arrData["tasaInteres"] ?? null;
 			$this->codEstado = $arrData["codEstado"] ?? "COD_ESTADO_1";
 		}
     }
@@ -41,8 +37,6 @@ class LiquidacionesGlobales{
 		$consulta->bindValue(':anio'        		,$objEntidad->anio     			   ,\PDO::PARAM_INT);
 		$consulta->bindValue(':primerVencimiento'   ,$objEntidad->primerVencimiento    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':segundoVencimiento'  ,$objEntidad->segundoVencimiento   ,\PDO::PARAM_STR);
-		$consulta->bindValue(':fechaEmision'        ,$objEntidad->fechaEmision         ,\PDO::PARAM_STR);
-		$consulta->bindValue(':tasaInteres'         ,$objEntidad->tasaInteres          ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codEstado'           ,$objEntidad->codEstado            ,\PDO::PARAM_STR);
 	}
 
