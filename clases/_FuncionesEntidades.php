@@ -55,14 +55,17 @@ class Funciones{
 		return $result;					
 	}
 	
-	public static function GetOne($idParametro,$entityName){	
+	public static function GetOne($idParametro, $entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where id =:id");
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 		$consulta->execute();
 
-		$objEntidad= $consulta->fetchObject($entityName);
+		if (class_exists($entityName))
+			$objEntidad= $consulta->fetchObject($entityName);
+		else
+			$objEntidad= $consulta->fetchObject();
 		
 		return $objEntidad;						
 	}	 

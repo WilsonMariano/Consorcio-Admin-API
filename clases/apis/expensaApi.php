@@ -1,5 +1,6 @@
 <?php   
 
+include_once __DIR__ . '/liquidacionGlobalApi.php';
 include_once __DIR__ . '/../_FuncionesEntidades.php';
 include_once __DIR__ . '/../Helper.php';
 include_once __DIR__ . '/../Expensas.php';
@@ -7,7 +8,6 @@ include_once __DIR__ . '/../Manzanas.php';
 include_once __DIR__ . '/../Diccionario.php';
 include_once __DIR__ . '/../Liquidaciones.php';
 include_once __DIR__ . '/../UF.php';
-include_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
 include_once __DIR__ . '/../enums/EntityTypeEnum.php';
 include_once __DIR__ . '/../enums/RentalContractEnum.php';
 
@@ -18,27 +18,8 @@ class ExpensaApi{
 	private static $arrLiquidaciones = array();
 	private static $arrExpensas = array();
 	private static $idLiqGlobal;
+	private static $objLiquidacionGlobal;
 	
-	
-	/**	
-	 * Verifica si una liquidación global está en estado "abierta".
-	 */
-	private static function IsOpen($idLiqGlobal){
-		$liquidacionGlobal = Funciones::GetOne($idLiqGlobal, "LiquidacionesGlobales");
-		if($liquidacionGlobal)
-			return $liquidacionGlobal->codEstado == LiqGlobalStatesEnum::Abierta;
-		else 
-			throw new Exception("No se pudo encontrar la liquidacion informada. Reintente.");
-	}	
-
-	/**
-	 * Cierra la liquidación global procesada en el request. Actualiza el campo codEstado.
-	 */
-	private static function CloseLiquidacionGlobal(){
-		$liquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
-		$liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
-		Funciones::UpdateOne($liquidacionGlobal);
-	}
 
 	/**
 	 * Obtiene un idExpensa, ya sea del array de clase arrExpensas o generando un id nuevo 
@@ -82,6 +63,9 @@ class ExpensaApi{
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private static function GetIdLiquidacion($uf){
 		if(!is_null(self::$arrLiquidaciones)){
 			foreach (self::$arrLiquidaciones as $liquidacion){
@@ -94,7 +78,6 @@ class ExpensaApi{
 		$newLiquidacion = self::NewLiquidacion($uf);
 		array_push(self::$arrLiquidaciones, $newLiquidacion);
 		return $newLiquidacion->id;
-
 	}
 
 	private static function NewLiquidacion($uf){
@@ -132,13 +115,12 @@ class ExpensaApi{
 	 */
 	private static function SetCtaCteAndGetId($liquidacion){
 		// Obtengo el periodo a liquidar de la liquidacion global.
-		$liqGbl = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
 
 		$ctaCte = new CtasCtes();
 		$ctaCte->idUF = $liquidacion->idUF;
 		$ctaCte->idLiquidacion = $liquidacion->id;
 		$ctaCte->fecha = date("Y-m-d");
-		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . $liqGbl->mes . "/" . $liqGbl->anio;
+		$ctaCte->descripcion = "LIQUIDACION EXPENSA PERIODO " . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
 		$ctaCte->monto = $liquidacion->monto * -1;
 		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacion->monto;
@@ -154,9 +136,9 @@ class ExpensaApi{
 	 * Aplica un gasto a todas las unidades funcionales de una manzana.
 	 * Recibe por parámetro el id de la manzana, el monto del gasto y el id de la LiquidacionGlobal.
 	 */
-	private static function ApplyExpenseToManzana($idManzana, $montoGastoManzana, $idGastoLiquidacion){
-		$arrUF = UF::GetByIdManzana($idManzana);			
-	
+	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
+		$arrUF = UF::GetByNroManzana($nroManzana);			
+
 		foreach ($arrUF as $uf){
 			$montoGastoUF = Helper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
@@ -220,9 +202,9 @@ class ExpensaApi{
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
 		if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
-			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoSinContrato));
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
 		elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
-			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::InquilinoConContrato));
+			$tax = Helper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
@@ -237,7 +219,9 @@ class ExpensaApi{
 			$objetoAccesoDato->beginTransaction();
 					   
 			self::$idLiqGlobal = $request->getParsedBody()[0];
-			If(!self::IsOpen(self::$idLiqGlobal))
+			self::$objLiquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
+
+			If(!LiquidacionGlobalApi::IsOpen(self::$objLiquidacionGlobal))
 				throw new Exception("La liquidación ya se encuentra cerrada.");
 
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
@@ -249,7 +233,7 @@ class ExpensaApi{
 					switch ($arrRelacionesGastos[0]["entidad"]) {
 						case EntityTypeEnum::Manzana :
 							self::ApplyExpenseToManzana(
-								$arrRelacionesGastos[0]["idManzana"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
+								$arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
 							break;
 						case EntityTypeEnum::Edificio :
 							self::ApplyExpenseToEdificio(
@@ -268,7 +252,7 @@ class ExpensaApi{
 					
 					// Proceso el gasto por cada manzana relacionada.
 					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);	
-					
+
 					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
 						$montoGastoManzana = (Helper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
@@ -277,7 +261,7 @@ class ExpensaApi{
 				}
 			}
 			self::UpdateLiquidacionesUF();
-			self::CloseLiquidacionGlobal();
+			LiquidacionGlobalApi::CloseLiquidacionGlobal(self::$objLiquidacionGlobal);
 		
 			$objetoAccesoDato->commit();
 			return $response->withJson(true, 200);

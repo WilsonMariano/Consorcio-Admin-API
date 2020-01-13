@@ -61,11 +61,11 @@ class UF{
 	 * Devuelve un array de objetos UF, buscando por el número de manzana a la cual pertenecen.
 	 * Recibe por parámetro un idManzana (de la tabla Manzanas)
 	 */
-	public static function GetByIdManzana($idManzana){
+	public static function GetByNroManzana($nroManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF where idManzana =:idManzana");
-		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF  inner join Manzanas ma on UF.idManzana = ma.id where ma.nroManzana =:nroManzana");
+		$consulta->bindValue(':nroManzana', $nroManzana , PDO::PARAM_INT);
 		$consulta->execute();
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
 		
