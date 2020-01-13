@@ -3,6 +3,8 @@
 include_once __DIR__ . '/../LiquidacionesGlobales.php';
 include_once __DIR__ . '/../Diccionario.php';
 include_once __DIR__ . '/../Feriados.php';
+include_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
+
 
 class LiquidacionGlobalApi{
     
@@ -46,8 +48,6 @@ class LiquidacionGlobalApi{
         $liquidacionGbl = new LiquidacionesGlobales($apiParams);
         
         if(self::IsValid($liquidacionGbl)){
-            $liquidacionGbl->tasaInteres = Diccionario::GetValue("TASA_INTERES");
-            $liquidacionGbl->fechaEmision = date("Y-m-d");
             self::GetExpirationDates($liquidacionGbl);
             if(Funciones::InsertOne($liquidacionGbl) > 0)
                 return $response->withJson(true, 200); 		
@@ -57,5 +57,20 @@ class LiquidacionGlobalApi{
             return $response->withJson("El período ingresado ya se encuentra registrado.", 400);				
         }
     }
+
+    /**	
+	 * Verifica si una liquidación global está en estado "abierta".
+	 */
+	public static function IsOpen($liquidacionGlobal){
+		return $liquidacionGlobal->codEstado == LiqGlobalStatesEnum::Abierta;
+    }	
+    
+    /**
+	 * Cierra la liquidación global procesada en el request. Actualiza el campo codEstado.
+	 */
+	public static function CloseLiquidacionGlobal($liquidacionGlobal){
+		$liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
+		Funciones::UpdateOne($liquidacionGlobal);
+	}
   	 
 }//class
