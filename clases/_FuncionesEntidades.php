@@ -70,6 +70,9 @@ class Funciones{
 		return $objEntidad;						
 	}	 
 	 
+	/**
+	 * Update Genérico. Retorna bool indicando si se modifico algún registro.
+	 */
 	public static function UpdateOne($objEntidad){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 	
@@ -93,6 +96,9 @@ class Funciones{
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
+	/**
+	 * Insert genérico, retorna el ID generado por la BD
+	 */
 	public static function InsertOne($objEntidad, $includePK = false)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -120,6 +126,9 @@ class Funciones{
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();	
 	}
 	
+	/**
+	 * Delete genérico. Retorna bool indicando si se eliminó algún registro.
+	 */
 	public static function DeleteOne($idParametro,$entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . $entityName ." WHERE id=:id");	

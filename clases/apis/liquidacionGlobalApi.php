@@ -70,7 +70,8 @@ class LiquidacionGlobalApi{
 	 */
 	public static function CloseLiquidacionGlobal($liquidacionGlobal){
 		$liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
-		Funciones::UpdateOne($liquidacionGlobal);
+		if(!Funciones::UpdateOne($liquidacionGlobal))
+				throw new Exception("No se pudo actualizar la liquidación global.");
 	}
   	 
 }//class

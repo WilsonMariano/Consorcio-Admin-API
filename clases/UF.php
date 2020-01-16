@@ -64,7 +64,7 @@ class UF{
 	public static function GetByNroManzana($nroManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from UF  inner join Manzanas ma on UF.idManzana = ma.id where ma.nroManzana =:nroManzana");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select UF.* from UF inner join Manzanas ma on UF.idManzana = ma.id where ma.nroManzana =:nroManzana");
 		$consulta->bindValue(':nroManzana', $nroManzana , PDO::PARAM_INT);
 		$consulta->execute();
 		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
