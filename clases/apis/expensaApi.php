@@ -211,6 +211,22 @@ class ExpensaApi{
 	}
 
 	/**
+	 * Agrega el cobro de los fondos especiales a un objeto liquidacion
+	 */
+	private static function AddFondosEspeciales($liquidacion){
+		$uf = Funciones::GetOne($liquidacion->idUF, "UF");
+		// Se genera liquidacion para el fondo especial
+		self::NewLiquidacion($uf);
+		
+
+	}
+
+
+	private static function InsertMovimientoFondoEsp(){
+		// TODO: guardar en movimientos de fondos esp
+	}
+
+	/**
 	 * Procesa una liquidaciónGlobal generando las liquidaciones para cada unidad funcional. Se asume que previamente están cargados todos los GastosLiquidaciones correctamente.
 	 * Recibe via httpParam un idLiquidacionGlobal.
 	 */
@@ -228,6 +244,7 @@ class ExpensaApi{
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
 
 			for($i = 0; $i < sizeof($arrGastosLiq); $i++){
+
 				$arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);   
 				if(sizeof($arrRelacionesGastos)==1){
 					// Si hay solo una relacion , aplico calculo según tipo entidad.
