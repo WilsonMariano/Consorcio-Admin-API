@@ -3,6 +3,7 @@
 require_once "AccesoDatos.php";
 require_once "_FuncionesEntidades.php";
 require_once "Helper.php";
+require_once '/../enums/LiquidacionTypeEnum.php';
 
 class Manzanas{
 
@@ -80,6 +81,21 @@ class Manzanas{
 		 
 		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Manzanas where nroManzana= :nroManzana");
 		$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
+		$consulta->execute();
+		$objEntidad= $consulta->fetchObject("Manzanas");
+
+		return $objEntidad;		
+	}
+
+	public static function GetMontoFondoEspecial($idManzana, $tipoLiquidacion){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		if($tipoLiquidacion == LiquidacionTypeEnum::FondoReserva)
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoReserva from Manzanas where id= :idManzana");
+		else
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoPrevision from Manzanas where id= :idManzana");
+
+		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
 		$consulta->execute();
 		$objEntidad= $consulta->fetchObject("Manzanas");
 

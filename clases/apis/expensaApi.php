@@ -10,6 +10,7 @@ include_once __DIR__ . '/../Liquidaciones.php';
 include_once __DIR__ . '/../UF.php';
 include_once __DIR__ . '/../enums/EntityTypeEnum.php';
 include_once __DIR__ . '/../enums/RentalContractEnum.php';
+include_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
 
 
 class ExpensaApi{
@@ -213,18 +214,24 @@ class ExpensaApi{
 	/**
 	 * Agrega el cobro de los fondos especiales a un objeto liquidacion
 	 */
-	private static function AddFondosEspeciales($liquidacion){
-		$uf = Funciones::GetOne($liquidacion->idUF, "UF");
-		// Se genera liquidacion para el fondo especial
-		self::NewLiquidacion($uf);
+	// private static function AddFondosEspeciales($liquidacion){
+	// 	$uf = Funciones::GetOne($liquidacion->idUF, "UF");
 		
+	// 	self::NewFondoEspecial($uf, LiquidacionTypeEnum::FondoReserva);
+	// 	self::NewFondoEspecial($uf, LiquidacionTypeEnum::FondoPrevision);
 
-	}
+	// 	$liquidacion->monto += Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoReserva);
+	// 	$liquidacion->monto += Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoPrevision);
+	// }
 
+	// private static function NewFondoEspecial($uf, $tipoLiquidacion){
+	// 	$fondo = new FondosEspeciales();
+	// 	$fondo->idLiquidacion = self::NewLiquidacion($uf)->id;
+	// 	$fondo->idLiquidacionGlobal = self::$idLiqGlobal;
+	// 	$fondo->tipoLiquidacion = $tipoLiquidacion;
 
-	private static function InsertMovimientoFondoEsp(){
-		// TODO: guardar en movimientos de fondos esp
-	}
+	// 	return self::InsertAndSaveID($fondo);
+	// }
 
 	/**
 	 * Procesa una liquidaciónGlobal generando las liquidaciones para cada unidad funcional. Se asume que previamente están cargados todos los GastosLiquidaciones correctamente.
