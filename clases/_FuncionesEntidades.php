@@ -1,6 +1,7 @@
 <?php
 
-foreach (glob("clases/*.php") as $filename)
+require_once "helpers\PDOHelper.php";
+foreach (glob("clases\*.php") as $filename)
     require_once $filename;
 
 class Funciones{
@@ -27,8 +28,8 @@ class Funciones{
 	public static function GetAll($entityName){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
-		$consulta->execute();		
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$consulta->execute();	
+		$arrObjEntidad= PDOHelper::FetchAll($consulta, $entityName);	
 		
 		return $arrObjEntidad;
 	}
@@ -40,7 +41,7 @@ class Funciones{
 			"call spGetPagedWithOptionalFilter('$entityName', '$column1', '$text1', '$column2', '$text2', $rows, $page, @o_total_rows)");
 
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrResult= PDOHelper::FetchAll($consulta);	
 		$consulta->closeCursor();
 		
 		$output = $objetoAccesoDato->Query("select @o_total_rows as total_rows")->fetchObject();
@@ -62,11 +63,7 @@ class Funciones{
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 		$consulta->execute();
 
-		if (class_exists($entityName))
-			$objEntidad= $consulta->fetchObject($entityName);
-		else
-			$objEntidad= $consulta->fetchObject();
-		
+		$objEntidad = PDOHelper::FetchObject($consulta, $entityName);
 		return $objEntidad;						
 	}	 
 	 

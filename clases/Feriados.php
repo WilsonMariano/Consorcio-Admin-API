@@ -1,8 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
-require_once "_FuncionesEntidades.php";
-require_once "Helper.php";
 
 class Feriados{
 
@@ -41,35 +38,36 @@ class Feriados{
 
 	public static function IsInamovible($fecha){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new Feriados();
+		$objEntidad = new static();
 	
 		$dia = $fecha->format("d");
         $mes = $fecha->format("m");
  
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and tipo = 'FERIADO_INAMOVIBLE'");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
+			"where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible ."'");
 		$consulta->bindValue(':dia', $dia , PDO::PARAM_STR);
 		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Feriados");
+		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 	public static function IsOptativo($fecha){
-
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new Feriados();
+		$objEntidad = new static();
 		
 		$dia = $fecha->format("d");
         $mes = $fecha->format("m");
 		$anio = $fecha->format("Y");
 
- 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and anio =:anio and tipo = 'FERIADO_OPTATIVO'");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where dia = :dia and mes = :mes and anio =:anio and tipo = '" . FeriadoTypeEnum::Optativo . "'");
 		$consulta->bindValue(':dia', $dia , PDO::PARAM_STR);
 		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
 		$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Feriados");
+		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}

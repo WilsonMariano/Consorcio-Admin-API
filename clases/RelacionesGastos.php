@@ -1,7 +1,6 @@
 <?php
 
-require_once "AccesoDatos.php";
-require_once "enums/EntityTypeEnum.php";
+require_once __DIR__ . '\enums\EntityTypeEnum.php';
 
 class RelacionesGastos{
 
@@ -40,7 +39,9 @@ class RelacionesGastos{
 	 */
 	public static function DeleteAll($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("delete from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");	
+		
+		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . static::class . 
+			" where idGastosLiquidaciones = :idGastosLiquidaciones");	
 		$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
 		$consulta->execute();
 		
@@ -54,11 +55,11 @@ class RelacionesGastos{
 	public static function GetByIdGastoLiquidacion($idGastosLiquidaciones){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from RelacionesGastos where idGastosLiquidaciones = :idGastosLiquidaciones");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
+			" where idGastosLiquidaciones = :idGastosLiquidaciones");
 		$consulta->bindValue(':idGastosLiquidaciones', $idGastosLiquidaciones , PDO::PARAM_INT);
 		$consulta->execute();
-			
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad= PDOHelper::FetchAll($consulta);	
 		
 		return $arrObjEntidad;	
 	}

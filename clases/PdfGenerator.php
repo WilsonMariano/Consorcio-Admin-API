@@ -1,5 +1,6 @@
 <?php
 
+
 class PdfGenerator {
 
 	public static function generateRecibo($response) {

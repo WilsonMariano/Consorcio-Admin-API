@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class UF{
 	
@@ -64,10 +63,11 @@ class UF{
 	public static function GetByNroManzana($nroManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select UF.* from UF inner join Manzanas ma on UF.idManzana = ma.id where ma.nroManzana =:nroManzana");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select " . static::class. ".* from " . static::class. 
+			" inner join Manzanas ma on UF.idManzana = ma.id where ma.nroManzana =:nroManzana");
 		$consulta->bindValue(':nroManzana', $nroManzana , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad= PDOHelper::FetchAll($consulta, static::class);	
 		
 		return $arrObjEntidad;					
 	}
@@ -79,12 +79,12 @@ class UF{
 	public static function GetByManzanaAndEdificio($idManzana, $idEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"select * from UF where idManzana = :idManzana and idEdificio =:idEdificio");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where idManzana = :idManzana and idEdificio =:idEdificio");
 		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
 		$consulta->bindValue(':idEdificio', $idEdificio , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad = PDOHelper::FetchAll($consulta, static::class);	
 		
 		return $arrObjEntidad;					
 	}
@@ -95,12 +95,12 @@ class UF{
 	public static function GetByManzanaAndNumero($idManzana, $nroUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"select * from UF where idManzana = :idManzana and nroUF =:nroUF");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .
+			" where idManzana = :idManzana and nroUF =:nroUF");
 		$consulta->bindValue(':idManzana', $idManzana , PDO::PARAM_INT);
 		$consulta->bindValue(':nroUF', $nroUF , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetch(PDO::FETCH_ASSOC);	
+		$arrObjEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $arrObjEntidad;					
 	}

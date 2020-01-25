@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class CtasCtes
 {
@@ -48,24 +47,25 @@ class CtasCtes
 	public static function GetLastSaldo($idUF){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from CtasCtes where idUF = :idUF order by id desc limit 1");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from " . static::class . 
+			" where idUF = :idUF order by id desc limit 1");
 		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
-		return $consulta->fetch()[0];
+		return PDOHelper::FetchObject($consulta, static::class)[0];
 	}
 
     /**
      * Genera un movimiento a favor del cliente, simulando una nota de crédito.
      */
 	public static function NewCreditNote($uf, $monto){
-		$ctaCte = new CtasCtes();
+		$ctaCte = new static();
 		$ctaCte->idUF = $uf->id;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = "NOTA DE CREDITO";
 		$ctaCte->monto = $monto;
-		$saldoActual = Helper::NumFormat(CtasCtes::GetLastSaldo($uf->nroUF) ?? 0);
-		$ctaCte->saldo = $saldoActual + Helper::NumFormat($monto);
+		$saldoActual = SimpleTypesHelper::NumFormat(self::GetLastSaldo($uf->nroUF) ?? 0);
+		$ctaCte->saldo = $saldoActual + SimpleTypesHelper::NumFormat($monto);
 
 		$newId =  Funciones::InsertOne($ctaCte);
 		if($newId < 1)
@@ -81,7 +81,7 @@ class CtasCtes
 		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
-		return $consulta->fetchAll(PDO::FETCH_ASSOC);
+		return PDOHelper::FetchAll($consulta);
 	}
 
 }//class

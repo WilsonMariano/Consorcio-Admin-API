@@ -12,7 +12,6 @@ class GastoLiquidacionApi{
     private static function IsValid($gasto){
         if(!Funciones::GetOne($gasto->idLiquidacionGlobal, "LiquidacionesGlobales")) 
             throw new Exception("La liquidación global ingresada no existe.");
-
         return true;
     }
 

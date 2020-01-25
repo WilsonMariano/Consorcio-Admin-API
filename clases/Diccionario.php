@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class Diccionario{
 
@@ -31,22 +30,22 @@ class Diccionario{
 
  	public static function GetAll($codigo){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"select * from diccionario where codigo like '" . $codigo . "%'");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where codigo like '" . $codigo . "%'");
 		$consulta->execute();		
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad = PDOHelper::FetchAll($consulta);	
 		
 		return $arrObjEntidad;
 	}
 
 	public static function GetValue($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new Diccionario();
+		$objEntidad = new static();
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from diccionario where codigo =:codigo");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from ". static::class . " where codigo =:codigo");
 		$consulta->bindValue(':codigo', $codigo , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Diccionario");
+		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $objEntidad->valor;						
 	}

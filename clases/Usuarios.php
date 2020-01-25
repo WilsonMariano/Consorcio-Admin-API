@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class Usuarios{
 
@@ -26,23 +25,25 @@ class Usuarios{
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 
 		if($includePK == true)
-			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+			$consulta->bindValue(':id' ,$objEntidad->id ,\PDO::PARAM_INT);
 		
 		$consulta->bindValue(':email'	 ,$objEntidad->email    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':password' ,$objEntidad->password ,\PDO::PARAM_STR);
-		$consulta->bindValue(':nombre' ,$objEntidad->nombre ,\PDO::PARAM_STR);
+		$consulta->bindValue(':nombre'   ,$objEntidad->nombre   ,\PDO::PARAM_STR);
 		$consulta->bindValue(':apellido' ,$objEntidad->apellido ,\PDO::PARAM_STR);
 	}
 
 
 	public static function Login($usuario) {
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from usuarios where email =:email AND password = :password");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .
+			" where email =:email AND password = :password");
 		$consulta->bindValue(':email', $usuario->email, PDO::PARAM_STR);
 		$consulta->bindValue(':password', $usuario->password, PDO::PARAM_STR);
 		$consulta->execute();
 
-		$usuarioBuscado = $consulta->fetchObject('usuarios');
+		$usuarioBuscado = PDOHelper::FetchObject($consulta, static::class);
+
 		return $usuarioBuscado;
 	}
 
