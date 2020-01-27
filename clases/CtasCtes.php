@@ -52,7 +52,7 @@ class CtasCtes
 		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
 		$consulta->execute();
 
-		return PDOHelper::FetchObject($consulta, static::class)[0];
+		return PDOHelper::FetchObject($consulta);
 	}
 
     /**

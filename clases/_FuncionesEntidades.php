@@ -14,14 +14,15 @@ class Funciones{
 	 * Valida si un registo ya existe previamente en la BD. Admite un param opcional para validar contra una columna
 	 * en especial, de no recibirlo por default valida contra la columna "id".
 	 */
-	public static function IsDuplicated($entityObject, $column = "id"){
+	public static function Exists($entityObject, $column = "id"){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$entityName = get_class($entityObject);		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where " . $column . "=:" . $column);
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . 
+			" where " . $column . "=:" . $column);
 		$consulta->bindValue(':' . $column, $entityObject->$column, PDO::PARAM_INT);
 		$consulta->execute();
-		
+
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
@@ -37,8 +38,8 @@ class Funciones{
 	public static function GetPagedWithOptionalFilter($entityName, $column1, $text1, $column2, $text2, $rows, $page){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"call spGetPagedWithOptionalFilter('$entityName', '$column1', '$text1', '$column2', '$text2', $rows, $page, @o_total_rows)");
+		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetPagedWithOptionalFilter('$entityName', '$column1', 
+			'$text1', '$column2', '$text2', $rows, $page, @o_total_rows)");
 
 		$consulta->execute();
 		$arrResult= PDOHelper::FetchAll($consulta);	

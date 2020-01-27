@@ -1,16 +1,9 @@
 <?php   
 
-include_once __DIR__ . '/liquidacionGlobalApi.php';
-include_once __DIR__ . '/../_FuncionesEntidades.php';
-include_once __DIR__ . '/../Expensas.php';
-include_once __DIR__ . '/../Manzanas.php';
-include_once __DIR__ . '/../Diccionario.php';
-include_once __DIR__ . '/../Liquidaciones.php';
-include_once __DIR__ . '/../UF.php';
-include_once __DIR__ . '/../Helpers/SimpleTypesHelper.php';
-include_once __DIR__ . '/../enums/EntityTypeEnum.php';
-include_once __DIR__ . '/../enums/RentalContractEnum.php';
-include_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
+require_once __DIR__ . '/../Helpers/SimpleTypesHelper.php';
+require_once __DIR__ . '/../enums/EntityTypeEnum.php';
+require_once __DIR__ . '/../enums/RentalContractEnum.php';
+require_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
 
 
 class ExpensaApi{
@@ -28,7 +21,7 @@ class ExpensaApi{
 	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
 		$arrUF = UF::GetByNroManzana($nroManzana);		
 		foreach ($arrUF as $uf){
-			$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoManzana) * $uf['coeficiente'];		 
+			$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoManzana) * $uf->coeficiente;		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 		}
 	}
@@ -60,7 +53,7 @@ class ExpensaApi{
 		$monto = SimpleTypesHelper::NumFormat($montoGasto);
 		self::InsertGastoExpensa($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidaciones as $liquidacion){
-			if($liquidacion->idUF == $uf['id']){
+			if($liquidacion->idUF == $uf->id){
 				$liquidacion->monto += self::CheckContractTax($uf, $monto);
 				break;
 			}
@@ -88,7 +81,7 @@ class ExpensaApi{
 		// Además aseguramos que se genere una única expensa por cada UF.
 		if(!is_null(self::$arrLiquidaciones)){
 			foreach (self::$arrLiquidaciones as $liquidacion){
-				if($liquidacion->idUF == $uf['id']){
+				if($liquidacion->idUF == $uf->id){
 					foreach (self::$arrExpensas as $expensa){
 						if($expensa->idLiquidacion == $liquidacion->id){
 							return $expensa->id;
@@ -110,7 +103,7 @@ class ExpensaApi{
 		$expensa = new Expensas();
 		$expensa->idLiquidacion = self::GetIdLiquidacion($uf);
 		$expensa->idLiquidacionGlobal = self::$idLiqGlobal;
-		$expensa->coeficiente = $uf['coeficiente'];
+		$expensa->coeficiente = $uf->coeficiente;
 
 		return self::InsertAndSaveID($expensa);
 	}
@@ -121,7 +114,7 @@ class ExpensaApi{
 	private static function GetIdLiquidacion($uf){
 		if(!is_null(self::$arrLiquidaciones)){
 			foreach (self::$arrLiquidaciones as $liquidacion){
-				if($liquidacion->idUF == $uf['id']){
+				if($liquidacion->idUF == $uf->id){
 					return $liquidacion->id;
 				}
 			}
@@ -137,7 +130,7 @@ class ExpensaApi{
 	 */
 	private static function NewLiquidacion($uf){
 		$liquidacion = new Liquidaciones();
-		$liquidacion->idUF = $uf['id'];
+		$liquidacion->idUF = $uf->id;
 		$liquidacion->fechaEmision = date("Y-m-d");
 		$liquidacion->tasaInteres = Diccionario::GetValue("TASA_INTERES");
 
@@ -162,9 +155,9 @@ class ExpensaApi{
 	 */
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
-		if($uf['codAlquila'] == RentalContractEnum::InquilinoSinContrato)
+		if($uf->codAlquila == RentalContractEnum::InquilinoSinContrato)
 			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
-		elseif($uf['codAlquila'] == RentalContractEnum::InquilinoConContrato)
+		elseif($uf->codAlquila == RentalContractEnum::InquilinoConContrato)
 			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
@@ -200,7 +193,6 @@ class ExpensaApi{
 		$ctaCte->monto = $liquidacion->saldoMonto;
 		$saldoActual = SimpleTypesHelper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacion->monto;
-		
 		self::InsertAndSaveID($ctaCte);
 	}
 

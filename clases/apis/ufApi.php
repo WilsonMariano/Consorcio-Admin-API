@@ -1,15 +1,12 @@
 <?php
 
-include_once __DIR__ . '/../UF.php';
-include_once __DIR__ . '/../_FuncionesEntidades.php';
-
 class UFApi{
     
     public static function Insert($request, $response, $args){
         $apiParams = $request->getParsedBody();
         $objUF = new UF($apiParams);
    
-        if(!UF::IsDuplicated($objUF))
+        if(!Funciones::Exists($objUF, "nroUF"))
             if(Funciones::InsertOne($objUF, true) > 0)
                 return $response->withJson(true, 200);
             else
@@ -22,9 +19,9 @@ class UFApi{
 
         $apiParams = $request->getQueryParams();
 
-        $res = UF::GetByManzanaAndNumero($apiParams['idManzana'], $apiParams['nroUF']);
+        $result = UF::GetByManzanaAndNumero($apiParams['idManzana'], $apiParams['nroUF']);
 
-        if($res != false)
+        if($result != false)
             return $response->withJson($res, 200);
         else
             return $response->withJson("No se encontraron resultados", 400);

@@ -4,7 +4,7 @@
     use \Psr\Http\Message\ResponseInterface as Response;
 
     require_once 'vendor/autoload.php';
-	require_once 'clases/AccesoDatos.php';
+	require_once 'clases/_AccesoDatos.php';
 	require_once 'clases/PdfGenerator.php';
 	
 	//Incluir todas las apis creadas

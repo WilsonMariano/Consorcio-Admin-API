@@ -1,8 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../Adherentes.php';
-include_once __DIR__ . '/../_FuncionesEntidades.php';
-
 class AdherenteApi{
     
     public static function Insert($request, $response, $args){
@@ -11,7 +8,7 @@ class AdherenteApi{
         $objAdherente = new Adherentes($apiParams);
 
         //Valido que el id no esté duplicado antes de insertar
-        if(!Funciones::IsDuplicated($objAdherente, "nroAdherente"))
+        if(!Funciones::Exists($objAdherente, "nroAdherente"))
             if(Funciones::InsertOne($objAdherente, true) > 0)
                 return $response->withJson(true, 200);
             else

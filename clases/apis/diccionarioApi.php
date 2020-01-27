@@ -1,13 +1,10 @@
 <?php
 
-include_once __DIR__ . '/../Diccionario.php';
-
 class DiccionarioApi{
 	
 	public static function GetAll($request, $response, $args){
 		//Traigo  todos los items
 		$apiParams = $request->getQueryParams();
-				
 		$listado = Diccionario::GetAll($apiParams["codigo"]);
 		
 		if($listado)
@@ -18,7 +15,6 @@ class DiccionarioApi{
 	
 	public static function GetValue ($request, $response, $args){
 		$apiParams = $request->getQueryParams();
-
 		$value = Diccionario::GetValue($apiParams["codigo"]);
 
 		if($value)

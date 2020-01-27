@@ -1,9 +1,5 @@
 <?php   
 
-include_once __DIR__ . '/../_FuncionesEntidades.php';
-include_once __DIR__ . '/../GastosLiquidaciones.php';
-include_once __DIR__ . '/../RelacionesGastos.php';
-
 class GastoLiquidacionApi{
 
     /**

@@ -1,6 +1,5 @@
 <?php
 
-
 class UF{
 	
 	//	Atributos
@@ -44,16 +43,6 @@ class UF{
 		$consulta->bindValue(':codSitLegal'  	,$objEntidad->codSitLegal     ,\PDO::PARAM_STR);
 		$consulta->bindValue(':coeficiente'  	,$objEntidad->coeficiente     ,\PDO::PARAM_STR);
 		$consulta->bindValue(':codAlquila'   	,$objEntidad->codAlquila      ,\PDO::PARAM_STR);
-	}
-
-	/**
-	 * Valida si un objeto UF ya no existe previamente en la BD.
-	 */
-	public static function IsDuplicated ($uf){
-		if (self::GetByManzanaAndNumero($uf->idManzana, $uf->nroUF)){
-			return true;
-		}
-		return false;
 	}
 
 	/**
