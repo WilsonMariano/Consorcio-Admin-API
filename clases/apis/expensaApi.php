@@ -175,7 +175,6 @@ class ExpensaApi{
 				throw new Exception("No se pudo actualizar el monto en una de las liquidaciones por unidad funcional.");
 
 			self::SetCtaCte($liquidacion);
-			self::AddFondosEspeciales($liquidacion);
 		}
 	}
 
@@ -205,28 +204,35 @@ class ExpensaApi{
 	}
 
 	/**
-	 * Agrega el cobro de los fondos especiales para cada liquidación
+	 * Agrega el cobro de los fondos especiales para cada uf previamente procesada
 	 */
-	private static function AddFondosEspeciales($liquidacion){
-		$uf = Funciones::GetOne($liquidacion->idUF, "UF");
-		
-		$newFondoReserva = self::NewFondoEspecial($uf, LiquidacionTypeEnum::FondoReserva);
-		$newFondoPrevision = self::NewFondoEspecial($uf, LiquidacionTypeEnum::FondoPrevision);
+	private static function AddFondosEspeciales(){
 
-		$newFondoReserva->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoReserva);
-		$newFondoPrevision->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoPrevision);
+		//TODO registrar movimientos en tablas de los fondos especiales
+		foreach(self::$arrLiquidaciones as $liquidacion){
+			$uf = Funciones::GetOne($liquidacion->idUF, UF::class);
 
-		return self::InsertAndSaveID($newFondoReserva);
-		return self::InsertAndSaveID($newFondoPrevision);
+			$newLiquidacionFR = self::NewLiquidacion($uf);
+			$newLiquidacionFR->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoReserva);
+			$newLiquidacionFR->saldoMonto = $newLiquidacionFR->monto * -1;
+			$newFondoReserva = self::NewFondoEspecial($newLiquidacionFR, LiquidacionTypeEnum::FondoReserva);
+			Funciones::UpdateOne($newLiquidacionFR);
+
+			$newLiquidacionFP = self::NewLiquidacion($uf);
+			$newLiquidacionFP->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoPrevision);
+			$newLiquidacionFP->saldoMonto = $newLiquidacionFP->monto * -1;
+			$newFondoPrevision = self::NewFondoEspecial($newLiquidacionFP, LiquidacionTypeEnum::FondoPrevision);
+			Funciones::UpdateOne($newLiquidacionFP);
+		}
 	}
 
-	private static function NewFondoEspecial($uf, $tipoLiquidacion){
+	private static function NewFondoEspecial($liquidacion, $tipoLiquidacion){
 		$fondo = new FondosEspeciales();
-		$fondo->idLiquidacion = self::NewLiquidacion($uf)->id;
+		$fondo->idLiquidacion = $liquidacion->id;
 		$fondo->idLiquidacionGlobal = self::$idLiqGlobal;
 		$fondo->tipoLiquidacion = $tipoLiquidacion;
 
-		return $fondo;
+		return self::InsertAndSaveID($fondo);
 	}
 
 	/**
@@ -239,7 +245,7 @@ class ExpensaApi{
 			$objetoAccesoDato->beginTransaction();
 					   
 			self::$idLiqGlobal = $request->getParsedBody()[0];
-			self::$objLiquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, "LiquidacionesGlobales");
+			self::$objLiquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, LiquidacionesGlobales::class);
 
 			If(!LiquidacionGlobalApi::IsOpen(self::$objLiquidacionGlobal))
 				throw new Exception("La liquidación ya se encuentra cerrada.");
@@ -249,7 +255,7 @@ class ExpensaApi{
 			for($i = 0; $i < sizeof($arrGastosLiq); $i++){
 
 				$arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);   
-				if(sizeof($arrRelacionesGastos)==1){
+				if(sizeof($arrRelacionesGastos)== 1){
 					// Si hay solo una relacion , aplico calculo según tipo entidad.
 					switch ($arrRelacionesGastos[0]["entidad"]) {
 						case EntityTypeEnum::Manzana :
@@ -283,6 +289,7 @@ class ExpensaApi{
 				}
 			}
 			self::UpdateLiquidacionesUF();
+			self::AddFondosEspeciales();
 			LiquidacionGlobalApi::CloseLiquidacionGlobal(self::$objLiquidacionGlobal);
 		
 			$objetoAccesoDato->commit();

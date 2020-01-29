@@ -6,7 +6,7 @@ class GastoLiquidacionApi{
      * Valida que la liquidacion global exista en la bd.
      */
     private static function IsValid($gasto){
-        if(!Funciones::GetOne($gasto->idLiquidacionGlobal, "LiquidacionesGlobales")) 
+        if(!Funciones::GetOne($gasto->idLiquidacionGlobal, LiquidacionesGlobales::class)) 
             throw new Exception("La liquidación global ingresada no existe.");
         return true;
     }
@@ -23,8 +23,8 @@ class GastoLiquidacionApi{
                 if(self::IsValid($gasto))
                     if(Funciones::InsertOne($gasto) > 0){
                         $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
-                        for($j = 0; $j < sizeof($arrGastos[$i]["RelacionesGastos"]); $j++){
-                            $relacion = new RelacionesGastos($arrGastos[$i]["RelacionesGastos"][$j]);
+                        for($j = 0; $j < sizeof($arrGastos[$i][RelacionesGastos::class]); $j++){
+                            $relacion = new RelacionesGastos($arrGastos[$i][RelacionesGastos::class][$j]);
                             $relacion->idGastosLiquidaciones = $gasto->id;
                             if(!RelacionesGastos::IsValid($relacion) || !Funciones::InsertOne($relacion))                       
                                 throw new Exception("No se pudieron guardar las relaciones de los gastos correctamente.");
@@ -50,7 +50,7 @@ class GastoLiquidacionApi{
 			$objetoAccesoDato->beginTransaction();
                   
             for($i = 0; $i < sizeof($arrIdGastos); $i++){
-                if(Funciones::DeleteOne($arrIdGastos[$i],"GastosLiquidaciones")){
+                if(Funciones::DeleteOne($arrIdGastos[$i], GastosLiquidaciones::class)){
                     //Elimino todas las relaciones del gasto
                         if(!RelacionesGastos::DeleteAll($arrIdGastos[$i]))                          
                             throw new Exception("No se pudieron eliminar las relaciones de los gastos correctamente.");

@@ -86,21 +86,24 @@ class Manzanas{
 		return $objEntidad;		
 	}
 
+	/**
+	 * Devuelve el monto a cobrar de un fondo especial que se encuentra parametrizado para un idManzana especifico.
+	 */
 	public static function GetMontoFondoEspecial($idManzana, $tipoLiquidacion){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
 		if($tipoLiquidacion == LiquidacionTypeEnum::FondoReserva)
-			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoReserva from " . static::class . 
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoReserva as monto from " . static::class . 
 				" where id = :idManzana");
 		else
-			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoPrevision from " . static::class .
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoPrevision as monto from " . static::class .
 				" where id = :idManzana");
 
 		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
 		$consulta->execute();
 		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
-		return $objEntidad;		
+		return $objEntidad->monto;
 	}
 
 }//class
