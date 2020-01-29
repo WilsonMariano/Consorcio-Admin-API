@@ -1,10 +1,6 @@
 <?php   
 
-include_once __DIR__ . '/../LiquidacionesGlobales.php';
-include_once __DIR__ . '/../Diccionario.php';
-include_once __DIR__ . '/../Feriados.php';
-include_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
-
+require_once __DIR__ . '/../enums/LiqGlobalStatesEnum.php';
 
 class LiquidacionGlobalApi{
     
@@ -13,12 +9,7 @@ class LiquidacionGlobalApi{
         return !LiquidacionesGlobales::GetByPeriod($liquidacionGbl->mes, $liquidacionGbl->anio);
     }
 
-    private static function IsHoliday($fecha){
-        $fecha = DateTime::createFromFormat("Y-m-d", $fecha);
-        return Feriados::IsInamovible($fecha) || Feriados::IsOptativo($fecha);
-    }
-
-    private static function GetExpirationDates($liquidacionGbl){
+    private static function SetExpirationDates($liquidacionGbl){
         // Si el mes es diciembre, calcular como enero. Sino, usar mes siguiente
         $mes = $liquidacionGbl->mes == 12 ? 1 : ($liquidacionGbl->mes + 1);
         $anio = $liquidacionGbl->anio;
@@ -29,9 +20,9 @@ class LiquidacionGlobalApi{
             // Validar que el dia de la semana no sea sabádo(6) ni domingo (0)
             if($nroDia != 6 && $nroDia != 0){
                 $segundoVenc = $anio . "-" . $mes . "-" . $i;
-                if(!self::IsHoliday($segundoVenc)){  
+                if(!Feriados::IsHoliday($segundoVenc)){  
                     $primerVenc = date('Y-m-d', strtotime('-7 days', strtotime($segundoVenc))); 
-                    if(!self::IsHoliday($primerVenc))
+                    if(!Feriados::IsHoliday($primerVenc))
                         break;   
                 }
             }
@@ -48,7 +39,7 @@ class LiquidacionGlobalApi{
         $liquidacionGbl = new LiquidacionesGlobales($apiParams);
         
         if(self::IsValid($liquidacionGbl)){
-            self::GetExpirationDates($liquidacionGbl);
+            self::SetExpirationDates($liquidacionGbl);
             if(Funciones::InsertOne($liquidacionGbl) > 0)
                 return $response->withJson(true, 200); 		
             else
@@ -70,7 +61,8 @@ class LiquidacionGlobalApi{
 	 */
 	public static function CloseLiquidacionGlobal($liquidacionGlobal){
 		$liquidacionGlobal->codEstado = LiqGlobalStatesEnum::Cerrada;
-		Funciones::UpdateOne($liquidacionGlobal);
+		if(!Funciones::UpdateOne($liquidacionGlobal))
+				throw new Exception("No se pudo actualizar la liquidación global.");
 	}
   	 
 }//class

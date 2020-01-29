@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class GastosLiquidaciones
 {
@@ -43,10 +42,11 @@ class GastosLiquidaciones
 	public static function GetByLiquidacionGlobal($idLiquidacionGlobal){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from GastosLiquidaciones where idLiquidacionGlobal = :idLiquidacionGlobal");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where idLiquidacionGlobal = :idLiquidacionGlobal");
 		$consulta->bindValue(':idLiquidacionGlobal', $idLiquidacionGlobal , PDO::PARAM_INT);
 		$consulta->execute();
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrObjEntidad= PDOHelper::FetchAll($consulta);
 
 		return $arrObjEntidad;					
 	}

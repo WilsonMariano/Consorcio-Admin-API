@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class ConceptosGastos
 {
@@ -36,12 +35,12 @@ class ConceptosGastos
 	 */
 	public static function GetByCodigo($codigo){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new ConceptosGastos();
+		$objEntidad = new static();
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from conceptosGastos where codigo =:codigo");
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . " where codigo =:codigo");
 		$consulta->bindValue(':codigo', $codigo , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("ConceptosGastos");
+		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 		
 		return $objEntidad;						
 	}

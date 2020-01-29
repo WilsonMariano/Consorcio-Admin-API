@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class Edificios{
 
@@ -35,11 +34,12 @@ class Edificios{
 	public static function GetByManzanaAndNumero($idManzana, $nroEdificio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Edificios where idManzana = :idManzana and nroEdificio = :nroEdificio");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where idManzana = :idManzana and nroEdificio = :nroEdificio");
 		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
 		$consulta->bindValue(':nroEdificio' , $nroEdificio, \PDO::PARAM_INT);	
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject('Edificios');
+		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
 		return $objEntidad;
 	}

@@ -16,7 +16,7 @@ class NotaCreditoDebitoApi{
 
         }
    
-        if(!UF::IsDuplicated($objUF))
+        if(!UF::Exists($objUF))
             if(Funciones::InsertOne($objUF, true) > 0)
                 return $response->withJson(true, 200);
             else

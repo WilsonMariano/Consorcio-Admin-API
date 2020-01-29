@@ -1,6 +1,7 @@
 <?php
 
-foreach (glob("clases/*.php") as $filename)
+require_once "helpers\PDOHelper.php";
+foreach (glob("clases\*.php") as $filename)
     require_once $filename;
 
 class Funciones{
@@ -13,22 +14,23 @@ class Funciones{
 	 * Valida si un registo ya existe previamente en la BD. Admite un param opcional para validar contra una columna
 	 * en especial, de no recibirlo por default valida contra la columna "id".
 	 */
-	public static function IsDuplicated($entityObject, $column = "id"){
+	public static function Exists($entityObject, $column = "id"){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 		$entityName = get_class($entityObject);		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . " where " . $column . "=:" . $column);
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . $entityName . 
+			" where " . $column . "=:" . $column);
 		$consulta->bindValue(':' . $column, $entityObject->$column, PDO::PARAM_INT);
 		$consulta->execute();
-		
+
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 	public static function GetAll($entityName){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta('select * from ' .$entityName);
-		$consulta->execute();		
-		$arrObjEntidad= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$consulta->execute();	
+		$arrObjEntidad= PDOHelper::FetchAll($consulta, $entityName);	
 		
 		return $arrObjEntidad;
 	}
@@ -36,11 +38,11 @@ class Funciones{
 	public static function GetPagedWithOptionalFilter($entityName, $column1, $text1, $column2, $text2, $rows, $page){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 
-		$consulta =$objetoAccesoDato->RetornarConsulta(
-			"call spGetPagedWithOptionalFilter('$entityName', '$column1', '$text1', '$column2', '$text2', $rows, $page, @o_total_rows)");
+		$consulta =$objetoAccesoDato->RetornarConsulta("call spGetPagedWithOptionalFilter('$entityName', '$column1', 
+			'$text1', '$column2', '$text2', $rows, $page, @o_total_rows)");
 
 		$consulta->execute();
-		$arrResult= $consulta->fetchAll(PDO::FETCH_ASSOC);	
+		$arrResult= PDOHelper::FetchAll($consulta);	
 		$consulta->closeCursor();
 		
 		$output = $objetoAccesoDato->Query("select @o_total_rows as total_rows")->fetchObject();
@@ -62,14 +64,13 @@ class Funciones{
 		$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 		$consulta->execute();
 
-		if (class_exists($entityName))
-			$objEntidad= $consulta->fetchObject($entityName);
-		else
-			$objEntidad= $consulta->fetchObject();
-		
+		$objEntidad = PDOHelper::FetchObject($consulta, $entityName);
 		return $objEntidad;						
 	}	 
 	 
+	/**
+	 * Update Genérico. Retorna bool indicando si se modifico algún registro.
+	 */
 	public static function UpdateOne($objEntidad){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 	
@@ -93,6 +94,9 @@ class Funciones{
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
+	/**
+	 * Insert genérico, retorna el ID generado por la BD
+	 */
 	public static function InsertOne($objEntidad, $includePK = false)
 	{
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -120,6 +124,9 @@ class Funciones{
 		return $objetoAccesoDato->RetornarUltimoIdInsertado();	
 	}
 	
+	/**
+	 * Delete genérico. Retorna bool indicando si se eliminó algún registro.
+	 */
 	public static function DeleteOne($idParametro,$entityName){	
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . $entityName ." WHERE id=:id");	

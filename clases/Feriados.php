@@ -1,8 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
-require_once "_FuncionesEntidades.php";
-require_once "Helper.php";
 
 class Feriados{
 
@@ -30,48 +27,47 @@ class Feriados{
 	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
-			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+			$consulta->bindValue(':id', $objEntidad->id, \PDO::PARAM_INT);
 		
-		$consulta->bindValue(':dia'   	,$objEntidad->dia    ,\PDO::PARAM_STR);
-		$consulta->bindValue(':mes'   	,$objEntidad->mes	  ,\PDO::PARAM_STR);
-		$consulta->bindValue(':anio'	,$objEntidad->anio ,\PDO::PARAM_STR);
-		$consulta->bindValue(':tipo'	,$objEntidad->tipo ,\PDO::PARAM_STR);
+		$consulta->bindValue(':dia'   		,$objEntidad->dia         ,\PDO::PARAM_STR);
+		$consulta->bindValue(':mes'   		,$objEntidad->mes         ,\PDO::PARAM_STR);
+		$consulta->bindValue(':anio'		,$objEntidad->anio        ,\PDO::PARAM_STR);
+		$consulta->bindValue(':tipo'		,$objEntidad->tipo        ,\PDO::PARAM_STR);
 		$consulta->bindValue(':descripcion'	,$objEntidad->descripcion ,\PDO::PARAM_STR);
 	}
 
 	public static function IsInamovible($fecha){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new Feriados();
-	
-		$dia = $fecha->format("d");
-        $mes = $fecha->format("m");
- 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and tipo = 'FERIADO_INAMOVIBLE'");
-		$consulta->bindValue(':dia', $dia , PDO::PARAM_STR);
-		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
+		$objEntidad = new static();
+	 
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
+			"where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible ."'");
+		$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
+		$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Feriados");
+		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}
 
 	public static function IsOptativo($fecha){
-
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new Feriados();
-		
-		$dia = $fecha->format("d");
-        $mes = $fecha->format("m");
-		$anio = $fecha->format("Y");
+		$objEntidad = new static();
 
- 		$consulta =$objetoAccesoDato->RetornarConsulta("select * from Feriados where dia = :dia and mes = :mes and anio =:anio and tipo = 'FERIADO_OPTATIVO'");
-		$consulta->bindValue(':dia', $dia , PDO::PARAM_STR);
-		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
-		$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);
+		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where dia = :dia and mes = :mes and anio =:anio and tipo = '" . FeriadoTypeEnum::Optativo . "'");
+		$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
+		$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
+		$consulta->bindValue(':anio', $fecha->format("Y") , PDO::PARAM_STR);
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Feriados");
+		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
 		
 		return $consulta->rowCount() > 0 ? true : false;
 	}
+
+	public static function IsHoliday($fecha){
+        $fecha = DateTime::createFromFormat("Y-m-d", $fecha);
+        return self::IsInamovible($fecha) || self::IsOptativo($fecha);
+    }
 
 }//class

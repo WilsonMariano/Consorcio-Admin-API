@@ -1,7 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../_FuncionesEntidades.php';
-
 class GenericApi{
 
 	public static function GetAll($request, $response, $args){
@@ -38,7 +36,7 @@ class GenericApi{
 		$apiParams = $request->getQueryParams();
 		$id = json_decode($args['id']);
 		
-		$obj= Funciones::GetOne($id,$apiParams["t"]);
+		$obj= Funciones::GetOne($id, $apiParams["t"]);
 		
 		if($obj)
 			return $response->withJson($obj, 200); 
@@ -104,7 +102,7 @@ class GenericApi{
 
 		if($obj){
 			$obj->id = $id;
-			if(!Funciones::IsDuplicated($obj))
+			if(!Funciones::Exists($obj))
 				return $response->withJson(true, 200); 
 			else
 				return $response->withJson(false, 200);  			

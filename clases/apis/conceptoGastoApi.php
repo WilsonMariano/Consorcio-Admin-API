@@ -1,7 +1,5 @@
 <?php
 
-include_once __DIR__ . '/../ConceptosGastos.php';
-
 class ConceptoGastoApi{
     
     public static function Insert($request, $response, $args){
@@ -10,7 +8,7 @@ class ConceptoGastoApi{
         $objConceptoGasto = new ConceptosGastos($apiParams);
         
         //Valido que el código no esté duplicado antes de insertar
-        if(!Funciones::IsDuplicated($objConceptoGasto, "codigo"))
+        if(!Funciones::Exists($objConceptoGasto, "codigo"))
             if(Funciones::InsertOne($objConceptoGasto) > 0)
                 return $response->withJson(true, 200);
             else

@@ -1,8 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
-require_once __DIR__ . "/enums/LiqGlobalStatesEnum.php";
-require_once "_FuncionesEntidades.php";
 
 class LiquidacionesGlobales{
 	
@@ -46,9 +43,10 @@ class LiquidacionesGlobales{
 	 */
 	public static function GetByPeriod($mes, $anio){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new LiquidacionesGlobales();
+		$objEntidad = new static();
 		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from LiquidacionesGlobales where mes = :mes and anio = :anio");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where mes = :mes and anio = :anio");
 		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
 		$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);
 		$consulta->execute();

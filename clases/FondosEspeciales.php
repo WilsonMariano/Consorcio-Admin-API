@@ -1,23 +1,22 @@
 <?php
 
 
-class Expensas
+class FondosEspeciales
 {
 	// Atributos
 	public $id;
 	public $idLiquidacion;
 	public $idLiquidacionGlobal;
-	public $coeficiente;
-
+	public $tipoLiquidacion;
+	
 	// Constructor customizado
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
 			$this->idLiquidacion = $arrData['idLiquidacion'];
 			$this->idLiquidacionGlobal = $arrData['idLiquidacionGlobal'];
-		} else {
-			$this->coeficiente = 0;
-		}
+			$this->tipoLiquidacion = $arrData['tipoLiquidacion'];
+		} 
 	}
 
 	/**
@@ -30,7 +29,7 @@ class Expensas
 		
 		$consulta->bindValue(':idLiquidacion'          ,$objEntidad->idLiquidacion        ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idLiquidacionGlobal'    ,$objEntidad->idLiquidacionGlobal  ,\PDO::PARAM_INT);
-		$consulta->bindValue(':coeficiente'   	       ,$objEntidad->coeficiente          ,\PDO::PARAM_STR);
+		$consulta->bindValue(':tipoLiquidacion'        ,$objEntidad->tipoLiquidacion      ,\PDO::PARAM_STR);
 	}
 
 }//class

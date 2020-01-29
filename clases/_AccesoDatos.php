@@ -50,7 +50,7 @@ class AccesoDatos{
  
     public static function dameUnObjetoAcceso(){ 
         if (!isset(self::$ObjetoAccesoDatos)) {          
-            self::$ObjetoAccesoDatos = new AccesoDatos(); 
+            self::$ObjetoAccesoDatos = new static(); 
         } 
         return self::$ObjetoAccesoDatos;        
     }

@@ -1,8 +1,7 @@
 <?php
 
-require_once "AccesoDatos.php";
-require_once "_FuncionesEntidades.php";
-require_once "Helper.php";
+require_once __DIR__ . '\helpers\SimpleTypesHelper.php';
+require_once __DIR__ . '\enums\LiquidacionTypeEnum.php';
 
 class Manzanas{
 
@@ -18,7 +17,7 @@ class Manzanas{
 	public function __construct($arrData = null){
 		if($arrData != null){
 			$this->id = $arrData['id'] ?? null;
-			$this->id = $arrData['nroManzana'];
+			$this->idnroManzana = $arrData['nroManzana'];
 			$this->mtsCuadrados = $arrData['mtsCuadrados'];
 			$this->tipoVivienda = $arrData['tipoVivienda'] ?? null;
 			$this->nombreConsorcio = $arrData['nombreConsorcio'];
@@ -48,7 +47,7 @@ class Manzanas{
 	 */
 	public static function GetPorcentajes($arrManzanas){
 		//Traigo todas las manzanas
-		$manzanas = Funciones::GetAll("Manzanas");
+		$manzanas = Funciones::GetAll(static::class);
 
 		if($manzanas){
 			$totalMts = 0;
@@ -56,9 +55,9 @@ class Manzanas{
 			// Burbujeo para armar el result(preliminar) y tambien calcular el total de mts cuadrados entre todas las manzanas recibidas por param
 			foreach ($arrManzanas as $nroManzana) {
 				foreach ($manzanas as $manzana) {
-					if($nroManzana == $manzana['nroManzana']) {
-						$result->$nroManzana = Helper::NumFormat($manzana['mtsCuadrados']);
-						$totalMts += Helper::NumFormat($manzana['mtsCuadrados']);
+					if($nroManzana == $manzana->nroManzana) {
+						$result->$nroManzana = SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
+						$totalMts += SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
 						break;
 					}
 				}	
@@ -66,8 +65,8 @@ class Manzanas{
 
 			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 			foreach ($arrManzanas as $nroManzana) {
-				$valor =  (Helper::NumFormat($result->$nroManzana) * 100) / Helper::NumFormat($totalMts);
-				$result->$nroManzana =  Helper::NumFormat($valor);
+				$valor =  (SimpleTypesHelper::NumFormat($result->$nroManzana) * 100) / SimpleTypesHelper::NumFormat($totalMts);
+				$result->$nroManzana =  SimpleTypesHelper::NumFormat($valor);
 			}
 			return $result;
 		}else{
@@ -78,12 +77,33 @@ class Manzanas{
 	public static function GetByNumero($nroManzana){
 		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from Manzanas where nroManzana= :nroManzana");
+		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+			" where nroManzana= :nroManzana");
 		$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
 		$consulta->execute();
-		$objEntidad= $consulta->fetchObject("Manzanas");
+		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
 		return $objEntidad;		
+	}
+
+	/**
+	 * Devuelve el monto a cobrar de un fondo especial que se encuentra parametrizado para un idManzana especifico.
+	 */
+	public static function GetMontoFondoEspecial($idManzana, $tipoLiquidacion){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		if($tipoLiquidacion == LiquidacionTypeEnum::FondoReserva)
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoReserva as monto from " . static::class . 
+				" where id = :idManzana");
+		else
+			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoPrevision as monto from " . static::class .
+				" where id = :idManzana");
+
+		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+		$consulta->execute();
+		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
+
+		return $objEntidad->monto;
 	}
 
 }//class

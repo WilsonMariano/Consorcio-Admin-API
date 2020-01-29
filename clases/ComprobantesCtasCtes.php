@@ -1,6 +1,5 @@
 <?php
 
-require_once "AccesoDatos.php";
 
 class ComprobantesCtasCtes
 {
@@ -25,7 +24,7 @@ class ComprobantesCtasCtes
 	 */
 	public function BindQueryParams($consulta,$objEntidad, $includePK = true){
 		if($includePK == true)
-			$consulta->bindValue(':id'		 ,$objEntidad->id       ,\PDO::PARAM_INT);
+			$consulta->bindValue(':id' ,$objEntidad->id ,\PDO::PARAM_INT);
 		
 		$consulta->bindValue(':idCtaCte'   	          ,$objEntidad->idCtaCte              ,\PDO::PARAM_INT);
 		$consulta->bindValue(':idDetalleComprobante'  ,$objEntidad->idDetalleComprobante  ,\PDO::PARAM_INT);
