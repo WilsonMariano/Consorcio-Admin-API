@@ -1,13 +1,11 @@
 <?php
 
-
 class MovimientosFR
 {
 	// Atributos
 	public $id;
 	public $idMovimientoFondoEsp;
 	public $idGastoLiquidacion;
-	
 	
 	// Constructor customizado
 	public function __construct($arrData = null){

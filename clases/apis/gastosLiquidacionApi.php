@@ -11,16 +11,27 @@ class GastoLiquidacionApi{
         return true;
     }
 
-    private static function ImputarContraFondoEsp($gastoLiquidacion){
+    private static function ImputarContraFondoEsp($jsonGastoLiq, $idGastoLiq){
+        for($i = 0; $i < sizeof($jsonGastoLiq[RelacionesGastos::class]); $i++){
+            $relacion = new RelacionesGastos($jsonGastoLiq[RelacionesGastos::class][$i]);
         
-        $movFondos = new MovimientosFondosEsp();
-        // $movFondos->idManzana = 
+            $movFondos = new MovimientosFondosEsp();
+            $movFondos->idManzana = $relacion->idManzana;
+            $movFondos->monto = SimpleTypesHelper::NumFormat($jsonGastoLiq['monto']);
+            $movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
+            $lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($relacion->idManzana));
+            $movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($jsonGastoLiq['monto']);
+            $movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
+            $newIdMovFondosEsp = Funciones::InsertOne($movFondos);
+            if($newIdMovFondosEsp < 1)
+                throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
 
-        // $fondo = new MovimientosFR();
-        // $fondo->idMovimientoFondoEsp = ;
-        // $fondo->idGastoLiquidacion = ;
-
-        return true;
+            $movFR = new MovimientosFR();
+            $movFR->idMovimientoFondoEsp = $newIdMovFondosEsp;
+            $movFR->idGastoLiquidacion = $idGastoLiq; 
+            if(!Funciones::InsertOne($movFR))
+                throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
+        }   
     }
 
     public static function Insert($request, $response, $args){
@@ -33,10 +44,7 @@ class GastoLiquidacionApi{
             for($i = 0; $i < sizeof($arrGastos); $i++){
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
                 if(self::IsValid($gasto)){
-
-                    if($arrGastos[$i]["imputaFondoEspecial"])
-                        self::ImputarContraFondoEsp($gasto);
-
+                  
                     if(Funciones::InsertOne($gasto) > 0){
                         $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
                         for($j = 0; $j < sizeof($arrGastos[$i][RelacionesGastos::class]); $j++){
@@ -48,6 +56,9 @@ class GastoLiquidacionApi{
                     }else{
                         throw new Exception("No se pudo guardar los gastos correctamente.");
                     }
+
+                    if($arrGastos[$i]["imputaFondoEspecial"])
+                        self::ImputarContraFondoEsp($arrGastos[$i], $gasto->id);
                 }
             }
             $objetoAccesoDato->commit();

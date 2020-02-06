@@ -36,7 +36,21 @@ class MovimientosFondosEsp
 		$consulta->bindValue(':descripcion',      $objEntidad->descripcion,      \PDO::PARAM_STR);
 		$consulta->bindValue(':saldo',            $objEntidad->saldo,            \PDO::PARAM_INT);
 		$consulta->bindValue(':tipoLiquidacion',  $objEntidad->tipoLiquidacion,  \PDO::PARAM_STR);
-	
+	}
+
+		/**
+	 * Devuelve el ultimo saldo calculado para un fondo especial.
+	 * Recibe por parámetro el id de la manzana
+	 */
+	public static function GetLastSaldo($idManzana){
+		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		 
+		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from " . static::class . 
+			" where idManzana = :idManzana order by id desc limit 1");
+		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+		$consulta->execute();
+
+		return PDOHelper::FetchObject($consulta)->saldo ?? 0;
 	}
 
 }//class
