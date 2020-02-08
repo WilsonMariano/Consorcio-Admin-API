@@ -14,23 +14,8 @@ class GastoLiquidacionApi{
     private static function ImputarContraFondoEsp($jsonGastoLiq, $idGastoLiq){
         for($i = 0; $i < sizeof($jsonGastoLiq[RelacionesGastos::class]); $i++){
             $relacion = new RelacionesGastos($jsonGastoLiq[RelacionesGastos::class][$i]);
-        
-            $movFondos = new MovimientosFondosEsp();
-            $movFondos->idManzana = $relacion->idManzana;
-            $movFondos->monto = SimpleTypesHelper::NumFormat($jsonGastoLiq['monto']);
-            $movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
-            $lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($relacion->idManzana));
-            $movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($jsonGastoLiq['monto']);
-            $movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
-            $newIdMovFondosEsp = Funciones::InsertOne($movFondos);
-            if($newIdMovFondosEsp < 1)
-                throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
-
-            $movFR = new MovimientosFR();
-            $movFR->idMovimientoFondoEsp = $newIdMovFondosEsp;
-            $movFR->idGastoLiquidacion = $idGastoLiq; 
-            if(!Funciones::InsertOne($movFR))
-                throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
+            $newIdMovFondosEsp = MovimientosFondosEsp::SetMovimientoFondoEsp($relacion, $jsonGastoLiq['monto']);
+            MovimientosFR::SetMovimientoFR($newIdMovFondosEsp, $idGastoLiq);
         }   
     }
 
@@ -57,7 +42,7 @@ class GastoLiquidacionApi{
                         throw new Exception("No se pudo guardar los gastos correctamente.");
                     }
 
-                    if($arrGastos[$i]["imputaFondoEspecial"])
+                    if($arrGastos[$i]["imputaFondoEspecial"] === true)
                         self::ImputarContraFondoEsp($arrGastos[$i], $gasto->id);
                 }
             }

@@ -28,4 +28,12 @@ class MovimientosFR
 		$consulta->bindValue(':idGastoLiquidacion'    ,$objEntidad->idGastoLiquidacion    ,\PDO::PARAM_INT);
 	}
 
+	public static function SetMovimientoFR($newIdMovFondosEsp, $idGastoLiq){
+        $movFR = new static();
+        $movFR->idMovimientoFondoEsp = $newIdMovFondosEsp;
+        $movFR->idGastoLiquidacion = $idGastoLiq; 
+        if(!Funciones::InsertOne($movFR))
+            throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
+    }
+
 }//class

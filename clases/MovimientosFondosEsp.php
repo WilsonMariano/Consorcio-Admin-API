@@ -53,4 +53,19 @@ class MovimientosFondosEsp
 		return PDOHelper::FetchObject($consulta)->saldo ?? 0;
 	}
 
+	public static function SetMovimientoFondoEsp($relacionGasto, $montoGasto){
+        $movFondos = new static();
+        $movFondos->idManzana = $relacionGasto->idManzana;
+        $movFondos->monto = SimpleTypesHelper::NumFormat($montoGasto);
+        $movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
+        $lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($relacionGasto->idManzana));
+        $movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($montoGasto);
+        $movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
+        $newIdMovFondosEsp = Funciones::InsertOne($movFondos);
+        if($newIdMovFondosEsp < 1)
+            throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
+
+        return $newIdMovFondosEsp;
+    }
+
 }//class

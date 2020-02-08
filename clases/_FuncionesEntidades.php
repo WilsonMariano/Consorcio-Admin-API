@@ -1,6 +1,8 @@
 <?php
 
 require_once "helpers\PDOHelper.php";
+require_once "helpers\ErrorHelper.php";
+require_once "enums\ErrorEnum.php";
 foreach (glob("clases\*.php") as $filename)
     require_once $filename;
 
@@ -99,29 +101,35 @@ class Funciones{
 	 */
 	public static function InsertOne($objEntidad, $includePK = false)
 	{
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		try {  
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 					 
-		//Obtengo el nombre de la clase y sus atributos
-		$entityName = get_class($objEntidad);
-		$arrAtributos = get_class_vars($entityName);
-
-		//Armo la query SQL dinamicamente
-		$myQuery = "insert into " . $entityName ." (" ;
-		$myQueryAux = "";
-		foreach ($arrAtributos as $atributo => $valor) {
-			if ($atributo != "id" || $includePK){
-				$myQuery .= $atributo .  ",";
-				$myQueryAux .= ":".$atributo.","; 
+			//Obtengo el nombre de la clase y sus atributos
+			$entityName = get_class($objEntidad);
+			$arrAtributos = get_class_vars($entityName);
+	
+			//Armo la query SQL dinamicamente
+			$myQuery = "insert into " . $entityName ." (" ;
+			$myQueryAux = "";
+			foreach ($arrAtributos as $atributo => $valor) {
+				if ($atributo != "id" || $includePK){
+					$myQuery .= $atributo .  ",";
+					$myQueryAux .= ":".$atributo.","; 
+				}
 			}
-		}
-		$myQuery = rtrim($myQuery,",") . ") values (" . rtrim($myQueryAux,",") . ")" ;
+			$myQuery = rtrim($myQuery,",") . ") values (" . rtrim($myQueryAux,",") . ")" ;
+	
+			//Ejecuto la query
+			$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
+			$objEntidad->BindQueryParams($consulta, $objEntidad, $includePK);
+			$consulta->execute();
 
-		//Ejecuto la query
-		$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
-		$objEntidad->BindQueryParams($consulta, $objEntidad, $includePK);
-		$consulta->execute();
-		
-		return $objetoAccesoDato->RetornarUltimoIdInsertado();	
+			return $objetoAccesoDato->RetornarUltimoIdInsertado();	
+
+		}catch(Exception $e){
+			ErrorHelper::LogError(ErrorEnum::GenericInsert, $objEntidad , $e);		 
+            throw new ErrorException("No se pudo insertar una entidad del tipo " . $entityName);
+		}
 	}
 	
 	/**
