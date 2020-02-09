@@ -11,6 +11,14 @@ class GastoLiquidacionApi{
         return true;
     }
 
+    private static function ImputarContraFondoEsp($jsonGastoLiq, $idGastoLiq){
+        for($i = 0; $i < sizeof($jsonGastoLiq[RelacionesGastos::class]); $i++){
+            $relacion = new RelacionesGastos($jsonGastoLiq[RelacionesGastos::class][$i]);
+            $newIdMovFondosEsp = MovimientosFondosEsp::SetMovimientoFondoEsp($relacion, $jsonGastoLiq['monto']);
+            MovimientosFR::SetMovimientoFR($newIdMovFondosEsp, $idGastoLiq);
+        }   
+    }
+
     public static function Insert($request, $response, $args){
         try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
@@ -20,7 +28,8 @@ class GastoLiquidacionApi{
                   
             for($i = 0; $i < sizeof($arrGastos); $i++){
                 $gasto = new GastosLiquidaciones($arrGastos[$i]);
-                if(self::IsValid($gasto))
+                if(self::IsValid($gasto)){
+                  
                     if(Funciones::InsertOne($gasto) > 0){
                         $gasto->id = $objetoAccesoDato->RetornarUltimoIdInsertado();
                         for($j = 0; $j < sizeof($arrGastos[$i][RelacionesGastos::class]); $j++){
@@ -32,6 +41,10 @@ class GastoLiquidacionApi{
                     }else{
                         throw new Exception("No se pudo guardar los gastos correctamente.");
                     }
+
+                    if($arrGastos[$i]["imputaFondoEspecial"] === true)
+                        self::ImputarContraFondoEsp($arrGastos[$i], $gasto->id);
+                }
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
@@ -40,6 +53,7 @@ class GastoLiquidacionApi{
             return $response->withJson($e->getMessage(), 500);
 		}
     }
+
    
     public static function Delete($request, $response, $args){
         //Proceso los datos recibidos por body

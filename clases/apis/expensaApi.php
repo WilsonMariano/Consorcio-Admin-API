@@ -226,7 +226,7 @@ class ExpensaApi{
 		}
 	}
 
-	private static function NewFondoEspecial($liquidacion, $tipoLiquidacion){
+	public static function NewFondoEspecial($liquidacion, $tipoLiquidacion){
 		$fondo = new FondosEspeciales();
 		$fondo->idLiquidacion = $liquidacion->id;
 		$fondo->idLiquidacionGlobal = self::$idLiqGlobal;

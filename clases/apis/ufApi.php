@@ -21,8 +21,9 @@ class UFApi{
 
         $result = UF::GetByManzanaAndNumero($apiParams['idManzana'], $apiParams['nroUF']);
 
+
         if($result != false)
-            return $response->withJson($res, 200);
+            return $response->withJson($result, 200);
         else
             return $response->withJson("No se encontraron resultados", 400);
     }
