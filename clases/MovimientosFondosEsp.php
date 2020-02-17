@@ -43,29 +43,41 @@ class MovimientosFondosEsp
 	 * Recibe por parámetro el id de la manzana
 	 */
 	public static function GetLastSaldo($idManzana){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from " . static::class . 
-			" where idManzana = :idManzana order by id desc limit 1");
-		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
-		$consulta->execute();
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select saldo from " . static::class . 
+				" where idManzana = :idManzana order by id desc limit 1");
+			$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+			$consulta->execute();
 
-		return PDOHelper::FetchObject($consulta)->saldo ?? 0;
+			return PDOHelper::FetchObject($consulta)->saldo ?? 0;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idManzana, $e);		 
+			throw new ErrorException("No se pudo recuperar el ultimo saldo de la manzana de id" . $idManzana);
+		}
 	}
 
-	public static function SetMovimientoFondoEsp($relacionGasto, $montoGasto){
-        $movFondos = new static();
-        $movFondos->idManzana = $relacionGasto->idManzana;
-        $movFondos->monto = SimpleTypesHelper::NumFormat($montoGasto);
-        $movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
-        $lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($relacionGasto->idManzana));
-        $movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($montoGasto);
-        $movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
-        $newIdMovFondosEsp = Funciones::InsertOne($movFondos);
-        if($newIdMovFondosEsp < 1)
-            throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
+	public static function SetMovimientoFondoEsp($idManzana, $montoGasto){
+		try{
+			$movFondos = new static();
+			$movFondos->idManzana = $idManzana;
+			$movFondos->monto = SimpleTypesHelper::NumFormat($montoGasto);
+			$movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
+			$lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($idManzana));
+			$movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($montoGasto);
+			$movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
+			$newIdMovFondosEsp = Funciones::InsertOne($movFondos);
+			if($newIdMovFondosEsp < 1)
+				throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
 
-        return $newIdMovFondosEsp;
+			return $newIdMovFondosEsp;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $relacionGasto . "- $" . $montoGasto, $e);		 
+			throw new ErrorException("No se pudo generar el movimiento de fondo especial para la manzana de id" . $idManzana);
+		}
     }
 
 }//class

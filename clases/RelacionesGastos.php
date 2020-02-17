@@ -38,14 +38,20 @@ class RelacionesGastos{
 	 * Recibe por parámetro un idGastoLiquidacion.
 	 */
 	public static function DeleteAll($idGastosLiquidaciones){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . static::class . 
-			" where idGastosLiquidaciones = :idGastosLiquidaciones");	
-		$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
-		$consulta->execute();
-		
-		return $consulta->rowCount() > 0 ? true : false;
+			$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . static::class . 
+				" where idGastosLiquidaciones = :idGastosLiquidaciones");	
+			$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
+			$consulta->execute();
+			
+			return $consulta->rowCount() > 0 ? true : false;
+	
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $nroManzana, $e);		 
+			throw new ErrorException("No se pudo recuperar la manzana " . $nroManzana);
+		}
 	}
 
 	/**

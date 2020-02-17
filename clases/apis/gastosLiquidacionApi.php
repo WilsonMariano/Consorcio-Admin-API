@@ -14,7 +14,7 @@ class GastoLiquidacionApi{
     private static function ImputarContraFondoEsp($jsonGastoLiq, $idGastoLiq){
         for($i = 0; $i < sizeof($jsonGastoLiq[RelacionesGastos::class]); $i++){
             $relacion = new RelacionesGastos($jsonGastoLiq[RelacionesGastos::class][$i]);
-            $newIdMovFondosEsp = MovimientosFondosEsp::SetMovimientoFondoEsp($relacion, $jsonGastoLiq['monto']);
+            $newIdMovFondosEsp = MovimientosFondosEsp::SetMovimientoFondoEsp($relacion->idManzana, $jsonGastoLiq['monto']);
             MovimientosFR::SetMovimientoFR($newIdMovFondosEsp, $idGastoLiq);
         }   
     }

@@ -59,29 +59,42 @@ class CtasCtes
      * Genera un movimiento a favor del cliente, simulando una nota de crédito.
      */
 	public static function NewCreditNote($uf, $monto){
-		$ctaCte = new static();
-		$ctaCte->idUF = $uf->id;
-		$ctaCte->fecha = date("Y-m-d");
-		$ctaCte->descripcion = "NOTA DE CREDITO";
-		$ctaCte->monto = $monto;
-		$saldoActual = SimpleTypesHelper::NumFormat(self::GetLastSaldo($uf->nroUF) ?? 0);
-		$ctaCte->saldo = $saldoActual + SimpleTypesHelper::NumFormat($monto);
+		try{		
+			$ctaCte = new static();
+			$ctaCte->idUF = $uf->id;
+			$ctaCte->fecha = date("Y-m-d");
+			$ctaCte->descripcion = "NOTA DE CREDITO";
+			$ctaCte->monto = $monto;
+			$saldoActual = SimpleTypesHelper::NumFormat(self::GetLastSaldo($uf->nroUF) ?? 0);
+			$ctaCte->saldo = $saldoActual + SimpleTypesHelper::NumFormat($monto);
 
-		$newId =  Funciones::InsertOne($ctaCte);
-		if($newId < 1)
-			throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
-		else
-			return $newId;
+			$newId =  Funciones::InsertOne($ctaCte);
+			if($newId < 1)
+				throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
+			else
+				return $newId;
+
+			}catch(Exception $e){
+				ErrorHelper::LogError(__FUNCTION__, $uf , $e);		 
+				throw new ErrorException("No se pudo generar una nota de crédito para la uf " . $uf_id);
+		}
 	}
 	
 	public static function GetDeudas($idUF){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idUF = :idUF");
-		$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
-		$consulta->execute();
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idUF = :idUF");
+			$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
+			$consulta->execute();
 
-		return PDOHelper::FetchAll($consulta);
+			return PDOHelper::FetchAll($consulta);
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idUF, $e);		 
+			throw new ErrorException("No se pudieron recuperar las deudas de la uf " . $idUF);
+		}
+
 	}
 
 }//class
