@@ -8,7 +8,9 @@ require_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
 
 class ExpensaApi{
  
-	// Variables de clase
+	private const TXT_LIQ_EXPENSA = "TXT_LIQ_EXPENSA";
+	private const TASA_INTERES = "TASA_INTERES";
+
 	private static $arrLiquidaciones = array();
 	private static $arrExpensas = array();
 	private static $idLiqGlobal;
@@ -132,7 +134,7 @@ class ExpensaApi{
 		$liquidacion = new Liquidaciones();
 		$liquidacion->idUF = $uf->id;
 		$liquidacion->fechaEmision = date("Y-m-d");
-		$liquidacion->tasaInteres = Diccionario::GetValue("TASA_INTERES");
+		$liquidacion->tasaInteres = Diccionario::GetValue(self::TASA_INTERES);
 
 		return self::InsertAndSaveID($liquidacion);
 	}
@@ -199,7 +201,7 @@ class ExpensaApi{
 	 * Genera el texto para la descripción de las expensas en cuentas corrientes.
 	 */
 	private static function GetDescripcion(){
-		$textoDescripcion = Diccionario::GetValue("TXT_LIQ_EXPENSA");
+		$textoDescripcion = Diccionario::GetValue(self::TXT_LIQ_EXPENSA);
 		return SimpleTypesHelper::TxtPadRight($textoDescripcion) . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
 	}
 
@@ -207,8 +209,6 @@ class ExpensaApi{
 	 * Agrega el cobro de los fondos especiales para cada uf previamente procesada
 	 */
 	private static function AddFondosEspeciales(){
-
-		//TODO registrar movimientos en tablas de los fondos especiales
 		foreach(self::$arrLiquidaciones as $liquidacion){
 			$uf = Funciones::GetOne($liquidacion->idUF, UF::class);
 
