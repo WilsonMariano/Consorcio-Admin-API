@@ -48,8 +48,10 @@ class GastoLiquidacionApi{
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
+
 		}catch(Exception $e){
-			$objetoAccesoDato->rollBack();
+            $objetoAccesoDato->rollBack();
+            ErrorHelper::LogError(__FUNCTION__, $arrGastos, $e);
             return $response->withJson($e->getMessage(), 500);
 		}
     }
@@ -74,8 +76,10 @@ class GastoLiquidacionApi{
             }
             $objetoAccesoDato->commit();
             return $response->withJson(true, 200);
+
 		}catch(Exception $e){
-			$objetoAccesoDato->rollBack();
+            $objetoAccesoDato->rollBack();
+            ErrorHelper::LogError(__FUNCTION__, $arrIdGastos, $e);
             return $response->withJson($e->getMessage(), 500);
 		}
     }

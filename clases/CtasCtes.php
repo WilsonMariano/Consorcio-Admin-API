@@ -69,14 +69,11 @@ class CtasCtes
 			$ctaCte->saldo = $saldoActual + SimpleTypesHelper::NumFormat($monto);
 
 			$newId =  Funciones::InsertOne($ctaCte);
-			if($newId < 1)
-				throw new Exception("No se pudo actualizar uno de los movimientos en las cuentas corrientes.");
-			else
-				return $newId;
+			return $newId;
 
 			}catch(Exception $e){
 				ErrorHelper::LogError(__FUNCTION__, $uf , $e);		 
-				throw new ErrorException("No se pudo generar una nota de crédito para la uf " . $uf_id);
+				throw new ErrorException("No se pudo generar una nota de crédito para la uf " . $uf->id);
 		}
 	}
 	

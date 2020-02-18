@@ -297,6 +297,7 @@ class ExpensaApi{
 			
 		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
+			ErrorHelper::LogError(__FUNCTION__, self::$idLiqGlobal, $e);		 
 			return $response->withJson($e->getMessage(), 500);
 		}
 	}

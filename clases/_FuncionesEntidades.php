@@ -17,7 +17,6 @@ class Funciones{
 	 * en especial, de no recibirlo por default valida contra la columna "id".
 	 */
 	public static function Exists($entityObject, $column = "id"){
-
 		try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		

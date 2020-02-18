@@ -69,8 +69,6 @@ class MovimientosFondosEsp
 			$movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($montoGasto);
 			$movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
 			$newIdMovFondosEsp = Funciones::InsertOne($movFondos);
-			if($newIdMovFondosEsp < 1)
-				throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
 
 			return $newIdMovFondosEsp;
 
