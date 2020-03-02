@@ -50,4 +50,18 @@ class Liquidaciones
 		$consulta->bindValue(':tasaInteres'       ,$objEntidad->tasaInteres       ,\PDO::PARAM_STR);
 	}
 
+	public function UpdateSaldo($idLiquidacion, $monto){
+		$liq = Funciones::GetOne($idLiquidacion, static::Class);
+
+		if($liq->saldoInteres < 0){
+			$montoAux = $monto + $liq->saldoInteres;
+			$liq->saldoInteres += $monto;
+			if($liq->saldoInteres == 0 && $montoAux > 0){
+				$liq->saldoMonto = $montoAux;
+			}
+		}
+
+		return Funciones::UpdateOne($liq);
+	}
+
 }//class

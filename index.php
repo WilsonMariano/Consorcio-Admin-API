@@ -69,6 +69,10 @@
 		$this->get('/getValue[/]', \DiccionarioApi::class . ':GetValue');          
 		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
 	});
+	
+	$app->group('/expensa', function () {
+		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
+	});
 
 	$app->group('/gastos-liq', function () {
 		$this->post('/insert[/]', \GastoLiquidacionApi::class . ':Insert');  
@@ -77,10 +81,6 @@
 
 	$app->group('/liquidacion-gbl', function () {
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
-	});
-
-	$app->group('/expensa', function () {
-		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
 	});
 
 	$app->group('/notas-credito-debito', function () {
