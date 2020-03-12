@@ -3,25 +3,25 @@
 class CtasCtesApi{
     
     public static function ProcessPayment($request, $response, $args){
-        $apiParams = $request->getParsedBody();
+        try {  
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+            $objetoAccesoDato->beginTransaction();
+            
+            $apiParams = $request->getParsedBody();
 
-        for($i = 0; $i < sizeof($apiParams["arrDeudas"]); $i++){
-            $deuda = ($apiParams["arrDeudas"][$i]);
+            for($i = 0; $i < sizeof($apiParams["arrDeudas"]); $i++){
+                $deuda = ($apiParams["arrDeudas"][$i]);
+                Liquidaciones::UpdateSaldo($deuda["idLiquidacion"], $deuda["montoPagar"]);
+            }
 
-            $liquidacion = Funciones::GetOne($deuda["idLiquidacion"], Liquidaciones::class);
-            Liquidaciones::UpdateSaldo($deuda["idLiquidacion"], $deuda["montoPagar"]);
-        }
-        // {
-        //     "arrDeudas": [
-        //       {
-        //         "detalle": "LIQUIDACION EXPENSA PERIODO 12/19",
-        //         "idLiquidacion": "2",
-        //         "montoAsignado": "1320.00",
-        //         "montoPagar": "1320.00"
-        //       }
-        //     ],
-        //     "totalPagar": "1320"
-        //  }
+            $objetoAccesoDato->commit();
+            return $response->withJson(true, 200);
+
+		}catch(Exception $e){
+            $objetoAccesoDato->rollBack();
+            ErrorHelper::LogError(__FUNCTION__, $apiParams, $e);
+            return $response->withJson($e->getMessage(), 500);
+		}
     }
 
     public static function GetDeudas ($request, $response, $args){
