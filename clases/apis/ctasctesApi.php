@@ -11,7 +11,7 @@ class CtasCtesApi{
 
             for($i = 0; $i < sizeof($apiParams["arrDeudas"]); $i++){
                 $deuda = ($apiParams["arrDeudas"][$i]);
-                Liquidaciones::UpdateSaldo($deuda["idLiquidacion"], $deuda["montoPagar"]);
+                Liquidaciones::UpdateSaldos($deuda["idLiquidacion"], $deuda["montoPagar"]);
             }
 
             $objetoAccesoDato->commit();

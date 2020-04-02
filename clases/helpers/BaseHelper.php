@@ -9,7 +9,7 @@ abstract class BaseHelper {
     
     public static function MyVarDump($data){
       echo "\xA";
-      var_dump($data);
+      var_dump(json_encode($data));
       echo "\xA";
     }
 

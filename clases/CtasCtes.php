@@ -65,8 +65,8 @@ class CtasCtes
 			$ctaCte->fecha = date("Y-m-d");
 			$ctaCte->descripcion = "NOTA DE CREDITO";
 			$ctaCte->monto = $monto;
-			$saldoActual = SimpleTypesHelper::NumFormat(self::GetLastSaldo($uf->nroUF) ?? 0);
-			$ctaCte->saldo = $saldoActual + SimpleTypesHelper::NumFormat($monto);
+			$saldoActual = NumHelper::NumFormat(self::GetLastSaldo($uf->nroUF) ?? 0);
+			$ctaCte->saldo = $saldoActual + NumHelper::NumFormat($monto);
 
 			$newId =  Funciones::InsertOne($ctaCte);
 			return $newId;

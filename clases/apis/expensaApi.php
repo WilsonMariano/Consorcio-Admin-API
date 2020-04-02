@@ -1,6 +1,7 @@
 <?php   
 
-require_once __DIR__ . '/../Helpers/SimpleTypesHelper.php';
+require_once __DIR__ . '/../Helpers/NumHelper.php';
+require_once __DIR__ . '/../Helpers/StrHelper.php';
 require_once __DIR__ . '/../enums/EntityTypeEnum.php';
 require_once __DIR__ . '/../enums/RentalContractEnum.php';
 require_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
@@ -23,7 +24,7 @@ class ExpensaApi{
 	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
 		$arrUF = UF::GetByNroManzana($nroManzana);		
 		foreach ($arrUF as $uf){
-			$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoManzana) * $uf->coeficiente;		 
+			$montoGastoUF = NumHelper::NumFormat($montoGastoManzana) * $uf->coeficiente;		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 		}
 	}
@@ -33,7 +34,7 @@ class ExpensaApi{
 	 */
 	private static function ApplyExpenseToEdificio($idManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
 		$cantUF = Edificios::GetByManzanaAndNumero($idManzana, $nroEdificio)->cantUF;
-		$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoEdificio) / $cantUF;
+		$montoGastoUF = NumHelper::NumFormat($montoGastoEdificio) / $cantUF;
 
 		$arrUF = UF::GetByManzanaAndEdificio($idManzana, $nroEdificio);				  
 		foreach ($arrUF as $uf)
@@ -52,7 +53,7 @@ class ExpensaApi{
 	 * Guarda el gasto en la bd y acumula el monto del gasto en la expensa correspondiente.
 	 */
 	private static function SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion){
-		$monto = SimpleTypesHelper::NumFormat($montoGasto);
+		$monto = NumHelper::NumFormat($montoGasto);
 		self::InsertGastoExpensa($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidaciones as $liquidacion){
 			if($liquidacion->idUF == $uf->id){
@@ -158,9 +159,9 @@ class ExpensaApi{
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
 		if($uf->codAlquila == RentalContractEnum::InquilinoSinContrato)
-			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
+			$tax = NumHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
 		elseif($uf->codAlquila == RentalContractEnum::InquilinoConContrato)
-			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
+			$tax = NumHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
@@ -192,7 +193,7 @@ class ExpensaApi{
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = self::GetDescripcion();
 		$ctaCte->monto = $liquidacion->saldoMonto;
-		$saldoActual = SimpleTypesHelper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
+		$saldoActual = NumHelper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacion->monto;
 		self::InsertAndSaveID($ctaCte);
 	}
@@ -202,7 +203,7 @@ class ExpensaApi{
 	 */
 	private static function GetDescripcion(){
 		$textoDescripcion = Diccionario::GetValue(self::TXT_LIQ_EXPENSA);
-		return SimpleTypesHelper::TxtPadRight($textoDescripcion) . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
+		return StrHelper::TxtPadRight($textoDescripcion) . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
 	}
 
 	/**
@@ -283,7 +284,7 @@ class ExpensaApi{
 
 					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
-						$montoGastoManzana = (SimpleTypesHelper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
+						$montoGastoManzana = (NumHelper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
 						self::ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
 					}
 				}

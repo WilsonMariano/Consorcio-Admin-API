@@ -63,10 +63,10 @@ class MovimientosFondosEsp
 		try{
 			$movFondos = new static();
 			$movFondos->idManzana = $idManzana;
-			$movFondos->monto = SimpleTypesHelper::NumFormat($montoGasto);
+			$movFondos->monto = NumHelper::NumFormat($montoGasto);
 			$movFondos->descripcion = "SE IMPUTA GASTO CONTRA FONDO ESPECIAL";
-			$lastSaldo = SimpleTypesHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($idManzana));
-			$movFondos->saldo = $lastSaldo - SimpleTypesHelper::NumFormat($montoGasto);
+			$lastSaldo = NumHelper::NumFormat(MovimientosFondosEsp::GetLastSaldo($idManzana));
+			$movFondos->saldo = $lastSaldo - NumHelper::NumFormat($montoGasto);
 			$movFondos->tipoLiquidacion = LiquidacionTypeEnum::FondoReserva;
 			$newIdMovFondosEsp = Funciones::InsertOne($movFondos);
 

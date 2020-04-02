@@ -50,14 +50,13 @@ class Liquidaciones
 	/**
 	 * Actualiza los saldos de una liquidación.
 	 */
-	public function UpdateSaldo($idLiquidacion, $parMonto){
+	public function UpdateSaldos($idLiquidacion, $parMonto){
 		$liq = Funciones::GetOne($idLiquidacion, static::Class);
-		$monto = SimpleTypesHelper::NumFormat($parMonto);
+		$monto = NumHelper::NumFormat($parMonto);
 		$saldoMontoAux = $monto;
 
-		if($liq->saldoInteres < 0){
-			$saldoMontoAux = $monto + $liq->saldoInteres;
-		
+		if(NumHelper::IsNegative($liq->saldoInteres)){
+			$saldoMontoAux = $monto + NumHelper::NumFormat($liq->saldoInteres);	
 			if($saldoMontoAux >= 0){
 				$liq->saldoInteres = 0;
 			}else{
@@ -65,8 +64,10 @@ class Liquidaciones
 			}
 		}
 
-		if($liq->saldoMonto < 0 && $saldoMontoAux > 0){
+		if(NumHelper::IsNegative($liq->saldoMonto) && $saldoMontoAux > 0){
 			$liq->saldoMonto += $saldoMontoAux;
+			if($liq->saldoMonto > 0)
+				$liq->saldoMonto = 0;
 		}
 
 		return Funciones::UpdateOne($liq);

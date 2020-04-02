@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '\helpers\SimpleTypesHelper.php';
+require_once __DIR__ . '\helpers\NumHelper.php';
 require_once __DIR__ . '\enums\LiquidacionTypeEnum.php';
 
 class Manzanas{
@@ -57,8 +57,8 @@ class Manzanas{
 				foreach ($arrManzanas as $nroManzana) {
 					foreach ($manzanas as $manzana) {
 						if($nroManzana == $manzana->nroManzana) {
-							$result->$nroManzana = SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
-							$totalMts += SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
+							$result->$nroManzana = NumHelper::NumFormat($manzana->mtsCuadrados);
+							$totalMts += NumHelper::NumFormat($manzana->mtsCuadrados);
 							break;
 						}
 					}	
@@ -66,8 +66,8 @@ class Manzanas{
 
 				// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
 				foreach ($arrManzanas as $nroManzana) {
-					$valor =  (SimpleTypesHelper::NumFormat($result->$nroManzana) * 100) / SimpleTypesHelper::NumFormat($totalMts);
-					$result->$nroManzana =  SimpleTypesHelper::NumFormat($valor);
+					$valor =  (NumHelper::NumFormat($result->$nroManzana) * 100) / NumHelper::NumFormat($totalMts);
+					$result->$nroManzana =  NumHelper::NumFormat($valor);
 				}
 				return $result;
 			}else{
