@@ -93,4 +93,20 @@ class CtasCtes
 		}
 	}
 
+	public static function GetMovimientos($idUF){
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from CtasCtes where idUF = :idUF order by fecha desc");
+			$consulta->bindValue(':idUF', $idUF, \PDO::PARAM_INT);	
+			$consulta->execute();
+
+			return PDOHelper::FetchAll($consulta);
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idUF, $e);		 
+			throw new ErrorException("No se pudieron recuperar los movimientos de la uf " . $idUF);
+		}
+	}
+
 }//class

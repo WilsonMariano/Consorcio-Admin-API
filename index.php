@@ -63,6 +63,7 @@
 	$app->group('/ctas-ctes', function () {
 		$this->post('/payment[/]' , \CtasCtesApi::class . ':ProcessPayment');      
 		$this->get('/getDeudas[/]' , \CtasCtesApi::class . ':GetDeudas');      
+		$this->get('/getMovimientos[/]' , \CtasCtesApi::class . ':GetMovimientos');      
 	});
 
 	$app->group('/diccionario', function () {
