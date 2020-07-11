@@ -29,7 +29,7 @@ class Funciones{
 			return $consulta->rowCount() > 0 ? true : false;
 
 		}catch(Exception $e){
-			ErrorHelper::LogError(__FUNCTION__, $objEntidad , $e);		 
+			ErrorHelper::LogError(__FUNCTION__, $obj , $e);		 
 			throw new ErrorException("No se pudo validar la existencia de una entidad del tipo " . $entityName);
 		}
 	}
@@ -45,7 +45,7 @@ class Funciones{
 			return $arrObjEntidad;
 
 		}catch(Exception $e){
-			ErrorHelper::LogError(ErrorEnum::GenericGet, $objEntidad , $e);		 
+			ErrorHelper::LogError(ErrorEnum::GenericGet, $obj , $e);		 
 			throw new ErrorException("No se pudieron recuperar entidades del tipo " . $entityName);
 		}
 	}
@@ -74,7 +74,7 @@ class Funciones{
 			return $result;	
 
 		}catch(Exception $e){
-			ErrorHelper::LogError(__FUNCTION__, $objEntidad , $e);		 
+			ErrorHelper::LogError(__FUNCTION__, $obj , $e);		 
 			throw new ErrorException("No se pudieron recuperar entidades del tipo " . $entityName);
 		}
 	}
@@ -87,11 +87,11 @@ class Funciones{
 			$consulta->bindValue(':id', $idParametro, PDO::PARAM_INT);
 			$consulta->execute();
 	
-			$objEntidad = PDOHelper::FetchObject($consulta, $entityName);
-			return $objEntidad;	
+			$obj = PDOHelper::FetchObject($consulta, $entityName);
+			return $obj;	
 
 		}catch(Exception $e){
-			ErrorHelper::LogError(ErrorEnum::GenericGetOne, $objEntidad , $e);		 
+			ErrorHelper::LogError(ErrorEnum::GenericGetOne, $obj , $e);		 
 			throw new ErrorException("No se pudo insertar una entidad del tipo " . $entityName);
 		}
 	}	 
@@ -99,12 +99,12 @@ class Funciones{
 	/**
 	 * Update Genérico. Retorna bool indicando si se modifico algún registro.
 	 */
-	public static function UpdateOne($objEntidad){
+	public static function UpdateOne($obj){
 		try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
 			//Obtengo el nombre de la clase y sus atributos
-			$entityName = get_class($objEntidad);
+			$entityName = get_class($obj);
 			$arrAtributos = get_class_vars($entityName);
 		
 			//Armo la query SQL dinamicamente
@@ -117,13 +117,13 @@ class Funciones{
 		
 			//Ejecuto la query
 			$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
-			$objEntidad->BindQueryParams($consulta,$objEntidad);
+			$obj->BindQueryParams($consulta,$obj);
 			$consulta->execute();
 		
 			return $consulta->rowCount() > 0 ? true : false;
 		
 		}catch(Exception $e){
-			ErrorHelper::LogError(ErrorEnum::GenericUpdate, $objEntidad , $e);		 
+			ErrorHelper::LogError(ErrorEnum::GenericUpdate, $obj , $e);		 
 			throw new ErrorException("No se pudo actualizar una entidad del tipo " . $entityName);
 		}
 	}
@@ -131,13 +131,13 @@ class Funciones{
 	/**
 	 * Insert genérico, retorna el ID generado por la BD
 	 */
-	public static function InsertOne($objEntidad, $includePK = false)
+	public static function InsertOne($obj, $includePK = false)
 	{
 		try {  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 					 
 			//Obtengo el nombre de la clase y sus atributos
-			$entityName = get_class($objEntidad);
+			$entityName = get_class($obj);
 			$arrAtributos = get_class_vars($entityName);
 	
 			//Armo la query SQL dinamicamente
@@ -153,17 +153,31 @@ class Funciones{
 	
 			//Ejecuto la query
 			$consulta =$objetoAccesoDato->RetornarConsulta($myQuery);
-			$objEntidad->BindQueryParams($consulta, $objEntidad, $includePK);
+			$obj->BindQueryParams($consulta, $obj, $includePK);
 			$consulta->execute();
 
 			return $objetoAccesoDato->RetornarUltimoIdInsertado();	
 
 		}catch(Exception $e){
-			ErrorHelper::LogError(ErrorEnum::GenericInsert, $objEntidad , $e);		 
+			ErrorHelper::LogError(ErrorEnum::GenericInsert, $obj, $e);		 
             throw new ErrorException("No se pudo insertar una entidad del tipo " . $entityName);
 		}
 	}
 	
+	/**
+	 * Guarda un objeto en la BD y guarda en el mismo el ID generado .
+	 */
+	public static function InsertAndSaveID($obj){
+		$newId = self::InsertOne($obj);
+		if($newId < 1){
+			throw new Exception("No se pudo generar un objeto del tipo " . get_class($obj) .  " para una de las UF.");
+		}else{
+			$obj->id = $newId;
+			return $obj;
+		}
+	}
+
+
 	/**
 	 * Delete genérico. Retorna bool indicando si se eliminó algún registro.
 	 */

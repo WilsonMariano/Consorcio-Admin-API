@@ -81,8 +81,8 @@ class CtasCtes
 		try{
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			
-			$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idUF = :idUF");
-			$consulta->bindValue(':idUF' , $idUF, \PDO::PARAM_INT);	
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from vwDeudasUF where idUF = :idUF order by fechaEmision");
+			$consulta->bindValue(':idUF', $idUF, \PDO::PARAM_INT);	
 			$consulta->execute();
 
 			return PDOHelper::FetchAll($consulta);
@@ -91,7 +91,6 @@ class CtasCtes
 			ErrorHelper::LogError(__FUNCTION__, $idUF, $e);		 
 			throw new ErrorException("No se pudieron recuperar las deudas de la uf " . $idUF);
 		}
-
 	}
 
 }//class
