@@ -35,16 +35,22 @@ class Usuarios{
 
 
 	public static function Login($usuario) {
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .
-			" where email =:email AND password = :password");
-		$consulta->bindValue(':email', $usuario->email, PDO::PARAM_STR);
-		$consulta->bindValue(':password', $usuario->password, PDO::PARAM_STR);
-		$consulta->execute();
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .
+				" where email =:email AND password = :password");
+			$consulta->bindValue(':email', $usuario->email, PDO::PARAM_STR);
+			$consulta->bindValue(':password', $usuario->password, PDO::PARAM_STR);
+			$consulta->execute();
 
-		$usuarioBuscado = PDOHelper::FetchObject($consulta, static::class);
+			$usuarioBuscado = PDOHelper::FetchObject($consulta, static::class);
 
-		return $usuarioBuscado;
+			return $usuarioBuscado;
+		
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $usuario, $e);		 
+			throw new ErrorException("No se pudo iniciar sesión");
+		}
 	}
 
 }//class

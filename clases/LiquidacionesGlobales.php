@@ -42,16 +42,23 @@ class LiquidacionesGlobales{
 	 * Recibe por parámetros el mes y el año.
 	 */
 	public static function GetByPeriod($mes, $anio){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new static();
-		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
-			" where mes = :mes and anio = :anio");
-		$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
-		$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);
-		$consulta->execute();
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objEntidad = new static();
 			
-		return $consulta->rowCount() > 0 ? true : false;						
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+				" where mes = :mes and anio = :anio");
+			$consulta->bindValue(':mes', $mes , PDO::PARAM_STR);
+			$consulta->bindValue(':anio', $anio , PDO::PARAM_STR);
+			$consulta->execute();
+				
+			return $consulta->rowCount() > 0 ? true : false;
+		
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $mes . "/" . $anio, $e);		 
+			throw new ErrorException("No se pudo recuperar la liquidación del periodo  " . $mes . "/" . $anio);
+		}
+
 	}
 
 }//class

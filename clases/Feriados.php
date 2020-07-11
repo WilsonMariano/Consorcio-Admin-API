@@ -37,32 +37,44 @@ class Feriados{
 	}
 
 	public static function IsInamovible($fecha){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new static();
-	 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
-			"where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible ."'");
-		$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
-		$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
-		$consulta->execute();
-		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
+		try {
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objEntidad = new static();
 		
-		return $consulta->rowCount() > 0 ? true : false;
+			$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
+				"where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible ."'");
+			$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
+			$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
+			$consulta->execute();
+			$objEntidad = PDOHelper::FetchObject($consulta, static::class);
+			
+			return $consulta->rowCount() > 0 ? true : false;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $codigo, $e);		 
+			throw new ErrorException("No se pudo recuperar el parámetro " . $codigo);
+		}
 	}
 
 	public static function IsOptativo($fecha){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new static();
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objEntidad = new static();
 
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
-			" where dia = :dia and mes = :mes and anio =:anio and tipo = '" . FeriadoTypeEnum::Optativo . "'");
-		$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
-		$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
-		$consulta->bindValue(':anio', $fecha->format("Y") , PDO::PARAM_STR);
-		$consulta->execute();
-		$objEntidad = PDOHelper::FetchObject($consulta, static::class);
+			$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+				" where dia = :dia and mes = :mes and anio =:anio and tipo = '" . FeriadoTypeEnum::Optativo . "'");
+			$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
+			$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
+			$consulta->bindValue(':anio', $fecha->format("Y") , PDO::PARAM_STR);
+			$consulta->execute();
+			$objEntidad = PDOHelper::FetchObject($consulta, static::class);
+			
+			return $consulta->rowCount() > 0 ? true : false;
 		
-		return $consulta->rowCount() > 0 ? true : false;
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $fecha, $e);		 
+			throw new ErrorException("No se pudo recuperar el feriado " . $fecha);
+		}
 	}
 
 	public static function IsHoliday($fecha){

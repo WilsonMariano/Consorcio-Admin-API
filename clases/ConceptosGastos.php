@@ -34,15 +34,21 @@ class ConceptosGastos
 	 * Recibe por parámetro el código a buscar.
 	 */
 	public static function GetByCodigo($codigo){	
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		$objEntidad = new static();
-		
-		$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . " where codigo =:codigo");
-		$consulta->bindValue(':codigo', $codigo , PDO::PARAM_STR);
-		$consulta->execute();
-		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
-		
-		return $objEntidad;						
+		try {  
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$objEntidad = new static();
+			
+			$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class . " where codigo =:codigo");
+			$consulta->bindValue(':codigo', $codigo , PDO::PARAM_STR);
+			$consulta->execute();
+			$objEntidad= PDOHelper::FetchObject($consulta, static::class);
+			
+			return $objEntidad;						
+
+		}catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $objEntidad , $e);		 
+			throw new ErrorException("No se pudo recuperar una entidad del tipo " . static::class);
+		}
 	}
 
 }//class

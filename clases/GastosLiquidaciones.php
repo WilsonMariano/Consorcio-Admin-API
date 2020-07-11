@@ -40,15 +40,22 @@ class GastosLiquidaciones
 	 * Recibe por param un idLiquidacionGlobal.
 	 */
 	public static function GetByLiquidacionGlobal($idLiquidacionGlobal){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
-			" where idLiquidacionGlobal = :idLiquidacionGlobal");
-		$consulta->bindValue(':idLiquidacionGlobal', $idLiquidacionGlobal , PDO::PARAM_INT);
-		$consulta->execute();
-		$arrObjEntidad= PDOHelper::FetchAll($consulta);
+		try{
 
-		return $arrObjEntidad;					
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+				" where idLiquidacionGlobal = :idLiquidacionGlobal");
+			$consulta->bindValue(':idLiquidacionGlobal', $idLiquidacionGlobal , PDO::PARAM_INT);
+			$consulta->execute();
+			$arrObjEntidad= PDOHelper::FetchAll($consulta);
+
+			return $arrObjEntidad;					
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idLiquidacionGlobal, $e);		 
+			throw new ErrorException("No se pudo recuperar la liquidación global " . $idLiquidacionGlobal);
+		}
 	}
 
 }//class

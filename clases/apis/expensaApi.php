@@ -1,6 +1,7 @@
 <?php   
 
-require_once __DIR__ . '/../Helpers/SimpleTypesHelper.php';
+require_once __DIR__ . '/../Helpers/NumHelper.php';
+require_once __DIR__ . '/../Helpers/StrHelper.php';
 require_once __DIR__ . '/../enums/EntityTypeEnum.php';
 require_once __DIR__ . '/../enums/RentalContractEnum.php';
 require_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
@@ -8,12 +9,32 @@ require_once __DIR__ . '/../enums/LiquidacionTypeEnum.php';
 
 class ExpensaApi{
  
-	// Variables de clase
+	private const TXT_LIQ_EXPENSA = "TXT_LIQ_EXPENSA";
 	private static $arrLiquidaciones = array();
 	private static $arrExpensas = array();
 	private static $idLiqGlobal;
 	private static $objLiquidacionGlobal;
 	
+	/**
+	 * Aplica un gasto a una entidad en específico.
+	 */
+	private static function ApplyExpenseToEntity($relacionGasto, $gastoLiq)
+	{
+		switch ($relacionGasto["entidad"]) {
+			case EntityTypeEnum::Manzana :
+				self::ApplyExpenseToManzana(
+					$relacionGasto["nroEntidad"], $arrGastosLiq[$i]["monto"], $gastoLiq["id"]);
+				break;
+			case EntityTypeEnum::Edificio :
+				self::ApplyExpenseToEdificio(
+					$relacionGasto["idManzana"], $relacionGasto["nroEntidad"], $gastoLiq["monto"], $gastoLiq["id"]);
+				break;
+			case EntityTypeEnum::UnidadFuncional :
+				self::ApplyExpenseToUF(
+					$relacionGasto["idManzana"], $relacionGasto["nroEntidad"], $gastoLiq["monto"], $gastoLiq["id"]);
+				break;
+		}
+	}
 
 	/**
 	 * Aplica un gasto a todas las unidades funcionales de una manzana.
@@ -21,7 +42,7 @@ class ExpensaApi{
 	private static function ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $idGastoLiquidacion){
 		$arrUF = UF::GetByNroManzana($nroManzana);		
 		foreach ($arrUF as $uf){
-			$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoManzana) * $uf->coeficiente;		 
+			$montoGastoUF = NumHelper::NumFormat($montoGastoManzana) * $uf->coeficiente;		 
 			self::SaveGastoAndAccumulateAmount($uf, $montoGastoUF, $idGastoLiquidacion);
 		}
 	}
@@ -31,7 +52,7 @@ class ExpensaApi{
 	 */
 	private static function ApplyExpenseToEdificio($idManzana, $nroEdificio, $montoGastoEdificio, $idGastoLiquidacion){
 		$cantUF = Edificios::GetByManzanaAndNumero($idManzana, $nroEdificio)->cantUF;
-		$montoGastoUF = SimpleTypesHelper::NumFormat($montoGastoEdificio) / $cantUF;
+		$montoGastoUF = NumHelper::NumFormat($montoGastoEdificio) / $cantUF;
 
 		$arrUF = UF::GetByManzanaAndEdificio($idManzana, $nroEdificio);				  
 		foreach ($arrUF as $uf)
@@ -50,7 +71,7 @@ class ExpensaApi{
 	 * Guarda el gasto en la bd y acumula el monto del gasto en la expensa correspondiente.
 	 */
 	private static function SaveGastoAndAccumulateAmount($uf, $montoGasto, $idGastoLiquidacion){
-		$monto = SimpleTypesHelper::NumFormat($montoGasto);
+		$monto = NumHelper::NumFormat($montoGasto);
 		self::InsertGastoExpensa($uf, $monto, $idGastoLiquidacion);
 		foreach (self::$arrLiquidaciones as $liquidacion){
 			if($liquidacion->idUF == $uf->id){
@@ -69,7 +90,7 @@ class ExpensaApi{
 		$gastoUF->idGastosLiquidaciones = $idGastoLiquidacion;
 		$gastoUF->monto = $montoGastoUF;
 
-		self::InsertAndSaveID($gastoUF);
+		Funciones::InsertAndSaveID($gastoUF);
 	}
 
 	/**
@@ -105,7 +126,7 @@ class ExpensaApi{
 		$expensa->idLiquidacionGlobal = self::$idLiqGlobal;
 		$expensa->coeficiente = $uf->coeficiente;
 
-		return self::InsertAndSaveID($expensa);
+		return Funciones::InsertAndSaveID($expensa);
 	}
 
 	/**
@@ -120,34 +141,9 @@ class ExpensaApi{
 			}
 		}
 		// Sino existe en el array generamos una nueva expensa 
-		$newLiquidacion = self::NewLiquidacion($uf);
+		$newLiquidacion = LiquidacionApi::NewLiquidacion($uf);
 		array_push(self::$arrLiquidaciones, $newLiquidacion);
 		return $newLiquidacion->id;
-	}
-
-	/**
-	 * Genera una liquidación nueva y la guarda en la BD
-	 */
-	private static function NewLiquidacion($uf){
-		$liquidacion = new Liquidaciones();
-		$liquidacion->idUF = $uf->id;
-		$liquidacion->fechaEmision = date("Y-m-d");
-		$liquidacion->tasaInteres = Diccionario::GetValue("TASA_INTERES");
-
-		return self::InsertAndSaveID($liquidacion);
-	}
-
-	/**
-	 * Guarda un objeto en la BD y guarda en el mismo el ID generado .
-	 */
-	private static function InsertAndSaveID($obj){
-		$newId = Funciones::InsertOne($obj);
-		if($newId < 1){
-			throw new Exception("No se pudo generar un objeto del tipo " . get_class($obj) .  " para una de las UF.");
-		}else{
-			$obj->id = $newId;
-			return $obj;
-		}
 	}
 
 	/**
@@ -156,9 +152,9 @@ class ExpensaApi{
 	private static function CheckContractTax($uf, $montoGasto){
 		$tax = 0;
 		if($uf->codAlquila == RentalContractEnum::InquilinoSinContrato)
-			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
+			$tax = NumHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqSinContrato));
 		elseif($uf->codAlquila == RentalContractEnum::InquilinoConContrato)
-			$tax = SimpleTypesHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
+			$tax = NumHelper::NumFormat(Diccionario::GetValue(RentalContractEnum::TaxInqConContrato));
 
 		return $montoGasto += ($montoGasto * $tax) / 100;
 	}
@@ -182,43 +178,39 @@ class ExpensaApi{
 	 * Gestiona el insert de un nuevo registro en la tabla CtasCTes y devuelve el id generado por la BD.
 	 */
 	private static function SetCtaCte($liquidacion){
-		// Obtengo el periodo a liquidar de la liquidacion global.
-
 		$ctaCte = new CtasCtes();
 		$ctaCte->idUF = $liquidacion->idUF;
 		$ctaCte->idLiquidacion = $liquidacion->id;
 		$ctaCte->fecha = date("Y-m-d");
 		$ctaCte->descripcion = self::GetDescripcion();
 		$ctaCte->monto = $liquidacion->saldoMonto;
-		$saldoActual = SimpleTypesHelper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
+		$saldoActual = NumHelper::NumFormat(CtasCtes::GetLastSaldo($liquidacion->idUF) ?? 0);
 		$ctaCte->saldo = $saldoActual - $liquidacion->monto;
-		self::InsertAndSaveID($ctaCte);
+		Funciones::InsertAndSaveID($ctaCte);
 	}
 
 	/**
 	 * Genera el texto para la descripción de las expensas en cuentas corrientes.
 	 */
 	private static function GetDescripcion(){
-		$textoDescripcion = Diccionario::GetValue("TXT_LIQ_EXPENSA");
-		return SimpleTypesHelper::TxtPadRight($textoDescripcion) . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
+		$textoDescripcion = Diccionario::GetValue(self::TXT_LIQ_EXPENSA);
+		return StrHelper::TxtPadRight($textoDescripcion) . self::$objLiquidacionGlobal->mes . "/" . self::$objLiquidacionGlobal->anio;
 	}
 
 	/**
 	 * Agrega el cobro de los fondos especiales para cada uf previamente procesada
 	 */
 	private static function AddFondosEspeciales(){
-
-		//TODO registrar movimientos en tablas de los fondos especiales
 		foreach(self::$arrLiquidaciones as $liquidacion){
 			$uf = Funciones::GetOne($liquidacion->idUF, UF::class);
 
-			$newLiquidacionFR = self::NewLiquidacion($uf);
+			$newLiquidacionFR = LiquidacionApi::NewLiquidacion($uf);
 			$newLiquidacionFR->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoReserva);
 			$newLiquidacionFR->saldoMonto = $newLiquidacionFR->monto * -1;
 			$newFondoReserva = self::NewFondoEspecial($newLiquidacionFR, LiquidacionTypeEnum::FondoReserva);
 			Funciones::UpdateOne($newLiquidacionFR);
 
-			$newLiquidacionFP = self::NewLiquidacion($uf);
+			$newLiquidacionFP = LiquidacionApi::NewLiquidacion($uf);
 			$newLiquidacionFP->monto = Manzanas::GetMontoFondoEspecial($uf->idManzana, LiquidacionTypeEnum::FondoPrevision);
 			$newLiquidacionFP->saldoMonto = $newLiquidacionFP->monto * -1;
 			$newFondoPrevision = self::NewFondoEspecial($newLiquidacionFP, LiquidacionTypeEnum::FondoPrevision);
@@ -232,58 +224,46 @@ class ExpensaApi{
 		$fondo->idLiquidacionGlobal = self::$idLiqGlobal;
 		$fondo->tipoLiquidacion = $tipoLiquidacion;
 
-		return self::InsertAndSaveID($fondo);
+		return Funciones::InsertAndSaveID($fondo);
 	}
 
+
 	/**
+	 * ******************************************************************************************************************************************************************************
+	 * 
+	 *               CALCULO DE EXPENSAS. FUNCION PRINCIPAL DE LA CLASE
+	 * 
 	 * Procesa una liquidaciónGlobal generando las liquidaciones para cada unidad funcional. Se asume que previamente están cargados todos los GastosLiquidaciones correctamente.
 	 * Recibe via httpParam un idLiquidacionGlobal.
+	 * ******************************************************************************************************************************************************************************
 	 */
 	public static function ProcessExpenses($request, $response, $args){
 		try{  
 			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 			$objetoAccesoDato->beginTransaction();
-					   
+
 			self::$idLiqGlobal = $request->getParsedBody()[0];
 			self::$objLiquidacionGlobal = Funciones::GetOne(self::$idLiqGlobal, LiquidacionesGlobales::class);
 
+			// Valido si la liquidacionGlobal ya fue cerrada
 			If(!LiquidacionGlobalApi::IsOpen(self::$objLiquidacionGlobal))
 				throw new Exception("La liquidación ya se encuentra cerrada.");
 
 			$arrGastosLiq = GastosLiquidaciones::GetByLiquidacionGlobal(self::$idLiqGlobal);
-
 			for($i = 0; $i < sizeof($arrGastosLiq); $i++){
-
 				$arrRelacionesGastos = RelacionesGastos::GetByIdGastoLiquidacion($arrGastosLiq[$i]["id"]);   
 				if(sizeof($arrRelacionesGastos)== 1){
-					// Si hay solo una relacion , aplico calculo según tipo entidad.
-					switch ($arrRelacionesGastos[0]["entidad"]) {
-						case EntityTypeEnum::Manzana :
-							self::ApplyExpenseToManzana(
-								$arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
-							break;
-						case EntityTypeEnum::Edificio :
-							self::ApplyExpenseToEdificio(
-								$arrRelacionesGastos[0]["idManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
-							break;
-						case EntityTypeEnum::UnidadFuncional :
-							self::ApplyExpenseToUF(
-								$arrRelacionesGastos[0]["idManzana"], $arrRelacionesGastos[0]["nroEntidad"], $arrGastosLiq[$i]["monto"], $arrGastosLiq[$i]["id"]);
-							break;
-					}
+					self::ApplyExpenseToEntity($arrRelacionesGastos[0], $arrGastosLiq[$i] );
 				}
-				else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Calcular porcentaje de c/ manzana.
+				else // Else: el gasto está relacionado con varias entidades (en este punto solo pueden ser manzanas). Se calcula porcentaje de c/ manzana.
 				{
-				
-					// Extraigo solo el nroManzana de las relaciones de cada gasto.
+					// Extraigo solo el nroManzana (campo nroEntidad) de las relaciones de cada gasto.
 					$arrManzanas = array_map(function($var) { return $var['nroEntidad']; }, $arrRelacionesGastos);
-			
-					// Proceso el gasto por cada manzana relacionada.
-					$arrCoefManzanas = Manzanas::GetPorcentajes($arrManzanas);	
 
+					$arrCoefManzanas = ManzanaApi::GetPorcentajes($arrManzanas);	
 					foreach ($arrCoefManzanas as $nroManzana => $coefManzana){
 						// Calculo la porción de gasto aplicable a cada manzana.
-						$montoGastoManzana = (SimpleTypesHelper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
+						$montoGastoManzana = (NumHelper::NumFormat($arrGastosLiq[$i]["monto"]) * $coefManzana) / 100;
 						self::ApplyExpenseToManzana($nroManzana, $montoGastoManzana, $arrGastosLiq[$i]["id"]);
 					}
 				}
@@ -297,6 +277,7 @@ class ExpensaApi{
 			
 		}catch(Exception $e){
 			$objetoAccesoDato->rollBack();
+			ErrorHelper::LogError(__FUNCTION__, self::$idLiqGlobal, $e);		 
 			return $response->withJson($e->getMessage(), 500);
 		}
 	}

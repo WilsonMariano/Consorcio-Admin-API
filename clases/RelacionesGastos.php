@@ -38,14 +38,20 @@ class RelacionesGastos{
 	 * Recibe por parámetro un idGastoLiquidacion.
 	 */
 	public static function DeleteAll($idGastosLiquidaciones){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
 		
-		$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . static::class . 
-			" where idGastosLiquidaciones = :idGastosLiquidaciones");	
-		$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
-		$consulta->execute();
-		
-		return $consulta->rowCount() > 0 ? true : false;
+			$consulta =$objetoAccesoDato->RetornarConsulta("delete from " . static::class . 
+				" where idGastosLiquidaciones = :idGastosLiquidaciones");	
+			$consulta->bindValue(':idGastosLiquidaciones',$idGastosLiquidaciones, PDO::PARAM_INT);		
+			$consulta->execute();
+			
+			return $consulta->rowCount() > 0 ? true : false;
+	
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $nroManzana, $e);		 
+			throw new ErrorException("No se pudo recuperar la manzana " . $nroManzana);
+		}
 	}
 
 	/**
@@ -53,15 +59,21 @@ class RelacionesGastos{
 	 * Recibe por parámetro un idGastosLiquidacion.
 	 */
 	public static function GetByIdGastoLiquidacion($idGastosLiquidaciones){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
-			" where idGastosLiquidaciones = :idGastosLiquidaciones");
-		$consulta->bindValue(':idGastosLiquidaciones', $idGastosLiquidaciones , PDO::PARAM_INT);
-		$consulta->execute();
-		$arrObjEntidad= PDOHelper::FetchAll($consulta);	
-		
-		return $arrObjEntidad;	
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
+				" where idGastosLiquidaciones = :idGastosLiquidaciones");
+			$consulta->bindValue(':idGastosLiquidaciones', $idGastosLiquidaciones , PDO::PARAM_INT);
+			$consulta->execute();
+			$arrObjEntidad= PDOHelper::FetchAll($consulta);	
+			
+			return $arrObjEntidad;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idGastosLiquidaciones, $e);		 
+			throw new ErrorException("No se pudieron recuperar las relaciones para el gasto " . $idGastosLiquidaciones);
+		}
 	}
 
 	/**

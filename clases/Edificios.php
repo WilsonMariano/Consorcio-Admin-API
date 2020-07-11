@@ -32,16 +32,22 @@ class Edificios{
 	}
 
 	public static function GetByManzanaAndNumero($idManzana, $nroEdificio){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
-			" where idManzana = :idManzana and nroEdificio = :nroEdificio");
-		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
-		$consulta->bindValue(':nroEdificio' , $nroEdificio, \PDO::PARAM_INT);	
-		$consulta->execute();
-		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
+				" where idManzana = :idManzana and nroEdificio = :nroEdificio");
+			$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+			$consulta->bindValue(':nroEdificio' , $nroEdificio, \PDO::PARAM_INT);	
+			$consulta->execute();
+			$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
-		return $objEntidad;
+			return $objEntidad;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $nroEdificio, $e);		 
+			throw new ErrorException("No se pudo recuperar el edificio " . $nroEdificio);
+		}
 	}
 
  

@@ -26,9 +26,6 @@ class Liquidaciones
 			$this->fechaRecalculo   = $arrData['fechaRecalculo'] ?? null;
 			$this->fechaEmision     = $arrData['fechaEmision'] ?? date("Y-m-d");
 			$this->tasaInteres      = $arrData['tasaInteres'] ?? 0;
-		} else {
-			$this->interesAcumulado = 0;
-			$this->saldoInteres = 0;
 		}
 	}
 
@@ -48,6 +45,32 @@ class Liquidaciones
 		$consulta->bindValue(':fechaRecalculo'    ,$objEntidad->fechaRecalculo    ,\PDO::PARAM_STR);
 		$consulta->bindValue(':fechaEmision'      ,$objEntidad->fechaEmision      ,\PDO::PARAM_STR);
 		$consulta->bindValue(':tasaInteres'       ,$objEntidad->tasaInteres       ,\PDO::PARAM_STR);
+	}
+
+	/**
+	 * Actualiza los saldos de una liquidación.
+	 */
+	public function UpdateSaldos($idLiquidacion, $parMonto){
+		$liq = Funciones::GetOne($idLiquidacion, static::Class);
+		$monto = NumHelper::NumFormat($parMonto);
+		$saldoMontoAux = $monto;
+
+		if(NumHelper::IsNegative($liq->saldoInteres)){
+			$saldoMontoAux = $monto + NumHelper::NumFormat($liq->saldoInteres);	
+			if($saldoMontoAux >= 0){
+				$liq->saldoInteres = 0;
+			}else{
+				$liq->saldoInteres += $monto;
+			}
+		}
+
+		if(NumHelper::IsNegative($liq->saldoMonto) && $saldoMontoAux > 0){
+			$liq->saldoMonto += $saldoMontoAux;
+			if($liq->saldoMonto > 0)
+				$liq->saldoMonto = 0;
+		}
+
+		return Funciones::UpdateOne($liq);
 	}
 
 }//class

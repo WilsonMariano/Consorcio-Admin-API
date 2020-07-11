@@ -63,11 +63,16 @@
 	$app->group('/ctas-ctes', function () {
 		$this->post('/payment[/]' , \CtasCtesApi::class . ':ProcessPayment');      
 		$this->get('/getDeudas[/]' , \CtasCtesApi::class . ':GetDeudas');      
+		$this->get('/getMovimientos[/]' , \CtasCtesApi::class . ':GetMovimientos');      
 	});
 
 	$app->group('/diccionario', function () {
 		$this->get('/getValue[/]', \DiccionarioApi::class . ':GetValue');          
 		$this->get('/getAll[/]', \DiccionarioApi::class . ':GetAll');          
+	});
+	
+	$app->group('/expensa', function () {
+		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
 	});
 
 	$app->group('/gastos-liq', function () {
@@ -77,10 +82,6 @@
 
 	$app->group('/liquidacion-gbl', function () {
 		$this->post('/insert[/]', \LiquidacionGlobalApi::class . ':Insert');          
-	});
-
-	$app->group('/expensa', function () {
-		$this->post('/process[/]', \ExpensaApi::class . ':ProcessExpenses');  
 	});
 
 	$app->group('/notas-credito-debito', function () {

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '\helpers\SimpleTypesHelper.php';
+require_once __DIR__ . '\helpers\NumHelper.php';
 require_once __DIR__ . '\enums\LiquidacionTypeEnum.php';
 
 class Manzanas{
@@ -41,69 +41,43 @@ class Manzanas{
 		$consulta->bindValue(':montoFondoPrevision'	,$objEntidad->montoFondoPrevision ,\PDO::PARAM_STR);
 	}
 
-	/**
-	 * Calcula el porcentaje de gasto que le corresponde a cada una de las manzanas recibidas. Devuelve un array con la estructura [nroManzana] = [coeficiente].
-	 * Recibe por parámetro un array con los nroManzana para los cuales calculará el coeficiente.
-	 */
-	public static function GetPorcentajes($arrManzanas){
-		//Traigo todas las manzanas
-		$manzanas = Funciones::GetAll(static::class);
-
-		if($manzanas){
-			$totalMts = 0;
-			$result = new \stdClass();
-			// Burbujeo para armar el result(preliminar) y tambien calcular el total de mts cuadrados entre todas las manzanas recibidas por param
-			foreach ($arrManzanas as $nroManzana) {
-				foreach ($manzanas as $manzana) {
-					if($nroManzana == $manzana->nroManzana) {
-						$result->$nroManzana = SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
-						$totalMts += SimpleTypesHelper::NumFormat($manzana->mtsCuadrados);
-						break;
-					}
-				}	
-			}
-
-			// Itero para calcular el coeficiente de cada manzana y actualizar el result final.
-			foreach ($arrManzanas as $nroManzana) {
-				$valor =  (SimpleTypesHelper::NumFormat($result->$nroManzana) * 100) / SimpleTypesHelper::NumFormat($totalMts);
-				$result->$nroManzana =  SimpleTypesHelper::NumFormat($valor);
-			}
-			return $result;
-		}else{
-			return false ;
-		}
-	}
-
 	public static function GetByNumero($nroManzana){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . 
-			" where nroManzana= :nroManzana");
-		$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
-		$consulta->execute();
-		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$consulta = $objetoAccesoDato->RetornarConsulta("select * from " . static::class . " where nroManzana= :nroManzana");
+			$consulta->bindValue(':nroManzana' , $nroManzana, \PDO::PARAM_INT);	
+			$consulta->execute();
+			$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
-		return $objEntidad;		
+			return $objEntidad;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $nroManzana, $e);		 
+			throw new ErrorException("No se pudo recuperar la manzana numero" . $nroManzana);
+		}
 	}
 
 	/**
 	 * Devuelve el monto a cobrar de un fondo especial que se encuentra parametrizado para un idManzana especifico.
 	 */
 	public static function GetMontoFondoEspecial($idManzana, $tipoLiquidacion){
-		$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
-		 
-		if($tipoLiquidacion == LiquidacionTypeEnum::FondoReserva)
-			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoReserva as monto from " . static::class . 
-				" where id = :idManzana");
-		else
-			$consulta = $objetoAccesoDato->RetornarConsulta("select montoFondoPrevision as monto from " . static::class .
-				" where id = :idManzana");
+		try{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			
+			$campoMonto = $tipoLiquidacion == LiquidacionTypeEnum::FondoReserva ? "montoFondoReserva" : "montoFondoPrevision";
 
-		$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
-		$consulta->execute();
-		$objEntidad= PDOHelper::FetchObject($consulta, static::class);
+			$consulta = $objetoAccesoDato->RetornarConsulta("select " . $campoMonto . " as monto from " . static::class . " where id = :idManzana");
+			$consulta->bindValue(':idManzana' , $idManzana, \PDO::PARAM_INT);	
+			$consulta->execute();
+			$objEntidad= PDOHelper::FetchObject($consulta, static::class);
 
-		return $objEntidad->monto;
+			return $objEntidad->monto;
+
+		} catch(Exception $e){
+			ErrorHelper::LogError(__FUNCTION__, $idManzana, $e);		 
+			throw new ErrorException("No se pudo recuperar el monto del fondo especial para la manzana de id " . $idManzana);
+		}
 	}
 
 }//class

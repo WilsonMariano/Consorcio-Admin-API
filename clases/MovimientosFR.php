@@ -32,7 +32,7 @@ class MovimientosFR
         $movFR = new static();
         $movFR->idMovimientoFondoEsp = $newIdMovFondosEsp;
         $movFR->idGastoLiquidacion = $idGastoLiq; 
-        if(!Funciones::InsertOne($movFR))
+        if(Funciones::InsertOne($movFR) < 1)
             throw new Exception("No se pudieron actualizar los fondos especiales correctamente.");
     }
 
