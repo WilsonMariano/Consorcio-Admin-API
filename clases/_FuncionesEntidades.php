@@ -92,7 +92,7 @@ class Funciones{
 
 		}catch(Exception $e){
 			ErrorHelper::LogError(ErrorEnum::GenericGetOne, $obj , $e);		 
-			throw new ErrorException("No se pudo insertar una entidad del tipo " . $entityName);
+			throw new ErrorException("No se pudo obtener una entidad del tipo " . $entityName);
 		}
 	}	 
 	 

@@ -8,6 +8,10 @@ class GastoLiquidacionApi{
     private static function IsValid($gasto){
         if(!Funciones::GetOne($gasto->idLiquidacionGlobal, LiquidacionesGlobales::class)) 
             throw new Exception("La liquidación global ingresada no existe.");
+
+        if(!ConceptosGastos::GetByCodigo($gasto->codConceptoGasto))
+            throw new Exception("No existe el código de gasto informado.");
+
         return true;
     }
 
