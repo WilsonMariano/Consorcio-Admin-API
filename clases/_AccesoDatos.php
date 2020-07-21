@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../credentials.php';
+// require_once __DIR__ . '/../credentials.php';
 
 class AccesoDatos{
     private static $ObjetoAccesoDatos;
@@ -9,10 +9,10 @@ class AccesoDatos{
     private function __construct(){
         //***************** CONFIGURAR CONEXIÓN EN LAS SIGUIENTES VARIABLES *****************
             // Definidos en credentials.php
-            $myServer 	= HOST;                
-            $myDBName 	= DBNAME;
-            $myUser 	= USERNAME;
-            $myPassWord = PASSWORD;
+            $myServer 	= 'localhost';                
+            $myDBName 	= 'consorcio';
+            $myUser 	= 'root';
+            $myPassWord = 'admin';
         //***********************************************************************************    
         try{
             $this->objetoPDO = new PDO('mysql:host=' . $myServer .';dbname='. $myDBName .';charset=utf8', $myUser, $myPassWord, array(PDO::ATTR_EMULATE_PREPARES => true,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
