@@ -41,6 +41,7 @@ BEGIN
 		INNER JOIN Expensas ex ON ex.idLiquidacionGlobal = lg.id
 		INNER JOIN Liquidaciones li ON ex.idLiquidacion = li.id;
 
+
 	DROP VIEW IF EXISTS vwGastosExpensa;
 	CREATE VIEW vwGastosExpensa AS 
 		SELECT ma.id AS nroManzana, UF.nroUF, gl.codConceptoGasto, cg.ConceptoGasto, gl.detalle, ge.monto
@@ -94,7 +95,15 @@ BEGIN
 		INNER JOIN NotasDebito nd  ON nd.idLiquidacion = li.id
 		WHERE li.saldoMonto < 0 ;
 		
-
+		
+	DROP VIEW IF EXISTS vwRecibos;
+	CREATE VIEW vwRecibos  AS
+		SELECT co.nroComprobante, di.valor AS 'medioPago', co.montoTotal, cc.idUf, cc.fecha, cc.descripcion
+		FROM Comprobantes co
+		INNER JOIN Diccionario di ON di.codigo = co.codMedioPago
+		INNER JOIN DetallesComprobante de ON de.idComprobante = co.id
+		INNER JOIN CtasCtes cc ON cc.id = de.idCtaCte;
+	
 END$$
 
 DELIMITER ;
