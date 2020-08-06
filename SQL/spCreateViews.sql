@@ -19,7 +19,7 @@ BEGIN
 	
 	DROP VIEW IF EXISTS vwCtasCtes;
 	CREATE VIEW vwCtasCtes AS 
-		SELECT UF.id, UF.nroUF, ma.nroManzana, ad.nroAdherente , CONCAT(ad.apellido,', ', ad.nombre) AS adherente, SUM(cc.saldo) AS 'saldo'
+		SELECT UF.id, UF.nroUF, ma.nroManzana, ad.nroAdherente , CONCAT(ad.apellido,', ', ad.nombre) AS adherente, SUM(cc.monto) AS 'saldo'
 		FROM CtasCtes cc
         INNER JOIN UF  ON cc.idUF = UF.id
         INNER JOIN Adherentes ad ON UF.idAdherente = ad.id
