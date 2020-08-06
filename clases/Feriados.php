@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/enums/FeriadoTypeEnum.php';
 
 class Feriados{
 
@@ -42,7 +43,7 @@ class Feriados{
 			$objEntidad = new static();
 		
 			$consulta =$objetoAccesoDato->RetornarConsulta("select * from " . static::class .  
-				"where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible ."'");
+				" where dia = :dia and mes = :mes and tipo = '" . FeriadoTypeEnum::Inamovible . "'");
 			$consulta->bindValue(':dia', $fecha->format("d") , PDO::PARAM_STR);
 			$consulta->bindValue(':mes', $fecha->format("m") , PDO::PARAM_STR);
 			$consulta->execute();
@@ -51,8 +52,8 @@ class Feriados{
 			return $consulta->rowCount() > 0 ? true : false;
 
 		} catch(Exception $e){
-			ErrorHelper::LogError(__FUNCTION__, $codigo, $e);		 
-			throw new ErrorException("No se pudo recuperar el parámetro " . $codigo);
+			ErrorHelper::LogError(__FUNCTION__, $fecha, $e);		 
+			throw new ErrorException("No se pudo recuperar el feriado " . $fecha->format('Y-m-d'));
 		}
 	}
 
@@ -73,7 +74,7 @@ class Feriados{
 		
 		} catch(Exception $e){
 			ErrorHelper::LogError(__FUNCTION__, $fecha, $e);		 
-			throw new ErrorException("No se pudo recuperar el feriado " . $fecha);
+			throw new ErrorException("No se pudo recuperar el feriado " . $fecha->format('Y-m-d'));
 		}
 	}
 
